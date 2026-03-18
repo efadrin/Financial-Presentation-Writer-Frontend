@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" data-framework="typescript">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Financial Presentation Writer</title>
+
+    <link rel="preconnect" href="https://appsforoffice.microsoft.com" crossorigin>
+    <link rel="preconnect" href="https://static2.sharepointonline.com" crossorigin>
+    <link rel="dns-prefetch" href="https://appsforoffice.microsoft.com">
+    <link rel="dns-prefetch" href="https://static2.sharepointonline.com">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+        }
+        #root {
+            height: 100%;
+            background-color: #ffffff;
+        }
+        .initial-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .initial-loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #0078d4;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .initial-loading-text {
+            color: #605e5c;
+            font-size: 14px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .app-mounted .initial-loading {
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript">
+        window._historyCache = {
+            replaceState: window.history.replaceState,
+            pushState: window.history.pushState
+        };
+    </script>
+
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+    <script type="text/javascript">
+        window.history.replaceState = window._historyCache.replaceState;
+        window.history.pushState = window._historyCache.pushState;
+    </script>
+
+    <link rel="stylesheet"
+        href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
+        media="print" onload="this.media='all'" />
+    <noscript>
+        <link rel="stylesheet"
+            href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
+    </noscript>
+
+</head>
+
+<body class="ms-font-m ms-Fabric">
+    <div id="root">
+        <div class="initial-loading" aria-label="Loading application">
+            <div class="initial-loading-spinner" role="progressbar"></div>
+            <span class="initial-loading-text">Starting EFADRIN...</span>
+        </div>
+    </div>
+</body>
+
+</html>

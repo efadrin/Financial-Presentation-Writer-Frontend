@@ -1,0 +1,16 @@
+name: Prettier Check
+
+on: [push]
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Run Prettier
+        run: npm run format -- --check

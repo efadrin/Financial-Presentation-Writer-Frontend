@@ -1,0 +1,52 @@
+name: build and deploy to server
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    environment: DEV
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - run: node -v
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "API_BASE_URL=${{ vars.API_BASE_URL }}" >> .env
+
+      - name: Build
+        run: npm run build
+
+      - name: Clean up deployment folder
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.HOST }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: powershell -Command "Remove-Item '${{ vars.DIRECTORY }}\*' -Recurse"
+
+      - name: Copy built files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.HOST }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "dist/*"
+          target: ${{ vars.DIRECTORY }}
+          strip_components: 1
