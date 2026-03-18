@@ -1,14 +1,14 @@
 import {
   useCreateUserMutation,
   useLazyGetUserInfoQuery,
-} from '@/services/apiSlice';
-import { pruneAllSettings, setUserInfo } from '@/services/settingSlice';
-import { RootState, useAppDispatch } from '@/store';
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import RenderWhen from '@/components/common/RenderWhen';
-import { FullPageCenter } from '../common/FullPageCenter';
-import AppSkeleton from '../common/AppSkeleton';
+} from "@/services/apiSlice";
+import { pruneAllSettings, setUserInfo } from "@/services/settingSlice";
+import { RootState, useAppDispatch } from "@/store";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import RenderWhen from "@/components/common/RenderWhen";
+import { FullPageCenter } from "../common/FullPageCenter";
+import AppSkeleton from "../common/AppSkeleton";
 
 export const UserInfoValidationWrapper: React.FC<PropsWithChildren> = ({
   children,
@@ -43,7 +43,7 @@ export const UserInfoValidationWrapper: React.FC<PropsWithChildren> = ({
                 FirmID: userInfo.Data.FirmID,
                 FirmKey: userInfo.Data.FirmKey,
                 isRegistered: true,
-              })
+              }),
             );
           }
         } else {
@@ -58,14 +58,14 @@ export const UserInfoValidationWrapper: React.FC<PropsWithChildren> = ({
                 FirmID: userInfo.Data.FirmID,
                 FirmKey: userInfo.Data.FirmKey,
                 isRegistered: true,
-              })
+              }),
             );
           }
         }
 
         setIsValidationDone(true);
       } catch (error) {
-        console.error('Error during user validation:', error);
+        console.error("Error during user validation:", error);
         setIsValidationDone(true);
       }
     };
@@ -83,7 +83,7 @@ export const UserInfoValidationWrapper: React.FC<PropsWithChildren> = ({
     return (
       <RenderWhen
         condition={isCreateUserError || isGetUserInfoError}
-        fallback={<AppSkeleton message='Validating user...' />}
+        fallback={<AppSkeleton message="Validating user..." />}
       >
         <FullPageCenter>
           Failed to validate user. Please try again

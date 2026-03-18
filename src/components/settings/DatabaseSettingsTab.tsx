@@ -1,35 +1,35 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '@/store';
+import React, { useEffect, useMemo, useState } from "react";
+import { makeStyles, tokens } from "@fluentui/react-components";
+import { useTranslation } from "react-i18next";
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   useGetFinancialDatabasesQuery,
   useGetAccountsQuery,
   AccountData,
-} from '@/services/apiSlice';
+} from "@/services/apiSlice";
 import {
   setFinancialSource,
   setAccountData,
   FinancialSource,
   Account,
-} from '@/services/settingSlice';
+} from "@/services/settingSlice";
 import {
   SimpleDropdown,
   DropdownOption,
-} from '@/components/common/SimpleDropdown';
+} from "@/components/common/SimpleDropdown";
 
 const useStyles = makeStyles({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    padding: '12px 0',
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    padding: "12px 0",
   },
   sectionTitle: {
     fontSize: tokens.fontSizeBase300,
     fontWeight: tokens.fontWeightSemibold,
     color: tokens.colorNeutralForeground1,
-    marginBottom: '4px',
+    marginBottom: "4px",
   },
 });
 
@@ -40,15 +40,15 @@ export const DatabaseSettingsTab: React.FC = () => {
   const settings = useAppSelector((state) => state.settings);
 
   const defaultFinancials: FinancialSource = {
-    FinancialSourceID: '',
-    FinancialSourceKey: '',
-    FinancialSourceName: '',
+    FinancialSourceID: "",
+    FinancialSourceKey: "",
+    FinancialSourceName: "",
   };
 
   const [localFinancialSource, setLocalFinancialSource] =
     useState<FinancialSource>(settings.financials ?? defaultFinancials);
   const [localAccount, setLocalAccount] = useState<Account | null>(
-    settings.account ?? null
+    settings.account ?? null,
   );
 
   // Fetch financial databases
@@ -62,7 +62,7 @@ export const DatabaseSettingsTab: React.FC = () => {
         FinancialSourceID: localFinancialSource.FinancialSourceID,
         FinancialSourceKey: localFinancialSource.FinancialSourceKey,
       },
-      { skip: !localFinancialSource.FinancialSourceID }
+      { skip: !localFinancialSource.FinancialSourceID },
     );
 
   // Auto-select first financial source if none selected
@@ -102,7 +102,7 @@ export const DatabaseSettingsTab: React.FC = () => {
 
   const handleFinancialSourceChange = (key: string) => {
     const selected = financialDatabases?.Data?.FinancialSources?.find(
-      (fs) => fs.FinancialSourceID === key
+      (fs) => fs.FinancialSourceID === key,
     );
     if (selected) {
       const source: FinancialSource = {
@@ -120,7 +120,7 @@ export const DatabaseSettingsTab: React.FC = () => {
 
   const handleAccountChange = (key: string) => {
     const selected = accounts?.find(
-      (acc: AccountData) => acc.AccountID === key
+      (acc: AccountData) => acc.AccountID === key,
     );
     if (selected) {
       const account: Account = {
@@ -139,18 +139,12 @@ export const DatabaseSettingsTab: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.sectionTitle}>
-        {t('settingsPane.database', 'Database')}
+        {t("settingsPane.database", "Database")}
       </div>
 
       <SimpleDropdown
-        label={t(
-          'settingsPane.selectFinancialDatabase',
-          'Financial Database'
-        )}
-        placeholder={t(
-          'settingsPane.chooseDatabase',
-          'Choose database'
-        )}
+        label={t("settingsPane.selectFinancialDatabase", "Financial Database")}
+        placeholder={t("settingsPane.chooseDatabase", "Choose database")}
         options={financialSourceOptions}
         selectedKey={localFinancialSource.FinancialSourceID || undefined}
         onSelect={handleFinancialSourceChange}
@@ -159,8 +153,8 @@ export const DatabaseSettingsTab: React.FC = () => {
       />
 
       <SimpleDropdown
-        label={t('account', 'Account')}
-        placeholder={t('selectAccount', 'Select an account ...')}
+        label={t("account", "Account")}
+        placeholder={t("selectAccount", "Select an account ...")}
         options={accountOptions}
         selectedKey={localAccount?.AccountID || undefined}
         onSelect={handleAccountChange}

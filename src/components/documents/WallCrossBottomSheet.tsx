@@ -1,38 +1,38 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from "react";
 import {
   makeStyles,
   tokens,
   Text,
   Spinner,
   Button,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   ShieldLock24Regular,
   ShieldCheckmark24Regular,
   Checkmark20Filled,
-} from '@fluentui/react-icons';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
-import { useUpdateWallCrossStatusMutation } from '@/services/apiSlice';
-import { BottomSheet, useBottomSheetStyles } from '../common/BottomSheet';
-import { useAppSelector } from '@/store';
-import { WF_DECLARATION } from '@/utils/constants';
+} from "@fluentui/react-icons";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
+import { useUpdateWallCrossStatusMutation } from "@/services/apiSlice";
+import { BottomSheet, useBottomSheetStyles } from "../common/BottomSheet";
+import { useAppSelector } from "@/store";
+import { WF_DECLARATION } from "@/utils/constants";
 
 const useStyles = makeStyles({
   optionsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
   optionCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '14px 16px',
-    borderRadius: '10px',
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "14px 16px",
+    borderRadius: "10px",
     border: `1px solid ${tokens.colorNeutralStroke2}`,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    ':hover': {
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    ":hover": {
       backgroundColor: tokens.colorNeutralBackground2,
     },
   },
@@ -53,27 +53,27 @@ const useStyles = makeStyles({
   },
   optionCardPublic: {},
   optionCardPublicSelected: {
-    borderTopColor: '#ffc83d',
-    borderRightColor: '#ffc83d',
-    borderBottomColor: '#ffc83d',
-    borderLeftColor: '#ffc83d',
-    backgroundColor: '#fff8e6',
+    borderTopColor: "#ffc83d",
+    borderRightColor: "#ffc83d",
+    borderBottomColor: "#ffc83d",
+    borderLeftColor: "#ffc83d",
+    backgroundColor: "#fff8e6",
   },
   optionCardNonPublic: {},
   optionCardNonPublicSelected: {
-    borderTopColor: '#d13438',
-    borderRightColor: '#d13438',
-    borderBottomColor: '#d13438',
-    borderLeftColor: '#d13438',
-    backgroundColor: '#fde7e9',
+    borderTopColor: "#d13438",
+    borderRightColor: "#d13438",
+    borderBottomColor: "#d13438",
+    borderLeftColor: "#d13438",
+    backgroundColor: "#fde7e9",
   },
   optionIconWrapper: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "40px",
+    height: "40px",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
   },
   optionIconWrapperNone: {
@@ -81,24 +81,24 @@ const useStyles = makeStyles({
     color: tokens.colorPaletteGreenForeground1,
   },
   optionIconWrapperPublic: {
-    backgroundColor: '#fff8e6',
-    color: '#ffc83d',
+    backgroundColor: "#fff8e6",
+    color: "#ffc83d",
   },
   optionIconWrapperNonPublic: {
-    backgroundColor: '#fde7e9',
-    color: '#d13438',
+    backgroundColor: "#fde7e9",
+    color: "#d13438",
   },
   optionContent: {
     flex: 1,
   },
   optionTitle: {
     fontWeight: 600,
-    fontSize: '14px',
+    fontSize: "14px",
   },
   optionDescription: {
-    fontSize: '12px',
+    fontSize: "12px",
     color: tokens.colorNeutralForeground3,
-    marginTop: '2px',
+    marginTop: "2px",
   },
   checkmark: {
     flexShrink: 0,
@@ -123,17 +123,19 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
   const bottomSheetStyles = useBottomSheetStyles();
   const settings = useAppSelector((state) => state.setting);
 
-  const accountName = settings.account?.AccountName || '';
-  const srvrID = parseInt(settings.account?.SrvrID || '0', 10);
-  const userID = parseInt(settings.account?.UserID?.toString() || '0', 10);
-  const accountID = parseInt(settings.account?.AccountID || '0', 10);
+  const accountName = settings.account?.AccountName || "";
+  const srvrID = parseInt(settings.account?.SrvrID || "0", 10);
+  const userID = parseInt(settings.account?.UserID?.toString() || "0", 10);
+  const accountID = parseInt(settings.account?.AccountID || "0", 10);
 
   const [updateWallCross, { isLoading }] = useUpdateWallCrossStatusMutation();
 
   // Determine current status
   const currentStatus = useMemo(() => {
-    if (!document.IsWallCrossed) return 'none';
-    return document.IsNonPublic ? WF_DECLARATION.NON_PUBLIC : WF_DECLARATION.PUBLIC;
+    if (!document.IsWallCrossed) return "none";
+    return document.IsNonPublic
+      ? WF_DECLARATION.NON_PUBLIC
+      : WF_DECLARATION.PUBLIC;
   }, [document.IsWallCrossed, document.IsNonPublic]);
 
   const [selectedStatus, setSelectedStatus] = React.useState(currentStatus);
@@ -155,7 +157,7 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
       onClose();
       onActionComplete?.();
     } catch (error) {
-      console.error('Wall-cross update failed:', error);
+      console.error("Wall-cross update failed:", error);
     }
   }, [
     updateWallCross,
@@ -192,7 +194,7 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
             disabled={isLoading}
             className={bottomSheetStyles.footerButton}
           >
-            {isLoading ? <Spinner size="tiny" /> : 'Update Status'}
+            {isLoading ? <Spinner size="tiny" /> : "Update Status"}
           </Button>
         </>
       }
@@ -200,18 +202,20 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
       <div className={styles.optionsContainer}>
         {/* Not Wall-Crossed */}
         <div
-          className={`${styles.optionCard} ${styles.optionCardNone} ${selectedStatus === 'none' ? styles.optionCardNoneSelected : ''}`}
-          onClick={() => setSelectedStatus('none')}
+          className={`${styles.optionCard} ${styles.optionCardNone} ${selectedStatus === "none" ? styles.optionCardNoneSelected : ""}`}
+          onClick={() => setSelectedStatus("none")}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              setSelectedStatus('none');
+              setSelectedStatus("none");
             }
           }}
         >
-          <div className={`${styles.optionIconWrapper} ${styles.optionIconWrapperNone}`}>
+          <div
+            className={`${styles.optionIconWrapper} ${styles.optionIconWrapperNone}`}
+          >
             <ShieldCheckmark24Regular />
           </div>
           <div className={styles.optionContent}>
@@ -220,23 +224,27 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
               This document does not contain wall-crossed information
             </div>
           </div>
-          {selectedStatus === 'none' && <Checkmark20Filled className={styles.checkmark} />}
+          {selectedStatus === "none" && (
+            <Checkmark20Filled className={styles.checkmark} />
+          )}
         </div>
 
         {/* Public Wall-Cross */}
         <div
-          className={`${styles.optionCard} ${styles.optionCardPublic} ${selectedStatus === WF_DECLARATION.PUBLIC ? styles.optionCardPublicSelected : ''}`}
+          className={`${styles.optionCard} ${styles.optionCardPublic} ${selectedStatus === WF_DECLARATION.PUBLIC ? styles.optionCardPublicSelected : ""}`}
           onClick={() => setSelectedStatus(WF_DECLARATION.PUBLIC)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               setSelectedStatus(WF_DECLARATION.PUBLIC);
             }
           }}
         >
-          <div className={`${styles.optionIconWrapper} ${styles.optionIconWrapperPublic}`}>
+          <div
+            className={`${styles.optionIconWrapper} ${styles.optionIconWrapperPublic}`}
+          >
             <ShieldLock24Regular />
           </div>
           <div className={styles.optionContent}>
@@ -252,18 +260,20 @@ export const WallCrossBottomSheet: React.FC<WallCrossBottomSheetProps> = ({
 
         {/* Non-Public Wall-Cross */}
         <div
-          className={`${styles.optionCard} ${styles.optionCardNonPublic} ${selectedStatus === WF_DECLARATION.NON_PUBLIC ? styles.optionCardNonPublicSelected : ''}`}
+          className={`${styles.optionCard} ${styles.optionCardNonPublic} ${selectedStatus === WF_DECLARATION.NON_PUBLIC ? styles.optionCardNonPublicSelected : ""}`}
           onClick={() => setSelectedStatus(WF_DECLARATION.NON_PUBLIC)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               setSelectedStatus(WF_DECLARATION.NON_PUBLIC);
             }
           }}
         >
-          <div className={`${styles.optionIconWrapper} ${styles.optionIconWrapperNonPublic}`}>
+          <div
+            className={`${styles.optionIconWrapper} ${styles.optionIconWrapperNonPublic}`}
+          >
             <ShieldLock24Regular />
           </div>
           <div className={styles.optionContent}>

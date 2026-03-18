@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Item } from './types';
-import { BreadcrumbItem } from './BreadcrumbItem';
-import { OverflowGroupDivider } from './OverflowGroupDivider';
-import { OverflowMenu } from './OverflowMenu';
-import { useBreadcrumbStyles } from './styles';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Item } from "./types";
+import { BreadcrumbItem } from "./BreadcrumbItem";
+import { OverflowGroupDivider } from "./OverflowGroupDivider";
+import { OverflowMenu } from "./OverflowMenu";
+import { useBreadcrumbStyles } from "./styles";
 
 interface BreadcrumbWithOverflowProps {
   items: Item[];
@@ -71,4 +71,4 @@ export const BreadcrumbWithOverflow: React.FC<BreadcrumbWithOverflowProps> = ({
 };
 
 export default BreadcrumbWithOverflow;
-export type { Item } from './types';
+export type { Item } from "./types";

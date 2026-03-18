@@ -7,11 +7,11 @@
  * - Components receive entity data with images automatically merged
  */
 
-import { useMemo } from 'react';
-import { Company, CompaniesbyUser } from '@/interfaces/Company';
-import { ReportType, UseReportTypes } from '@/interfaces/ReportType';
-import { UseAuthors, AuthorsResponse, Author } from '@/interfaces/Author';
-import { AuthorAvatarRequest } from '@/interfaces/AuthorImage';
+import { useMemo } from "react";
+import { Company, CompaniesbyUser } from "@/interfaces/Company";
+import { ReportType, UseReportTypes } from "@/interfaces/ReportType";
+import { UseAuthors, AuthorsResponse, Author } from "@/interfaces/Author";
+import { AuthorAvatarRequest } from "@/interfaces/AuthorImage";
 import {
   useGetCompaniesbyUserQuery,
   useGetCompanyImagesQuery,
@@ -21,7 +21,7 @@ import {
   useGetAuthorAvatarsQuery,
   CompanyImagesRequest,
   ReportTemplateImagesRequest,
-} from '@/services/apiSlice';
+} from "@/services/apiSlice";
 
 // Extended Author interface with avatar
 export interface AuthorWithAvatar extends Author {
@@ -35,7 +35,7 @@ export interface AuthorWithAvatar extends Author {
  */
 export const useCompaniesWithImages = (
   params: CompaniesbyUser,
-  options?: { skip?: boolean }
+  options?: { skip?: boolean },
 ) => {
   const shouldSkip = options?.skip ?? false;
 
@@ -51,9 +51,9 @@ export const useCompaniesWithImages = (
       accountName: params.AccountName,
       srvrID: parseInt(params.SrvrID, 10) || 0,
       userID: params.UserID,
-      languageID: parseInt(params.LanguageID || '0', 10) || 0,
+      languageID: parseInt(params.LanguageID || "0", 10) || 0,
     }),
-    [params]
+    [params],
   );
 
   // Fetch images (cached in IndexedDB for 30 days)
@@ -77,7 +77,7 @@ export const useCompaniesWithImages = (
     return companies.map((company) => ({
       ...company,
       companyImage:
-        images[parseInt(company.corpId, 10)] || company.companyImage || '',
+        images[parseInt(company.corpId, 10)] || company.companyImage || "",
     }));
   }, [companiesResult.data?.Data, imagesResult.data?.Data?.Images]);
 
@@ -102,7 +102,7 @@ export const useCompaniesWithImages = (
  */
 export const useReportTemplatesWithImages = (
   params: UseReportTypes,
-  options?: { skip?: boolean }
+  options?: { skip?: boolean },
 ) => {
   const shouldSkip = options?.skip ?? false;
 
@@ -116,7 +116,7 @@ export const useReportTemplatesWithImages = (
     () => ({
       FirmID: parseInt(params.FirmID, 10) || 0,
     }),
-    [params.FirmID]
+    [params.FirmID],
   );
 
   // Fetch images (cached in IndexedDB for 30 days)
@@ -141,12 +141,12 @@ export const useReportTemplatesWithImages = (
       ...template,
       RprtImg:
         images[
-          typeof template.WordID === 'string'
+          typeof template.WordID === "string"
             ? parseInt(template.WordID, 10)
             : template.WordID
         ] ||
         template.RprtImg ||
-        '',
+        "",
     }));
   }, [templatesResult.data?.Data, imagesResult.data?.Data?.Images]);
 
@@ -171,7 +171,7 @@ export const useReportTemplatesWithImages = (
  */
 export const useAuthorsWithImages = (
   params: UseAuthors,
-  options?: { skip?: boolean }
+  options?: { skip?: boolean },
 ) => {
   const shouldSkip = options?.skip ?? false;
 
@@ -185,7 +185,7 @@ export const useAuthorsWithImages = (
     () => ({
       SrvrID: params.SrvrID,
     }),
-    [params.SrvrID]
+    [params.SrvrID],
   );
 
   // Fetch avatars (cached in IndexedDB for 30 days)
@@ -221,7 +221,7 @@ export const useAuthorsWithImages = (
       ...corpGroup,
       authors: corpGroup.authors.map((author) => ({
         ...author,
-        authorAvatar: avatarMap.get(author.authorId) || '',
+        authorAvatar: avatarMap.get(author.authorId) || "",
       })) as AuthorWithAvatar[],
     }));
   }, [authorsResult.data?.Data, avatarMap]);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   OverlayDrawer,
   DrawerHeader,
@@ -7,10 +7,10 @@ import {
   Button,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
-import { Dismiss24Regular } from '@fluentui/react-icons';
-import { useTranslation } from 'react-i18next';
-import { DatabaseSettingsTab } from '@/components/settings/DatabaseSettingsTab';
+} from "@fluentui/react-components";
+import { Dismiss24Regular } from "@fluentui/react-icons";
+import { useTranslation } from "react-i18next";
+import { DatabaseSettingsTab } from "@/components/settings/DatabaseSettingsTab";
 
 interface SettingsPaneProps {
   isOpen: boolean;
@@ -19,10 +19,10 @@ interface SettingsPaneProps {
 
 const useStyles = makeStyles({
   body: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    padding: '0 16px 16px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    padding: "0 16px 16px",
   },
   headerTitle: {
     fontSize: tokens.fontSizeBase400,
@@ -51,14 +51,14 @@ export const SettingsPane: React.FC<SettingsPaneProps> = ({
           action={
             <Button
               appearance="subtle"
-              aria-label={t('common.close', 'Close')}
+              aria-label={t("common.close", "Close")}
               icon={<Dismiss24Regular />}
               onClick={onClose}
             />
           }
         >
           <span className={styles.headerTitle}>
-            {t('settings', 'Settings')}
+            {t("settings", "Settings")}
           </span>
         </DrawerHeaderTitle>
       </DrawerHeader>
