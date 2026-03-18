@@ -91,8 +91,8 @@
       </bt:LongStrings>
     </Resources>
     <WebApplicationInfo>
-      <Id>70b9f153-be7d-4172-9663-52b3dee72ce7</Id>
-      <Resource>api://app.efadrin.com/70b9f153-be7d-4172-9663-52b3dee72ce7</Resource>
+      <Id>33285dcc-8f3b-4cbe-adf4-0d1bb4a034bc</Id>
+      <Resource>api://app.efadrin.com/33285dcc-8f3b-4cbe-adf4-0d1bb4a034bc</Resource>
       <Scopes>
         <Scope>user.read</Scope>
         <Scope>profile</Scope>
