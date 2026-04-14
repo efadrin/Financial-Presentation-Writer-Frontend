@@ -755,6 +755,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         const result = await downloadDoc({
           AccountName: accountName,
           SrvrID: srvrID,
+          AccountID: accountID,
           DocID: document.DocID,
           DocType: docType,
           DocVersion: docVersion,
@@ -774,7 +775,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         console.error('Download failed:', error);
       }
     },
-    [downloadDoc, accountName, srvrID, document.DocID, downloadFile]
+    [downloadDoc, accountName, srvrID, accountID, document.DocID, downloadFile]
   );
 
   // Download RIXML via EFADocRetrieve for published documents
@@ -1110,6 +1111,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         const result = await downloadDoc({
           AccountName: accountName,
           SrvrID: srvrID,
+          AccountID: accountID,
           DocID: document.DocID,
           DocType: 0,
         }).unwrap();
