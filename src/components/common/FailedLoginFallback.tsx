@@ -18,7 +18,7 @@ const FailedLoginFallback = () => {
 
   useEffect(() => {
     if (auth.lastLogin == null || isButtonDisabled) return;
-    const timeSinceLastLogin = new Date().getTime() - auth.lastLogin.getTime();
+    const timeSinceLastLogin = new Date().getTime() - new Date(auth.lastLogin).getTime();
 
     if (timeSinceLastLogin < ONE_MINUTE) {
       setIsButtonDisabled(true);

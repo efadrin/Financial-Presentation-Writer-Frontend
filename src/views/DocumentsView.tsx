@@ -370,6 +370,7 @@ const DocumentsView: React.FC = () => {
           refetch();
           setSelectedTab("Drafts");
         }}
+        existingDocNames={(allDocsResponse?.Data || []).map(doc => doc.DocName)}
       />
 
       <div className={styles.tabRow}>

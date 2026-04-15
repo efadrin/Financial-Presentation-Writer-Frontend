@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SupportedLanguage } from '@/utils/constants';
 
 export interface FinancialSource {
   FinancialSourceID: string;
@@ -26,6 +27,7 @@ export interface SettingsState {
   financials: FinancialSource;
   account: Account | null;
   userInfo: CachedUserInfo;
+  selectedLanguage: SupportedLanguage;
 }
 
 const initialState: SettingsState = {
@@ -41,6 +43,7 @@ const initialState: SettingsState = {
     FirmKey: "",
     isRegistered: false,
   },
+  selectedLanguage: 'en',
 };
 
 export const settingSlice = createSlice({
@@ -57,6 +60,9 @@ export const settingSlice = createSlice({
     setUserInfo(state, action: PayloadAction<CachedUserInfo>) {
       state.userInfo = action.payload;
     },
+    setSelectedLanguage(state, action: PayloadAction<SupportedLanguage>) {
+      state.selectedLanguage = action.payload;
+    },
     pruneAllSettings(state) {
       state.financials = {
         FinancialSourceID: "",
@@ -70,14 +76,11 @@ export const settingSlice = createSlice({
         FirmKey: "",
         isRegistered: false,
       };
+      state.selectedLanguage = 'en';
     },
   },
 });
 
-export const {
-  setFinancialSource,
-  setAccountData,
-  setUserInfo,
-  pruneAllSettings,
-} = settingSlice.actions;
+export const { setFinancialSource, setAccountData, setUserInfo, setSelectedLanguage, pruneAllSettings } =
+  settingSlice.actions;
 export default settingSlice.reducer;

@@ -76,10 +76,10 @@ import {
   setOpenedDocument,
   setLoading,
   setError,
-} from "@/services/openedDocumentSlice";
-import { openPresentationFromBase64 } from "@/utils/documentOpenUtils";
-import { OpenInPowerPointDialog } from "./OpenInPowerPointDialog";
-import { RootState } from "@/store";
+} from '@/services/openedDocumentSlice';
+import { replaceCurrentPresentationFromBase64 } from '@/utils/documentOpenUtils';
+import { OpenInPowerPointDialog } from './OpenInPowerPointDialog';
+import { RootState } from '@/store';
 import {
   useCheckoutDocumentMutation,
   useCheckinDocumentMutation,
@@ -755,6 +755,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         const result = await downloadDoc({
           AccountName: accountName,
           SrvrID: srvrID,
+          AccountID: accountID,
           DocID: document.DocID,
           DocType: docType,
           DocVersion: docVersion,
@@ -774,7 +775,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         console.error("Download failed:", error);
       }
     },
-    [downloadDoc, accountName, srvrID, document.DocID, downloadFile],
+    [downloadDoc, accountName, srvrID, accountID, document.DocID, downloadFile]
   );
 
   // Download RIXML via EFADocRetrieve for published documents
@@ -1097,10 +1098,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   }, [document.IsWallCrossed, document.IsNonPublic]);
 
   /**
-   * Open in PowerPoint — downloads the document and opens it in a new PowerPoint window.
-   * Unlike the Word version, we do NOT set document custom properties (DocVariables)
-   * because PowerPoint.createPresentation() opens in a new window without access
-   * to the add-in's context. State is managed entirely through Redux.
+   * Open in PowerPoint — replaces the current presentation's slides in-place using
+   * insertSlidesFromBase64, then deletes the original slides and updates document
+   * properties. This keeps the add-in context alive so check-in/check-out works
+   * without navigating to a new window.
    */
   const handleOpenInPowerPoint = useCallback(
     async (mode: "edit" | "view") => {
@@ -1117,6 +1118,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         const result = await downloadDoc({
           AccountName: accountName,
           SrvrID: srvrID,
+          AccountID: accountID,
           DocID: document.DocID,
           DocType: 0,
         }).unwrap();
@@ -1127,17 +1129,23 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           );
         }
 
-        // Open in a new PowerPoint window
-        await openPresentationFromBase64(result.Data.BlobBase64);
+        // Replace the current presentation's slides in-place.
+        // Returns the custom properties XML extracted from the source PPTX.
+        const customPropertiesXml = await replaceCurrentPresentationFromBase64(
+          result.Data.BlobBase64,
+          result.Data.DocName || document.DocName,
+        );
 
-        // Store opened document state in Redux
+        // Store opened document state in Redux, including the custom properties
+        // XML so it can be re-injected into /docProps/custom.xml at check-in time.
         dispatch(
           setOpenedDocument({
             document: document,
             isCheckedOut: mode === "edit",
             isViewOnly: mode === "view",
             originalBlob: result.Data.BlobBase64,
-          }),
+            customPropertiesXml,
+          })
         );
 
         // Close the dialog
@@ -1175,6 +1183,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       baseRequest,
       accountName,
       srvrID,
+      accountID,
       document,
       dispatch,
       navigate,
@@ -1297,15 +1306,19 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           }}
         >
           <MenuList className={styles.menuList}>
-            {/* Open in PowerPoint - opens presentation in a new PowerPoint window */}
-            <MenuItem
-              icon={<Open20Regular />}
-              onClick={() => setOpenInPowerPointDialogOpen(true)}
-            >
-              Open in PowerPoint
-            </MenuItem>
-
-            <MenuDivider />
+            {/* Open in PowerPoint - only for .ppt/.pptx documents */}
+            {(document.DocName?.toLowerCase().endsWith('.pptx') ||
+              document.DocName?.toLowerCase().endsWith('.ppt')) && (
+              <>
+                <MenuItem
+                  icon={<Open20Regular />}
+                  onClick={() => setOpenInPowerPointDialogOpen(true)}
+                >
+                  Open in PowerPoint
+                </MenuItem>
+                <MenuDivider />
+              </>
+            )}
 
             {/* Checkout/Checkin */}
             {canCheckout && (

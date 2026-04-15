@@ -53,9 +53,10 @@ import {
   useGetDocumentCommentsQuery,
   useGetUserPermissionsQuery,
   useGetWorkflowFiltersQuery,
-} from "@/services/apiSlice";
-import { PriorityOption } from "@/interfaces/DocumentList";
-import { format } from "date-fns";
+} from '@/services/apiSlice';
+import { PriorityOption } from '@/interfaces/DocumentList';
+import { format } from 'date-fns';
+import { getCurrentPresentationBlob, replaceCurrentPresentationFromBase64, injectCustomPropertiesIntoBlob } from '@/utils/documentOpenUtils';
 
 const useStyles = makeStyles({
   root: {
@@ -239,8 +240,8 @@ const DocumentWorkflowPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { document, isCheckedOut, isViewOnly } = useSelector(
-    (state: RootState) => state.openedDocument,
+  const { document, isCheckedOut, isViewOnly, originalBlob, customPropertiesXml } = useSelector(
+    (state: RootState) => state.openedDocument
   );
   const settings = useSelector((state: RootState) => state.settings);
 
@@ -263,6 +264,8 @@ const DocumentWorkflowPage: React.FC = () => {
   const [newComment, setNewComment] = useState("");
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+  const [discardLoading, setDiscardLoading] = useState(false);
 
   // API mutations
   const [checkin] = useCheckinDocumentMutation();
@@ -342,38 +345,74 @@ const DocumentWorkflowPage: React.FC = () => {
   );
 
   /**
-   * Navigate back to documents list.
-   * Unlike Word, we don't need to clear the document content because
-   * PowerPoint opens presentations in separate windows.
+   * Navigate back to the documents list and clear Redux state.
    */
   const navigateToDocuments = useCallback(() => {
     dispatch(clearOpenedDocument());
     navigate("/documents");
   }, [dispatch, navigate]);
 
+  /**
+   * Back navigation — if the document is checked out, show a discard dialog
+   * so the user can choose to check in first rather than leaving it locked.
+   */
   const handleBack = useCallback(() => {
-    void navigateToDocuments();
-  }, [navigateToDocuments]);
+    if (isCheckedOut) {
+      setDiscardDialogOpen(true);
+    } else {
+      void navigateToDocuments();
+    }
+  }, [isCheckedOut, navigateToDocuments]);
 
   /**
-   * Check in the document (release the lock).
-   * Unlike Word, we do NOT send the document blob because PowerPoint
-   * presentations are opened in a separate window — there's no way to
-   * read the current state of the opened presentation from the add-in.
+   * Discard local changes: restore original slides, check in without uploading
+   * the edited content, then navigate back.
+   */
+  const handleDiscardAndBack = useCallback(async () => {
+    setDiscardLoading(true);
+    try {
+      if (originalBlob) {
+        await replaceCurrentPresentationFromBase64(originalBlob);
+      }
+      await checkin(baseRequest()).unwrap();
+      navigateToDocuments();
+    } catch (error) {
+      console.error('Discard and check-in failed:', error);
+    } finally {
+      setDiscardLoading(false);
+    }
+  }, [originalBlob, checkin, baseRequest, navigateToDocuments]);
+
+  /**
+   * Check in the document — reads the current presentation content via
+   * Office.js getFileAsync and uploads the blob so edits are saved.
    */
   const handleCheckin = useCallback(async () => {
     if (!document) return;
     setCheckinLoading(true);
 
     try {
-      await checkin(baseRequest()).unwrap();
+      let currentBlob = await getCurrentPresentationBlob();
+
+      // Inject custom document properties back into /docProps/custom.xml.
+      // insertSlidesFromBase64 only copies slides, so the properties extracted
+      // at open-time must be re-embedded before the file is uploaded.
+      if (customPropertiesXml) {
+        currentBlob = await injectCustomPropertiesIntoBlob(currentBlob, customPropertiesXml);
+      }
+
+      await checkin({
+        ...baseRequest(),
+        DocBlob: currentBlob,
+        DocName: document.DocName,
+      }).unwrap();
       navigateToDocuments();
     } catch (error) {
       console.error("Check-in failed:", error);
     } finally {
       setCheckinLoading(false);
     }
-  }, [document, checkin, baseRequest, navigateToDocuments]);
+  }, [document, customPropertiesXml, checkin, baseRequest, navigateToDocuments]);
 
   const handleApprove = useCallback(async () => {
     setActionLoading(true);
@@ -1031,6 +1070,53 @@ const DocumentWorkflowPage: React.FC = () => {
           resize="vertical"
           style={{ width: "100%" }}
         />
+      </BottomSheet>
+
+      {/* Discard Changes Bottom Sheet — shown when navigating back with checked-out doc */}
+      <BottomSheet
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        title='Document Checked Out'
+        subtitle={document?.DocName}
+        icon={<LockOpen20Regular />}
+        footer={<>
+          <Button
+            appearance='secondary'
+            onClick={() => setDiscardDialogOpen(false)}
+            className={bottomSheetStyles.footerButton}
+            disabled={checkinLoading || discardLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            appearance='secondary'
+            onClick={() => { setDiscardDialogOpen(false); void handleCheckin(); }}
+            className={bottomSheetStyles.footerButton}
+            disabled={checkinLoading || discardLoading}
+          >
+            {checkinLoading ? <Spinner size='tiny' /> : 'Check In'}
+          </Button>
+          <Button
+            appearance='primary'
+            onClick={handleDiscardAndBack}
+            className={bottomSheetStyles.footerButton}
+            disabled={checkinLoading || discardLoading}
+            style={{ backgroundColor: tokens.colorPaletteRedBackground3 }}
+          >
+            {discardLoading ? <Spinner size='tiny' /> : 'Discard & Go Back'}
+          </Button>
+        </>}
+      >
+        <Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
+          This document is checked out. Going back without checking in will
+          leave it locked.
+        </Text>
+        <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3, marginTop: '8px', display: 'block' }}>
+          <strong>Check In</strong> — saves your current edits and releases the lock.
+        </Text>
+        <Text style={{ fontSize: '13px', color: tokens.colorNeutralForeground3, marginTop: '4px', display: 'block' }}>
+          <strong>Discard &amp; Go Back</strong> — reverts to the original and releases the lock.
+        </Text>
       </BottomSheet>
     </div>
   );
