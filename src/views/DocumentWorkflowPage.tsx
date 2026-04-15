@@ -56,7 +56,7 @@ import {
 } from '@/services/apiSlice';
 import { PriorityOption } from '@/interfaces/DocumentList';
 import { format } from 'date-fns';
-import { getCurrentPresentationBlob, replaceCurrentPresentationFromBase64 } from '@/utils/documentOpenUtils';
+import { getCurrentPresentationBlob, replaceCurrentPresentationFromBase64, injectCustomPropertiesIntoBlob } from '@/utils/documentOpenUtils';
 
 const useStyles = makeStyles({
   root: {
@@ -240,7 +240,7 @@ const DocumentWorkflowPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { document, isCheckedOut, isViewOnly, originalBlob } = useSelector(
+  const { document, isCheckedOut, isViewOnly, originalBlob, customPropertiesXml } = useSelector(
     (state: RootState) => state.openedDocument
   );
   const settings = useSelector((state: RootState) => state.settings);
@@ -393,7 +393,14 @@ const DocumentWorkflowPage: React.FC = () => {
     setCheckinLoading(true);
 
     try {
-      const currentBlob = await getCurrentPresentationBlob();
+      let currentBlob = await getCurrentPresentationBlob();
+
+      // Inject custom document properties back into /docProps/custom.xml.
+      // insertSlidesFromBase64 only copies slides, so the properties extracted
+      // at open-time must be re-embedded before the file is uploaded.
+      if (customPropertiesXml) {
+        currentBlob = await injectCustomPropertiesIntoBlob(currentBlob, customPropertiesXml);
+      }
 
       await checkin({
         ...baseRequest(),
@@ -406,7 +413,7 @@ const DocumentWorkflowPage: React.FC = () => {
     } finally {
       setCheckinLoading(false);
     }
-  }, [document, checkin, baseRequest, navigateToDocuments]);
+  }, [document, customPropertiesXml, checkin, baseRequest, navigateToDocuments]);
 
   const handleApprove = useCallback(async () => {
     setActionLoading(true);

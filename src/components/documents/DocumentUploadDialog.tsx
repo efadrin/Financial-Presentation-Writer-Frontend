@@ -138,7 +138,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<Company>(NONE_COMPANY);
-  const [companySearchText, setCompanySearchText] = useState('None');
+  const [companySearchText, setCompanySearchText] = useState('Non-Corporate');
   const [submissionDate, setSubmissionDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -433,7 +433,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         setIsLoading(false);
         setSelectedTemplateId(null);
         setSelectedCompany(NONE_COMPANY);
-        setCompanySearchText('None');
+        setCompanySearchText('Non-Corporate');
         setSubmissionDate(new Date().toISOString().split('T')[0]);
         setSelectedLanguageKey(settings.selectedLanguage || 'en');
         setSelectedAuthors([]);
@@ -557,7 +557,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                         setSelectedFile(null);
                         setSelectedTemplateId(null);
                         setSelectedCompany(NONE_COMPANY);
-                        setCompanySearchText('None');
+                        setCompanySearchText('Non-Corporate');
                       }}
                     >
                       Remove
@@ -631,7 +631,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                 {/* Company selector */}
                 <Field 
                   label='Company' 
-                  hint='Select a company for this document (None = EFACorpID: -1)'
+                  hint='Select a company for this document (Non-Corporate = EFACorpID: -1)'
                 >
                   <Combobox
                     placeholder={isLoadingCompanies ? 'Loading companies...' : 'Search and select a company'}
@@ -642,7 +642,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                     onOptionSelect={(_, data) => {
                       if (data.optionValue === '-1') {
                         setSelectedCompany(NONE_COMPANY);
-                        setCompanySearchText('None');
+                        setCompanySearchText('Non-Corporate');
                       } else {
                         const company = filteredCompanies.find(c => c.corpId === data.optionValue);
                         if (company) {
@@ -654,8 +654,8 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                     positioning={{ autoSize: false }}
                     listbox={{ style: { maxHeight: '240px', overflowY: 'auto' } }}
                   >
-                    <Option key='none' value='-1' text='None'>
-                      None
+                    <Option key='none' value='-1' text='Non-Corporate'>
+                      Non-corporate
                     </Option>
                     {filteredCompanies.map(company => (
                       <Option key={company.corpId} value={company.corpId} text={company.corpName}>

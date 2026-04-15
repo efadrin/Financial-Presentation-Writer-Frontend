@@ -1122,19 +1122,22 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           );
         }
 
-        // Replace the current presentation's slides in-place
-        await replaceCurrentPresentationFromBase64(
+        // Replace the current presentation's slides in-place.
+        // Returns the custom properties XML extracted from the source PPTX.
+        const customPropertiesXml = await replaceCurrentPresentationFromBase64(
           result.Data.BlobBase64,
           result.Data.DocName || document.DocName,
         );
 
-        // Store opened document state in Redux
+        // Store opened document state in Redux, including the custom properties
+        // XML so it can be re-injected into /docProps/custom.xml at check-in time.
         dispatch(
           setOpenedDocument({
             document: document,
             isCheckedOut: mode === 'edit',
             isViewOnly: mode === 'view',
             originalBlob: result.Data.BlobBase64,
+            customPropertiesXml,
           })
         );
 
@@ -1296,15 +1299,19 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           }}
         >
           <MenuList className={styles.menuList}>
-            {/* Open in PowerPoint - opens presentation in a new PowerPoint window */}
-            <MenuItem
-              icon={<Open20Regular />}
-              onClick={() => setOpenInPowerPointDialogOpen(true)}
-            >
-              Open in PowerPoint
-            </MenuItem>
-
-            <MenuDivider />
+            {/* Open in PowerPoint - only for .ppt/.pptx documents */}
+            {(document.DocName?.toLowerCase().endsWith('.pptx') ||
+              document.DocName?.toLowerCase().endsWith('.ppt')) && (
+              <>
+                <MenuItem
+                  icon={<Open20Regular />}
+                  onClick={() => setOpenInPowerPointDialogOpen(true)}
+                >
+                  Open in PowerPoint
+                </MenuItem>
+                <MenuDivider />
+              </>
+            )}
 
             {/* Checkout/Checkin */}
             {canCheckout && (

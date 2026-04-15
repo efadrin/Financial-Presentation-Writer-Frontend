@@ -15,6 +15,9 @@ export interface OpenedDocumentState {
   hasLocalChanges: boolean;
   /** Original document blob for comparison/discard functionality */
   originalBlob: string | null;
+  /** Custom document properties XML (/docProps/custom.xml) from the source PPTX,
+   * stored so it can be injected back at check-in time via injectCustomPropertiesIntoBlob */
+  customPropertiesXml: string | null;
   /** Loading state while opening document */
   isLoading: boolean;
   /** Error message if opening failed */
@@ -27,6 +30,7 @@ const initialState: OpenedDocumentState = {
   isViewOnly: false,
   hasLocalChanges: false,
   originalBlob: null,
+  customPropertiesXml: null,
   isLoading: false,
   error: null,
 };
@@ -55,12 +59,14 @@ export const openedDocumentSlice = createSlice({
         isCheckedOut: boolean;
         isViewOnly: boolean;
         originalBlob: string;
+        customPropertiesXml?: string | null;
       }>
     ) {
       state.document = action.payload.document;
       state.isCheckedOut = action.payload.isCheckedOut;
       state.isViewOnly = action.payload.isViewOnly;
       state.originalBlob = action.payload.originalBlob;
+      state.customPropertiesXml = action.payload.customPropertiesXml ?? null;
       state.hasLocalChanges = false;
       state.isLoading = false;
       state.error = null;
