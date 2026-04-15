@@ -1,12 +1,70 @@
 /**
  * PowerPoint-specific document utilities.
- * Unlike the Word version which inserts documents into the current Word instance,
- * PowerPoint opens documents in a new window via PowerPoint.createPresentation().
  */
 
 /**
- * Open a PowerPoint presentation from base64 data.
- * This creates a new PowerPoint window with the document content.
+ * Replace the current presentation's content in-place using insertSlidesFromBase64.
+ *
+ * Strategy:
+ * 1. Record the existing slide IDs before insertion.
+ * 2. Insert the new slides at the beginning of the presentation.
+ * 3. Delete all the original slides, leaving only the newly inserted ones.
+ * 4. Set core document properties (title, author) from the provided metadata.
+ *
+ * This avoids opening a new PowerPoint window and keeps the add-in context alive.
+ */
+export async function replaceCurrentPresentationFromBase64(
+  base64Data: string,
+  docName?: string,
+  authorNames?: string
+): Promise<void> {
+  await PowerPoint.run(async (context) => {
+    const slides = context.presentation.slides;
+    slides.load('items/id');
+    await context.sync();
+
+    // Remember the IDs of all existing slides so we can delete them after insertion
+    const existingSlideIds = slides.items.map((s) => s.id);
+
+    // Insert the new slides at position 0 (before all existing slides)
+    context.presentation.insertSlidesFromBase64(base64Data, {
+      formatting: PowerPoint.InsertSlideFormatting.keepSourceFormatting,
+      targetSlideId: existingSlideIds.length > 0 ? existingSlideIds[0] : undefined,
+    });
+
+    await context.sync();
+
+    // Reload slides so we have an up-to-date list that includes the inserted ones
+    slides.load('items/id');
+    await context.sync();
+
+    // Delete the original slides (now sitting at the end after insertion at position 0)
+    for (const id of existingSlideIds) {
+      const slide = slides.items.find((s) => s.id === id);
+      if (slide) {
+        slide.delete();
+      }
+    }
+
+    // Update core document properties to match the opened document
+    if (docName || authorNames) {
+      const props = context.presentation.properties;
+      if (docName) {
+        props.title = docName.replace(/\.pptx?$/i, '');
+      }
+      if (authorNames) {
+        props.author = authorNames;
+      }
+    }
+
+    await context.sync();
+  });
+}
+
+/**
+ * Open a PowerPoint presentation from base64 data in a new window.
+ * NOTE: prefer replaceCurrentPresentationFromBase64 when the add-in context
+ * must remain active (e.g. for check-in/check-out workflows).
  */
 export async function openPresentationFromBase64(base64Data: string): Promise<void> {
   try {

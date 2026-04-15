@@ -77,7 +77,7 @@ import {
   setLoading,
   setError,
 } from '@/services/openedDocumentSlice';
-import { openPresentationFromBase64 } from '@/utils/documentOpenUtils';
+import { replaceCurrentPresentationFromBase64 } from '@/utils/documentOpenUtils';
 import { OpenInPowerPointDialog } from './OpenInPowerPointDialog';
 import { RootState } from '@/store';
 import {
@@ -1091,10 +1091,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   }, [document.IsWallCrossed, document.IsNonPublic]);
 
   /**
-   * Open in PowerPoint — downloads the document and opens it in a new PowerPoint window.
-   * Unlike the Word version, we do NOT set document custom properties (DocVariables)
-   * because PowerPoint.createPresentation() opens in a new window without access
-   * to the add-in's context. State is managed entirely through Redux.
+   * Open in PowerPoint — replaces the current presentation's slides in-place using
+   * insertSlidesFromBase64, then deletes the original slides and updates document
+   * properties. This keeps the add-in context alive so check-in/check-out works
+   * without navigating to a new window.
    */
   const handleOpenInPowerPoint = useCallback(
     async (mode: 'edit' | 'view') => {
@@ -1122,8 +1122,11 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           );
         }
 
-        // Open in a new PowerPoint window
-        await openPresentationFromBase64(result.Data.BlobBase64);
+        // Replace the current presentation's slides in-place
+        await replaceCurrentPresentationFromBase64(
+          result.Data.BlobBase64,
+          result.Data.DocName || document.DocName,
+        );
 
         // Store opened document state in Redux
         dispatch(
@@ -1170,6 +1173,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       baseRequest,
       accountName,
       srvrID,
+      accountID,
       document,
       dispatch,
       navigate,
