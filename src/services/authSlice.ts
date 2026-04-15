@@ -12,7 +12,7 @@ import { RootState } from '@/store';
 interface AuthState {
   sessionToken: string | null;
   msAccessToken: string | null;
-  lastLogin: Date | null;
+  lastLogin: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -63,8 +63,11 @@ export const login = createAsyncThunk<LoginThunkResponse>(
         SessionToken: sessionToken,
         MsAccessToken: msAccessToken,
       } as LoginThunkResponse;
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'message' in error) {
+        return rejectWithValue((error as { message: string }).message);
+      }
+      return rejectWithValue(String(error));
     }
   }
 );
@@ -102,7 +105,7 @@ export const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
-        state.lastLogin = new Date();
+        state.lastLogin = new Date().toISOString();
         state.error = action.payload as string;
         state.status = AuthStatusConst.failed;
       });
