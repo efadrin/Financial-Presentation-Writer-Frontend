@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   makeStyles,
   tokens,
@@ -16,7 +16,7 @@ import {
   RadioGroup,
   Radio,
   Label,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   Checkmark20Regular,
   Dismiss20Regular,
@@ -32,15 +32,15 @@ import {
   Save20Regular,
   ChevronDown20Regular,
   ChevronUp20Regular,
-} from '@fluentui/react-icons';
-import BreadcrumbWithOverflow from '@/components/common/BreadCrumb';
-import { Item } from '@/components/common/BreadCrumb/types';
+} from "@fluentui/react-icons";
+import BreadcrumbWithOverflow from "@/components/common/BreadCrumb";
+import { Item } from "@/components/common/BreadCrumb/types";
 import {
   BottomSheet,
   useBottomSheetStyles,
-} from '@/components/common/BottomSheet';
-import { RootState, useAppDispatch } from '@/store';
-import { clearOpenedDocument } from '@/services/openedDocumentSlice';
+} from "@/components/common/BottomSheet";
+import { RootState, useAppDispatch } from "@/store";
+import { clearOpenedDocument } from "@/services/openedDocumentSlice";
 import {
   useCheckinDocumentMutation,
   useApproveDocumentMutation,
@@ -60,52 +60,52 @@ import { getCurrentPresentationBlob, replaceCurrentPresentationFromBase64, injec
 
 const useStyles = makeStyles({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    width: "100%",
+    overflow: "hidden",
     backgroundColor: tokens.colorNeutralBackground1,
   },
   header: {
-    padding: '12px 16px',
+    padding: "12px 16px",
     flexShrink: 0,
   },
   breadcrumbContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '24px',
+    display: "flex",
+    alignItems: "center",
+    minHeight: "24px",
   },
   scrollContainer: {
-    flex: '1 1 auto',
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    padding: '16px',
-    paddingBottom: '32px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
+    flex: "1 1 auto",
+    overflowY: "auto",
+    overflowX: "hidden",
+    padding: "16px",
+    paddingBottom: "32px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
     minHeight: 0,
-    '&::-webkit-scrollbar': {
-      width: '6px',
+    "&::-webkit-scrollbar": {
+      width: "6px",
     },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: 'transparent',
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "transparent",
     },
-    '&::-webkit-scrollbar-thumb': {
+    "&::-webkit-scrollbar-thumb": {
       backgroundColor: tokens.colorNeutralStroke2,
-      borderRadius: '3px',
+      borderRadius: "3px",
     },
-    '&::-webkit-scrollbar-thumb:hover': {
+    "&::-webkit-scrollbar-thumb:hover": {
       backgroundColor: tokens.colorNeutralStroke1,
     },
   },
   statusBanner: {
-    padding: '10px 12px',
+    padding: "10px 12px",
     borderRadius: tokens.borderRadiusMedium,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
     flexShrink: 0,
   },
   statusBannerEdit: {
@@ -117,7 +117,7 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
   },
   statusIcon: {
-    fontSize: '18px',
+    fontSize: "18px",
     flexShrink: 0,
   },
   statusText: {
@@ -127,7 +127,7 @@ const useStyles = makeStyles({
   statusTitle: {
     fontWeight: 600,
     fontSize: tokens.fontSizeBase300,
-    display: 'block',
+    display: "block",
   },
   statusSubtitle: {
     fontSize: tokens.fontSizeBase200,
@@ -137,18 +137,18 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
-    overflow: 'hidden',
+    overflow: "hidden",
     flexShrink: 0,
   },
   sectionHeader: {
-    padding: '10px 12px',
+    padding: "10px 12px",
     backgroundColor: tokens.colorNeutralBackground2,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    cursor: 'pointer',
-    '&:hover': {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    cursor: "pointer",
+    "&:hover": {
       backgroundColor: tokens.colorNeutralBackground2Hover,
     },
   },
@@ -157,12 +157,12 @@ const useStyles = makeStyles({
     fontSize: tokens.fontSizeBase300,
   },
   sectionContent: {
-    padding: '12px',
+    padding: "12px",
   },
   detailsGrid: {
-    display: 'grid',
-    gridTemplateColumns: '100px 1fr',
-    gap: '6px 10px',
+    display: "grid",
+    gridTemplateColumns: "100px 1fr",
+    gap: "6px 10px",
     fontSize: tokens.fontSizeBase200,
   },
   detailLabel: {
@@ -173,14 +173,14 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
   },
   workflowProgress: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    flexWrap: 'wrap',
-    marginTop: '10px',
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    flexWrap: "wrap",
+    marginTop: "10px",
   },
   workflowStep: {
-    padding: '4px 10px',
+    padding: "4px 10px",
     borderRadius: tokens.borderRadiusSmall,
     fontSize: tokens.fontSizeBase100,
     backgroundColor: tokens.colorNeutralBackground4,
@@ -196,20 +196,20 @@ const useStyles = makeStyles({
     fontSize: tokens.fontSizeBase100,
   },
   actionsGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
   },
   actionButton: {
-    minWidth: 'auto',
+    minWidth: "auto",
     fontSize: tokens.fontSizeBase200,
-    padding: '6px 12px',
+    padding: "6px 12px",
   },
   historyItem: {
-    padding: '8px 0',
+    padding: "8px 0",
     borderBottom: `1px solid ${tokens.colorNeutralStroke3}`,
-    '&:last-child': {
-      borderBottom: 'none',
+    "&:last-child": {
+      borderBottom: "none",
     },
   },
   historyStatus: {
@@ -222,17 +222,17 @@ const useStyles = makeStyles({
   },
   emptyState: {
     color: tokens.colorNeutralForeground3,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: tokens.fontSizeBase200,
-    padding: '8px 0',
+    padding: "8px 0",
   },
   checkinButton: {
     fontSize: tokens.fontSizeBase200,
-    padding: '4px 12px',
+    padding: "4px 12px",
   },
 });
 
-const WORKFLOW_STEPS = ['Drafts', 'Review', 'Final', 'Published'];
+const WORKFLOW_STEPS = ["Drafts", "Review", "Final", "Published"];
 
 const DocumentWorkflowPage: React.FC = () => {
   const styles = useStyles();
@@ -246,10 +246,10 @@ const DocumentWorkflowPage: React.FC = () => {
   const settings = useSelector((state: RootState) => state.settings);
 
   // Query params
-  const accountName = settings.account?.AccountName || '';
-  const srvrID = parseInt(settings.account?.SrvrID || '0', 10);
-  const userID = parseInt(settings.account?.UserID?.toString() || '0', 10);
-  const accountID = parseInt(settings.account?.AccountID || '0', 10);
+  const accountName = settings.account?.AccountName || "";
+  const srvrID = parseInt(settings.account?.SrvrID || "0", 10);
+  const userID = parseInt(settings.account?.UserID?.toString() || "0", 10);
+  const accountID = parseInt(settings.account?.AccountID || "0", 10);
 
   // Collapse states for sections
   const [historyExpanded, setHistoryExpanded] = useState(false);
@@ -257,11 +257,11 @@ const DocumentWorkflowPage: React.FC = () => {
 
   // Dialog states
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [rejectReason, setRejectReason] = useState("");
   const [priorityDialogOpen, setPriorityDialogOpen] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState('');
+  const [selectedPriority, setSelectedPriority] = useState("");
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
@@ -285,14 +285,13 @@ const DocumentWorkflowPage: React.FC = () => {
     useGetWorkflowFiltersQuery(filterParams!, {
       skip: !filterParams || !priorityDialogOpen,
     });
-  const priorities: PriorityOption[] =
-    filtersResponse?.Data?.Priorities || [];
+  const priorities: PriorityOption[] = filtersResponse?.Data?.Priorities || [];
 
   // Fetch document history
   const { data: historyResponse, isLoading: historyLoading } =
     useGetDocumentHistoryQuery(
       { accountName, docID: document?.DocID || 0, srvrID },
-      { skip: !document || !accountName || !srvrID }
+      { skip: !document || !accountName || !srvrID },
     );
   const history = historyResponse?.Data || [];
 
@@ -303,7 +302,7 @@ const DocumentWorkflowPage: React.FC = () => {
     refetch: refetchComments,
   } = useGetDocumentCommentsQuery(
     { accountName, docID: document?.DocID || 0, srvrID },
-    { skip: !document || !accountName || !srvrID }
+    { skip: !document || !accountName || !srvrID },
   );
   const comments = commentsResponse?.Data || [];
 
@@ -321,17 +320,17 @@ const DocumentWorkflowPage: React.FC = () => {
     permissionsParams!,
     {
       skip: !permissionsParams,
-    }
+    },
   );
   const userRoles = permissionsResponse?.Data?.Roles || [];
 
   const hasRole = useCallback(
     (roleName: string) => {
       return userRoles.some(
-        (r) => r.RoleName.toLowerCase() === roleName.toLowerCase()
+        (r) => r.RoleName.toLowerCase() === roleName.toLowerCase(),
       );
     },
-    [userRoles]
+    [userRoles],
   );
 
   const baseRequest = useCallback(
@@ -342,7 +341,7 @@ const DocumentWorkflowPage: React.FC = () => {
       UserID: userID,
       AccountID: accountID,
     }),
-    [accountName, srvrID, document?.DocID, userID, accountID]
+    [accountName, srvrID, document?.DocID, userID, accountID],
   );
 
   /**
@@ -350,7 +349,7 @@ const DocumentWorkflowPage: React.FC = () => {
    */
   const navigateToDocuments = useCallback(() => {
     dispatch(clearOpenedDocument());
-    navigate('/documents');
+    navigate("/documents");
   }, [dispatch, navigate]);
 
   /**
@@ -409,7 +408,7 @@ const DocumentWorkflowPage: React.FC = () => {
       }).unwrap();
       navigateToDocuments();
     } catch (error) {
-      console.error('Check-in failed:', error);
+      console.error("Check-in failed:", error);
     } finally {
       setCheckinLoading(false);
     }
@@ -421,7 +420,7 @@ const DocumentWorkflowPage: React.FC = () => {
       await approve(baseRequest()).unwrap();
       navigateToDocuments();
     } catch (error) {
-      console.error('Approve failed:', error);
+      console.error("Approve failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -432,10 +431,10 @@ const DocumentWorkflowPage: React.FC = () => {
     try {
       await reject({ ...baseRequest(), Reason: rejectReason }).unwrap();
       setRejectDialogOpen(false);
-      setRejectReason('');
+      setRejectReason("");
       navigateToDocuments();
     } catch (error) {
-      console.error('Reject failed:', error);
+      console.error("Reject failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -447,7 +446,7 @@ const DocumentWorkflowPage: React.FC = () => {
       await submitForReview(baseRequest()).unwrap();
       navigateToDocuments();
     } catch (error) {
-      console.error('Submit for review failed:', error);
+      console.error("Submit for review failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -458,11 +457,11 @@ const DocumentWorkflowPage: React.FC = () => {
     try {
       await changeStatus({
         ...baseRequest(),
-        NewStatus: 'Published',
+        NewStatus: "Published",
       }).unwrap();
       navigateToDocuments();
     } catch (error) {
-      console.error('Publish failed:', error);
+      console.error("Publish failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -473,11 +472,11 @@ const DocumentWorkflowPage: React.FC = () => {
     try {
       await changeStatus({
         ...baseRequest(),
-        NewStatus: 'Review',
+        NewStatus: "Review",
       }).unwrap();
       navigateToDocuments();
     } catch (error) {
-      console.error('Retract failed:', error);
+      console.error("Retract failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -492,9 +491,9 @@ const DocumentWorkflowPage: React.FC = () => {
         PriorityID: parseInt(selectedPriority, 10),
       }).unwrap();
       setPriorityDialogOpen(false);
-      setSelectedPriority('');
+      setSelectedPriority("");
     } catch (error) {
-      console.error('Change priority failed:', error);
+      console.error("Change priority failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -505,20 +504,18 @@ const DocumentWorkflowPage: React.FC = () => {
     setActionLoading(true);
     try {
       const latestVersion =
-        history.length > 0
-          ? (history[0] as any).DocVersion || 1
-          : 1;
+        history.length > 0 ? (history[0] as any).DocVersion || 1 : 1;
       await addComment({
         ...baseRequest(),
         Comment: newComment,
         DocVersion: latestVersion,
-        StatusName: document?.StatusName || 'Review',
+        StatusName: document?.StatusName || "Review",
       }).unwrap();
-      setNewComment('');
+      setNewComment("");
       setCommentDialogOpen(false);
       refetchComments();
     } catch (error) {
-      console.error('Add comment failed:', error);
+      console.error("Add comment failed:", error);
     } finally {
       setActionLoading(false);
     }
@@ -532,42 +529,40 @@ const DocumentWorkflowPage: React.FC = () => {
   ]);
 
   // Role-based permissions
-  const isCompliance = hasRole('Compliance');
-  const isPublisher = hasRole('Publisher');
-  const isAdmin = hasRole('Admin');
-  const isSupervisory = hasRole('Supervisory');
+  const isCompliance = hasRole("Compliance");
+  const isPublisher = hasRole("Publisher");
+  const isAdmin = hasRole("Admin");
+  const isSupervisory = hasRole("Supervisory");
 
-  const status = document?.StatusName || '';
+  const status = document?.StatusName || "";
   const canApprove =
-    status === 'Review' && (isCompliance || isSupervisory || isPublisher);
-  const canReject = status === 'Review' && (isCompliance || isSupervisory);
-  const canSubmitForReview = status === 'Drafts' && isCheckedOut;
+    status === "Review" && (isCompliance || isSupervisory || isPublisher);
+  const canReject = status === "Review" && (isCompliance || isSupervisory);
+  const canSubmitForReview = status === "Drafts" && isCheckedOut;
   const canPublish =
-    (status === 'Final' || status === 'Finalised') &&
-    (isPublisher || isAdmin);
+    (status === "Final" || status === "Finalised") && (isPublisher || isAdmin);
   const canRetract =
-    (status === 'Final' || status === 'Finalised') &&
-    (isPublisher || isAdmin);
+    (status === "Final" || status === "Finalised") && (isPublisher || isAdmin);
 
   const breadcrumbItems: Item[] = document
     ? [
         {
-          text: 'Documents',
-          key: 'documents',
+          text: "Documents",
+          key: "documents",
           priority: 0,
           onClick: handleBack,
         },
         {
-          text: 'Workflow',
-          key: 'document-workflow',
+          text: "Workflow",
+          key: "document-workflow",
           priority: 1,
           onClick: () => {},
         },
       ]
     : [
         {
-          text: 'Documents',
-          key: 'documents',
+          text: "Documents",
+          key: "documents",
           priority: 0,
           onClick: handleBack,
         },
@@ -582,7 +577,7 @@ const DocumentWorkflowPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.scrollContainer}>
-          <MessageBar intent='warning'>
+          <MessageBar intent="warning">
             <MessageBarBody>
               <MessageBarTitle>No Document Open</MessageBarTitle>
               No document is currently open. Please open a document from the
@@ -595,8 +590,7 @@ const DocumentWorkflowPage: React.FC = () => {
   }
 
   const currentStepIndex = WORKFLOW_STEPS.findIndex(
-    (step) =>
-      step === status || (step === 'Final' && status === 'Finalised')
+    (step) => step === status || (step === "Final" && status === "Finalised"),
   );
 
   return (
@@ -623,34 +617,31 @@ const DocumentWorkflowPage: React.FC = () => {
           )}
           <div className={styles.statusText}>
             <Text className={styles.statusTitle}>
-              {isCheckedOut ? 'Edit Mode' : 'View Only Mode'}
+              {isCheckedOut ? "Edit Mode" : "View Only Mode"}
             </Text>
             <Text className={styles.statusSubtitle}>
               {isCheckedOut
-                ? 'Document locked for editing'
-                : 'Document opened in read-only mode'}
+                ? "Document locked for editing"
+                : "Document opened in read-only mode"}
             </Text>
           </div>
           {isCheckedOut && (
             <Button
               icon={<LockOpen20Regular />}
-              appearance='primary'
-              size='small'
+              appearance="primary"
+              size="small"
               className={styles.checkinButton}
               onClick={handleCheckin}
               disabled={checkinLoading}
             >
-              {checkinLoading ? <Spinner size='tiny' /> : 'Check In'}
+              {checkinLoading ? <Spinner size="tiny" /> : "Check In"}
             </Button>
           )}
         </div>
 
         {/* Document Details Section */}
         <div className={styles.section}>
-          <div
-            className={styles.sectionHeader}
-            style={{ cursor: 'default' }}
-          >
+          <div className={styles.sectionHeader} style={{ cursor: "default" }}>
             <Text className={styles.sectionTitle}>Document Details</Text>
           </div>
           <div className={styles.sectionContent}>
@@ -661,11 +652,9 @@ const DocumentWorkflowPage: React.FC = () => {
               <Text className={styles.detailLabel}>Status</Text>
               <div>
                 <Badge
-                  appearance='filled'
-                  size='small'
-                  color={
-                    status === 'Published' ? 'success' : 'informative'
-                  }
+                  appearance="filled"
+                  size="small"
+                  color={status === "Published" ? "success" : "informative"}
                 >
                   {status}
                 </Badge>
@@ -673,7 +662,7 @@ const DocumentWorkflowPage: React.FC = () => {
 
               <Text className={styles.detailLabel}>Priority</Text>
               <Text className={styles.detailValue}>
-                {document.PriorityName || 'Normal'}
+                {document.PriorityName || "Normal"}
               </Text>
 
               <Text className={styles.detailLabel}>Author</Text>
@@ -684,11 +673,8 @@ const DocumentWorkflowPage: React.FC = () => {
               <Text className={styles.detailLabel}>Last Modified</Text>
               <Text className={styles.detailValue}>
                 {document.TimeStamp
-                  ? format(
-                      new Date(document.TimeStamp),
-                      'MMM d, yyyy h:mm a'
-                    )
-                  : '-'}
+                  ? format(new Date(document.TimeStamp), "MMM d, yyyy h:mm a")
+                  : "-"}
               </Text>
 
               {document.Approvals && (
@@ -702,10 +688,10 @@ const DocumentWorkflowPage: React.FC = () => {
             </div>
 
             {/* Workflow Progress */}
-            <Divider style={{ margin: '12px 0' }} />
+            <Divider style={{ margin: "12px 0" }} />
             <Text
               className={styles.sectionTitle}
-              style={{ marginBottom: '8px', display: 'block' }}
+              style={{ marginBottom: "8px", display: "block" }}
             >
               Workflow Progress
             </Text>
@@ -716,7 +702,7 @@ const DocumentWorkflowPage: React.FC = () => {
                     className={`${styles.workflowStep} ${
                       index === currentStepIndex
                         ? styles.workflowStepActive
-                        : ''
+                        : ""
                     }`}
                   >
                     {step}
@@ -732,10 +718,7 @@ const DocumentWorkflowPage: React.FC = () => {
 
         {/* Workflow Actions Section */}
         <div className={styles.section}>
-          <div
-            className={styles.sectionHeader}
-            style={{ cursor: 'default' }}
-          >
+          <div className={styles.sectionHeader} style={{ cursor: "default" }}>
             <Text className={styles.sectionTitle}>Workflow Actions</Text>
           </div>
           <div className={styles.sectionContent}>
@@ -743,8 +726,8 @@ const DocumentWorkflowPage: React.FC = () => {
               {canSubmitForReview && (
                 <Button
                   icon={<ArrowForward20Regular />}
-                  appearance='outline'
-                  size='small'
+                  appearance="outline"
+                  size="small"
                   className={styles.actionButton}
                   onClick={handleSubmitForReview}
                   disabled={actionLoading}
@@ -755,8 +738,8 @@ const DocumentWorkflowPage: React.FC = () => {
               {canApprove && (
                 <Button
                   icon={<Checkmark20Regular />}
-                  appearance='outline'
-                  size='small'
+                  appearance="outline"
+                  size="small"
                   className={styles.actionButton}
                   onClick={handleApprove}
                   disabled={actionLoading}
@@ -767,8 +750,8 @@ const DocumentWorkflowPage: React.FC = () => {
               {canReject && (
                 <Button
                   icon={<Dismiss20Regular />}
-                  appearance='outline'
-                  size='small'
+                  appearance="outline"
+                  size="small"
                   className={styles.actionButton}
                   onClick={() => setRejectDialogOpen(true)}
                   disabled={actionLoading}
@@ -779,8 +762,8 @@ const DocumentWorkflowPage: React.FC = () => {
               {canPublish && (
                 <Button
                   icon={<Send20Regular />}
-                  appearance='outline'
-                  size='small'
+                  appearance="outline"
+                  size="small"
                   className={styles.actionButton}
                   onClick={handlePublish}
                   disabled={actionLoading}
@@ -791,8 +774,8 @@ const DocumentWorkflowPage: React.FC = () => {
               {canRetract && (
                 <Button
                   icon={<ArrowUndo20Regular />}
-                  appearance='outline'
-                  size='small'
+                  appearance="outline"
+                  size="small"
                   className={styles.actionButton}
                   onClick={handleRetract}
                   disabled={actionLoading}
@@ -802,8 +785,8 @@ const DocumentWorkflowPage: React.FC = () => {
               )}
               <Button
                 icon={<Flag20Regular />}
-                appearance='subtle'
-                size='small'
+                appearance="subtle"
+                size="small"
                 className={styles.actionButton}
                 onClick={() => setPriorityDialogOpen(true)}
                 disabled={actionLoading}
@@ -812,8 +795,8 @@ const DocumentWorkflowPage: React.FC = () => {
               </Button>
               <Button
                 icon={<Comment20Regular />}
-                appearance='subtle'
-                size='small'
+                appearance="subtle"
+                size="small"
                 className={styles.actionButton}
                 onClick={() => setCommentDialogOpen(true)}
                 disabled={actionLoading}
@@ -826,17 +809,17 @@ const DocumentWorkflowPage: React.FC = () => {
             {isCheckedOut && (
               <div
                 style={{
-                  display: 'flex',
-                  gap: '8px',
-                  paddingTop: '10px',
+                  display: "flex",
+                  gap: "8px",
+                  paddingTop: "10px",
                   borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
-                  marginTop: '10px',
+                  marginTop: "10px",
                 }}
               >
                 <Button
                   icon={<Save20Regular />}
-                  appearance='primary'
-                  size='small'
+                  appearance="primary"
+                  size="small"
                   className={styles.actionButton}
                   onClick={handleCheckin}
                   disabled={checkinLoading}
@@ -856,9 +839,9 @@ const DocumentWorkflowPage: React.FC = () => {
           >
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
               }}
             >
               <History20Regular />
@@ -875,11 +858,9 @@ const DocumentWorkflowPage: React.FC = () => {
           {historyExpanded && (
             <div className={styles.sectionContent}>
               {historyLoading ? (
-                <Spinner size='tiny' />
+                <Spinner size="tiny" />
               ) : history.length === 0 ? (
-                <Text className={styles.emptyState}>
-                  No history available
-                </Text>
+                <Text className={styles.emptyState}>No history available</Text>
               ) : (
                 history.slice(0, 10).map((item, index) => (
                   <div key={index} className={styles.historyItem}>
@@ -887,11 +868,8 @@ const DocumentWorkflowPage: React.FC = () => {
                       {item.StatusName}
                     </Text>
                     <Text className={styles.historyMeta}>
-                      {item.FullName} •{' '}
-                      {format(
-                        new Date(item.TimeStamp),
-                        'MMM d, yyyy h:mm a'
-                      )}
+                      {item.FullName} •{" "}
+                      {format(new Date(item.TimeStamp), "MMM d, yyyy h:mm a")}
                     </Text>
                   </div>
                 ))
@@ -908,9 +886,9 @@ const DocumentWorkflowPage: React.FC = () => {
           >
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
               }}
             >
               <Comment20Regular />
@@ -927,7 +905,7 @@ const DocumentWorkflowPage: React.FC = () => {
           {commentsExpanded && (
             <div className={styles.sectionContent}>
               {commentsLoading ? (
-                <Spinner size='tiny' />
+                <Spinner size="tiny" />
               ) : comments.length === 0 ? (
                 <Text className={styles.emptyState}>No comments yet</Text>
               ) : (
@@ -939,8 +917,8 @@ const DocumentWorkflowPage: React.FC = () => {
                     <Text
                       style={{
                         fontSize: tokens.fontSizeBase200,
-                        display: 'block',
-                        margin: '4px 0',
+                        display: "block",
+                        margin: "4px 0",
                       }}
                     >
                       {comment.Comment}
@@ -948,7 +926,7 @@ const DocumentWorkflowPage: React.FC = () => {
                     <Text className={styles.historyMeta}>
                       {format(
                         new Date(comment.TimeRecord),
-                        'MMM d, yyyy h:mm a'
+                        "MMM d, yyyy h:mm a",
                       )}
                     </Text>
                   </div>
@@ -963,45 +941,45 @@ const DocumentWorkflowPage: React.FC = () => {
       <BottomSheet
         open={rejectDialogOpen}
         onClose={() => setRejectDialogOpen(false)}
-        title='Reject Document'
+        title="Reject Document"
         subtitle={document?.DocName}
         icon={<Dismiss20Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => {
                 setRejectDialogOpen(false);
-                setRejectReason('');
+                setRejectReason("");
               }}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleReject}
               className={bottomSheetStyles.footerButton}
               disabled={actionLoading}
             >
-              {actionLoading ? <Spinner size='tiny' /> : 'Reject'}
+              {actionLoading ? <Spinner size="tiny" /> : "Reject"}
             </Button>
           </>
         }
       >
         <Label
-          htmlFor='rejectReason'
-          style={{ marginBottom: '4px', display: 'block' }}
+          htmlFor="rejectReason"
+          style={{ marginBottom: "4px", display: "block" }}
         >
           Reason for rejection (optional)
         </Label>
         <Textarea
-          id='rejectReason'
+          id="rejectReason"
           value={rejectReason}
           onChange={(_e, data) => setRejectReason(data.value)}
-          placeholder='Enter reason for rejection...'
-          resize='vertical'
-          style={{ width: '100%' }}
+          placeholder="Enter reason for rejection..."
+          resize="vertical"
+          style={{ width: "100%" }}
         />
       </BottomSheet>
 
@@ -1009,34 +987,34 @@ const DocumentWorkflowPage: React.FC = () => {
       <BottomSheet
         open={priorityDialogOpen}
         onClose={() => setPriorityDialogOpen(false)}
-        title='Change Priority'
+        title="Change Priority"
         subtitle={document?.DocName}
         icon={<Flag20Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => {
                 setPriorityDialogOpen(false);
-                setSelectedPriority('');
+                setSelectedPriority("");
               }}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleChangePriority}
               className={bottomSheetStyles.footerButton}
               disabled={!selectedPriority || actionLoading}
             >
-              {actionLoading ? <Spinner size='tiny' /> : 'Save'}
+              {actionLoading ? <Spinner size="tiny" /> : "Save"}
             </Button>
           </>
         }
       >
         {filtersLoading ? (
-          <Spinner size='small' label='Loading priorities...' />
+          <Spinner size="small" label="Loading priorities..." />
         ) : priorities.length === 0 ? (
           <Text>No priorities available</Text>
         ) : (
@@ -1059,28 +1037,28 @@ const DocumentWorkflowPage: React.FC = () => {
       <BottomSheet
         open={commentDialogOpen}
         onClose={() => setCommentDialogOpen(false)}
-        title='Add Comment'
+        title="Add Comment"
         subtitle={document?.DocName}
         icon={<Comment20Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => {
                 setCommentDialogOpen(false);
-                setNewComment('');
+                setNewComment("");
               }}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleAddComment}
               className={bottomSheetStyles.footerButton}
               disabled={!newComment.trim() || actionLoading}
             >
-              {actionLoading ? <Spinner size='tiny' /> : 'Add Comment'}
+              {actionLoading ? <Spinner size="tiny" /> : "Add Comment"}
             </Button>
           </>
         }
@@ -1088,9 +1066,9 @@ const DocumentWorkflowPage: React.FC = () => {
         <Textarea
           value={newComment}
           onChange={(_e, data) => setNewComment(data.value)}
-          placeholder='Enter your comment...'
-          resize='vertical'
-          style={{ width: '100%' }}
+          placeholder="Enter your comment..."
+          resize="vertical"
+          style={{ width: "100%" }}
         />
       </BottomSheet>
 

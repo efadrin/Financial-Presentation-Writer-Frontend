@@ -1,8 +1,8 @@
 // src/store.ts
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { apiSlice } from '@services/apiSlice';
-import authReducer, { authSlice } from './services/authSlice';
-import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { apiSlice } from "@services/apiSlice";
+import authReducer, { authSlice } from "./services/authSlice";
+import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 import {
   persistReducer,
   FLUSH,
@@ -12,16 +12,16 @@ import {
   PURGE,
   REGISTER,
   persistStore,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import settingsReducer, { settingSlice } from './services/settingSlice';
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import settingsReducer, { settingSlice } from "./services/settingSlice";
 import openedDocumentReducer, {
   openedDocumentSlice,
-} from './services/openedDocumentSlice';
-import { errorLoggerMiddleware } from './store/errorLoggerMiddleware';
+} from "./services/openedDocumentSlice";
+import { errorLoggerMiddleware } from "./store/errorLoggerMiddleware";
 
 const localStoragePersistConfig = {
-  key: 'settings',
+  key: "settings",
   storage: storage,
 };
 
@@ -30,13 +30,13 @@ const rootReducers = combineReducers({
   [authSlice.reducerPath]: authReducer,
   [settingSlice.reducerPath]: persistReducer(
     localStoragePersistConfig,
-    settingsReducer
+    settingsReducer,
   ),
   [openedDocumentSlice.name]: openedDocumentReducer,
 });
 
 const rootPersistConfig = {
-  key: 'root',
+  key: "root",
   storage: storage,
   whitelist: [settingSlice.reducerPath],
 };

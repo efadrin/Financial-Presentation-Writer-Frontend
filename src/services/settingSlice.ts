@@ -32,23 +32,23 @@ export interface SettingsState {
 
 const initialState: SettingsState = {
   financials: {
-    FinancialSourceID: '',
-    FinancialSourceName: '',
-    FinancialSourceKey: '',
+    FinancialSourceID: "",
+    FinancialSourceName: "",
+    FinancialSourceKey: "",
   },
   account: null,
   userInfo: {
-    Email: '',
-    FirmID: '',
-    FirmKey: '',
+    Email: "",
+    FirmID: "",
+    FirmKey: "",
     isRegistered: false,
   },
   selectedLanguage: 'en',
 };
 
 export const settingSlice = createSlice({
-  name: 'settings',
-  reducerPath: 'settings',
+  name: "settings",
+  reducerPath: "settings",
   initialState,
   reducers: {
     setFinancialSource(state, action: PayloadAction<FinancialSource>) {
@@ -65,15 +65,15 @@ export const settingSlice = createSlice({
     },
     pruneAllSettings(state) {
       state.financials = {
-        FinancialSourceID: '',
-        FinancialSourceName: '',
-        FinancialSourceKey: '',
+        FinancialSourceID: "",
+        FinancialSourceName: "",
+        FinancialSourceKey: "",
       };
       state.account = null;
       state.userInfo = {
-        Email: '',
-        FirmID: '',
-        FirmKey: '',
+        Email: "",
+        FirmID: "",
+        FirmKey: "",
         isRegistered: false,
       };
       state.selectedLanguage = 'en';

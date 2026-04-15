@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import JSZip from 'jszip';
-import { RootState } from '@/store';
+import { useState, useCallback } from "react";
+import { useSelector } from "react-redux";
+import JSZip from "jszip";
+import { RootState } from "@/store";
 import {
   useApproveDocumentMutation,
   useRejectDocumentMutation,
@@ -12,17 +12,17 @@ import {
   useLazyDownloadDocumentQuery,
   useGetRIXMLSubjectsQuery,
   useGetWorkflowFiltersQuery,
-} from '@/services/apiSlice';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
+} from "@/services/apiSlice";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
 
 export type BulkActionType =
-  | 'delete'
-  | 'submitForReview'
-  | 'approve'
-  | 'reject'
-  | 'analystSignOff'
-  | 'publish'
-  | 'download';
+  | "delete"
+  | "submitForReview"
+  | "approve"
+  | "reject"
+  | "analystSignOff"
+  | "publish"
+  | "download";
 
 export interface BulkActionResult {
   docId: number;
@@ -43,7 +43,11 @@ interface UseBulkDocumentActionsReturn {
   executeBulkAction: (
     action: BulkActionType,
     documents: DocumentListResponse[],
-    options?: { rejectReason?: string; distributeToPeelHunt?: boolean; distributeToSingleTrack?: boolean }
+    options?: {
+      rejectReason?: string;
+      distributeToPeelHunt?: boolean;
+      distributeToSingleTrack?: boolean;
+    },
   ) => Promise<BulkActionResult[]>;
   progress: BulkActionProgress;
   resetProgress: () => void;
@@ -52,10 +56,10 @@ interface UseBulkDocumentActionsReturn {
 
 const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
   const settings = useSelector((state: RootState) => state.settings);
-  const accountName = settings.account?.AccountName || '';
-  const srvrID = parseInt(settings.account?.SrvrID || '0', 10);
-  const userID = parseInt(settings.account?.UserID?.toString() || '0', 10);
-  const accountID = parseInt(settings.account?.AccountID || '0', 10);
+  const accountName = settings.account?.AccountName || "";
+  const srvrID = parseInt(settings.account?.SrvrID || "0", 10);
+  const userID = parseInt(settings.account?.UserID?.toString() || "0", 10);
+  const accountID = parseInt(settings.account?.AccountID || "0", 10);
 
   const [progress, setProgress] = useState<BulkActionProgress>({
     total: 0,
@@ -75,17 +79,20 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
   const [downloadDoc] = useLazyDownloadDocumentQuery();
 
   // Get filters for publish
-  const filterParams = accountName && srvrID > 0
-    ? { AccountName: accountName, SrvrID: srvrID }
-    : null;
-  const { data: filtersResponse } = useGetWorkflowFiltersQuery(filterParams!, { skip: !filterParams });
-  const publisherType = filtersResponse?.Data?.PublisherType || 'Default';
-  const isPeelHuntPublisher = publisherType === 'PeelHunt';
+  const filterParams =
+    accountName && srvrID > 0
+      ? { AccountName: accountName, SrvrID: srvrID }
+      : null;
+  const { data: filtersResponse } = useGetWorkflowFiltersQuery(filterParams!, {
+    skip: !filterParams,
+  });
+  const publisherType = filtersResponse?.Data?.PublisherType || "Default";
+  const isPeelHuntPublisher = publisherType === "PeelHunt";
 
   // Get RIXML subjects for publish
   const { data: rixmlSubjectsResponse } = useGetRIXMLSubjectsQuery(
     { accountName, accountID, srvrID },
-    { skip: !accountName || !srvrID }
+    { skip: !accountName || !srvrID },
   );
   const rixmlSubjects = rixmlSubjectsResponse?.Data?.Subjects || [];
 
@@ -107,14 +114,18 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
       UserID: userID,
       AccountID: accountID,
     }),
-    [accountName, srvrID, userID, accountID]
+    [accountName, srvrID, userID, accountID],
   );
 
   const executeBulkAction = useCallback(
     async (
       action: BulkActionType,
       documents: DocumentListResponse[],
-      options?: { rejectReason?: string; distributeToPeelHunt?: boolean; distributeToSingleTrack?: boolean }
+      options?: {
+        rejectReason?: string;
+        distributeToPeelHunt?: boolean;
+        distributeToSingleTrack?: boolean;
+      },
     ): Promise<BulkActionResult[]> => {
       const results: BulkActionResult[] = [];
 
@@ -133,53 +144,65 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
 
         try {
           switch (action) {
-            case 'delete':
+            case "delete":
               await killDocument(baseRequest).unwrap();
               success = true;
               break;
 
-            case 'submitForReview':
+            case "submitForReview":
               await submitForReview(baseRequest).unwrap();
               success = true;
               break;
 
-            case 'approve':
+            case "approve":
               await approve(baseRequest).unwrap();
               success = true;
               break;
 
-            case 'reject':
+            case "reject":
               if (!options?.rejectReason) {
-                throw new Error('Reject reason is required');
+                throw new Error("Reject reason is required");
               }
-              await reject({ ...baseRequest, Reason: options.rejectReason }).unwrap();
+              await reject({
+                ...baseRequest,
+                Reason: options.rejectReason,
+              }).unwrap();
               success = true;
               break;
 
-            case 'analystSignOff':
-              await analystSignOff({ ...baseRequest, DocName: doc.DocName }).unwrap();
+            case "analystSignOff":
+              await analystSignOff({
+                ...baseRequest,
+                DocName: doc.DocName,
+              }).unwrap();
               success = true;
               break;
 
-            case 'publish': {
-              const templateName = doc.TemplateName || '';
+            case "publish": {
+              const templateName = doc.TemplateName || "";
               const matchingSubject = rixmlSubjects.find(
-                (s) => s.SubjectPublisherDefined.toLowerCase() === templateName.toLowerCase()
+                (s) =>
+                  s.SubjectPublisherDefined.toLowerCase() ===
+                  templateName.toLowerCase(),
               );
 
               await publishDocument({
                 ...baseRequest,
                 DocName: doc.DocName,
-                SubjectEnum: matchingSubject?.SubjectEnum || '',
-                SubjectPublisherDefined: matchingSubject?.SubjectPublisherDefined || templateName,
-                DistributeToPeelHunt: isPeelHuntPublisher ? (options?.distributeToPeelHunt ?? true) : false,
-                DistributeToSingleTrack: options?.distributeToSingleTrack ?? true,
+                SubjectEnum: matchingSubject?.SubjectEnum || "",
+                SubjectPublisherDefined:
+                  matchingSubject?.SubjectPublisherDefined || templateName,
+                DistributeToPeelHunt: isPeelHuntPublisher
+                  ? (options?.distributeToPeelHunt ?? true)
+                  : false,
+                DistributeToSingleTrack:
+                  options?.distributeToSingleTrack ?? true,
               }).unwrap();
               success = true;
               break;
             }
 
-            case 'download': {
+            case "download": {
               // Download is handled separately below for ZIP creation
               success = true;
               break;
@@ -187,7 +210,7 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
           }
         } catch (err) {
           success = false;
-          error = err instanceof Error ? err.message : 'Unknown error occurred';
+          error = err instanceof Error ? err.message : "Unknown error occurred";
         }
 
         const result: BulkActionResult = {
@@ -208,7 +231,7 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
       }
 
       // Special handling for bulk download - create ZIP file
-      if (action === 'download') {
+      if (action === "download") {
         const zip = new JSZip();
         let downloadedCount = 0;
 
@@ -218,11 +241,12 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
               AccountName: accountName,
               SrvrID: srvrID,
               DocID: doc.DocID,
-              DocType: doc.StatusName === 'Published' ? 1 : 0,
+              DocType: doc.StatusName === "Published" ? 1 : 0,
             }).unwrap();
 
             if (result.Data?.Success && result.Data.BlobBase64) {
-              const fileName = result.Data.DocName || `Document_${doc.DocID}.pdf`;
+              const fileName =
+                result.Data.DocName || `Document_${doc.DocID}.pdf`;
               // Convert base64 to binary
               const binaryString = atob(result.Data.BlobBase64);
               const bytes = new Uint8Array(binaryString.length);
@@ -239,9 +263,9 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
 
         if (downloadedCount > 0) {
           // Generate ZIP and trigger download
-          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          const zipBlob = await zip.generateAsync({ type: "blob" });
           const url = URL.createObjectURL(zipBlob);
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
           link.download = `documents_${new Date().toISOString().slice(0, 10)}.zip`;
           document.body.appendChild(link);
@@ -271,7 +295,7 @@ const useBulkDocumentActions = (): UseBulkDocumentActionsReturn => {
       srvrID,
       rixmlSubjects,
       isPeelHuntPublisher,
-    ]
+    ],
   );
 
   return {
