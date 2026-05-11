@@ -42,7 +42,23 @@ export const DocVariables = {
   EFADocName: 'EFADocName',
   EFADocStatus: 'EFADocStatus',
   EFADRINReport: 'EFADRINReport',
+  EFAModel: 'EFAModel',
 };
+
+export const ShapeNamePrefixes = {
+  EFA_CHART: 'EFAChart',
+  EFA_TABLE: 'EFATable',
+  EFA_HEADER_SUFFIX: 'Header',
+  EFA_FILLED_TAG_KEY: 'EFAFilled',
+  EFA_FILLED_TAG_VALUE: '1',
+} as const;
+
+export const AddComponentTabKeys = {
+  Workflow: 'workflow',
+  Table: 'table',
+  Chart: 'chart',
+} as const;
+export type AddComponentTabKey = (typeof AddComponentTabKeys)[keyof typeof AddComponentTabKeys];
 
 export const ApiName = {
   AnalystCoverage: 'EFAAnalystCoverage',

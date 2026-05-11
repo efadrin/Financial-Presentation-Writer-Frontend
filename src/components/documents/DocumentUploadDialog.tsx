@@ -368,6 +368,8 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       docVariables.push({ Name: 'EFADocID', Value: newDocID.toString() });
       // EFACorpID - The corporation ID (integer, -1 for None)
       docVariables.push({ Name: 'EFACorpID', Value: selectedCompany.corpId.toString() });
+      // EFAModel - The company model (e.g. 'Life', 'Banks', '' for non-corporate)
+      docVariables.push({ Name: 'EFAModel', Value: selectedCompany.model || '' });
       
       // For PowerPoint files, add template and additional variables
       if (isPowerPoint && selectedTemplateId) {

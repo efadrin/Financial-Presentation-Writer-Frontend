@@ -16,6 +16,8 @@ import {
   RadioGroup,
   Radio,
   Label,
+  Tab,
+  TabList,
 } from '@fluentui/react-components';
 import {
   Checkmark20Regular,
@@ -32,7 +34,12 @@ import {
   Save20Regular,
   ChevronDown20Regular,
   ChevronUp20Regular,
+  DocumentBulletList20Regular,
+  TableSimpleRegular,
+  DataTrendingRegular,
 } from '@fluentui/react-icons';
+import AddTableAndChart from '@/components/addComponent/AddTableAndChart';
+import { AddComponentTabKeys, AddComponentTabKey } from '@/utils/constants';
 import BreadcrumbWithOverflow from '@/components/common/BreadCrumb';
 import { Item } from '@/components/common/BreadCrumb/types';
 import {
@@ -66,6 +73,17 @@ const useStyles = makeStyles({
     width: '100%',
     overflow: 'hidden',
     backgroundColor: tokens.colorNeutralBackground1,
+  },
+  tabBar: {
+    flexShrink: 0,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
+    paddingLeft: tokens.spacingHorizontalM,
+  },
+  tabContent: {
+    flex: '1 1 auto',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: {
     padding: '12px 16px',
@@ -239,6 +257,8 @@ const DocumentWorkflowPage: React.FC = () => {
   const bottomSheetStyles = useBottomSheetStyles();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const [activeTab, setActiveTab] = useState<AddComponentTabKey>(AddComponentTabKeys.Workflow);
 
   const { document, isCheckedOut, isViewOnly, originalBlob, customPropertiesXml } = useSelector(
     (state: RootState) => state.openedDocument
@@ -608,8 +628,37 @@ const DocumentWorkflowPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className={styles.scrollContainer}>
+      {/* Tab Bar */}
+      <div className={styles.tabBar}>
+        <TabList
+          selectedValue={activeTab}
+          onTabSelect={(_, d) => setActiveTab(d.value as AddComponentTabKey)}
+          size="small"
+        >
+          <Tab value={AddComponentTabKeys.Workflow} icon={<DocumentBulletList20Regular />}>
+            Workflow
+          </Tab>
+          <Tab value={AddComponentTabKeys.Table} icon={<TableSimpleRegular />}>
+            Tables
+          </Tab>
+          <Tab value={AddComponentTabKeys.Chart} icon={<DataTrendingRegular />}>
+            Charts
+          </Tab>
+        </TabList>
+      </div>
+
+      {/* Tab Content */}
+      <div className={styles.tabContent}>
+        {/* Table tab */}
+        {activeTab === AddComponentTabKeys.Table && <AddTableAndChart type="table" />}
+        {/* Chart tab */}
+        {activeTab === AddComponentTabKeys.Chart && <AddTableAndChart type="chart" />}
+
+        {/* Scrollable Workflow Content — hidden but mounted when other tabs active */}
+        <div
+          className={styles.scrollContainer}
+          style={{ display: activeTab === AddComponentTabKeys.Workflow ? undefined : 'none' }}
+        >
         {/* Status Banner */}
         <div
           className={`${styles.statusBanner} ${
@@ -958,6 +1007,7 @@ const DocumentWorkflowPage: React.FC = () => {
           )}
         </div>
       </div>
+      </div> {/* end tabContent */}
 
       {/* Reject Bottom Sheet */}
       <BottomSheet
