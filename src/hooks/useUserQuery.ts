@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { AddTableChartItem } from '@/interfaces/UserQuery';
@@ -88,22 +88,6 @@ const useUserQuery = (isChartMode: boolean) => {
     (!corpIdFromXml && !isNonCorporate) ||
     (isNonCorporate && !defaultCorpID);
 
-  // --- Log 1: API request params and skip decision ---
-  useEffect(() => {
-    console.group(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — API params`);
-    console.log('accountName:', accountName);
-    console.log('accountID:', accountID);
-    console.log('srvrID:', srvrID);
-    console.log('corpIdFromXml:', corpIdFromXml);
-    console.log('modelFromXml:', modelFromXml);
-    console.log('isNonCorporate:', isNonCorporate);
-    console.log('defaultCorpID:', defaultCorpID);
-    console.log('effectiveCorpID:', effectiveCorpID);
-    console.log('effectiveModel:', effectiveModel);
-    console.log('skip:', shouldSkip);
-    console.groupEnd();
-  }, [accountName, accountID, srvrID, corpIdFromXml, modelFromXml, isNonCorporate, defaultCorpID, effectiveCorpID, effectiveModel, shouldSkip, isChartMode]);
-
   const {
     data: rawItems = [],
     isFetching,
@@ -119,33 +103,10 @@ const useUserQuery = (isChartMode: boolean) => {
     { skip: shouldSkip }
   );
 
-  // --- Log 2: Raw API response ---
-  useEffect(() => {
-    if (isFetching) {
-      console.log(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — fetching...`);
-    } else {
-      console.group(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — raw API response`);
-      console.log('total items:', rawItems.length);
-      console.log('charts in response:', rawItems.filter((i) => i.IsChart).length);
-      console.log('tables in response:', rawItems.filter((i) => !i.IsChart).length);
-      console.log('IsChart sample values:', rawItems.slice(0, 5).map((i) => ({ QueryName: i.QueryName, IsChart: i.IsChart, type: typeof i.IsChart })));
-      console.table(rawItems.map((i) => ({ QueryName: i.QueryName, TableHeader: i.TableHeader, IsChart: i.IsChart, HasData: i.HasData })));
-      console.groupEnd();
-    }
-  }, [rawItems, isFetching, isChartMode]);
-
   const queryTypeItems = useMemo(
     () => rawItems.filter((item) => !!item.IsChart === isChartMode),
     [rawItems, isChartMode]
   );
-
-  // --- Log 3: After IsChart type filter ---
-  useEffect(() => {
-    console.group(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — after type filter`);
-    console.log(`${isChartMode ? 'IsChart=true' : 'IsChart=false'} items:`, queryTypeItems.length);
-    console.table(queryTypeItems.map((i) => ({ QueryName: i.QueryName, TableHeader: i.TableHeader, HasData: i.HasData })));
-    console.groupEnd();
-  }, [queryTypeItems, isChartMode]);
 
   const itemsWithAdded: AddTableChartItem[] = useMemo(
     () =>
@@ -155,16 +116,6 @@ const useUserQuery = (isChartMode: boolean) => {
       })),
     [queryTypeItems, insertedQueryNames]
   );
-
-  // --- Log 4: After Added mapping ---
-  useEffect(() => {
-    const addedItems = itemsWithAdded.filter((i) => i.Added);
-    console.group(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — after Added mapping`);
-    console.log('insertedQueryNames tracked:', insertedQueryNames);
-    console.log('items marked Added:', addedItems.length);
-    if (addedItems.length) console.table(addedItems.map((i) => ({ QueryName: i.QueryName, TableHeader: i.TableHeader })));
-    console.groupEnd();
-  }, [itemsWithAdded, insertedQueryNames, isChartMode]);
 
   const filteredItems = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -191,22 +142,6 @@ const useUserQuery = (isChartMode: boolean) => {
         return (a.TableHeader ?? a.QueryName).localeCompare(b.TableHeader ?? b.QueryName);
       });
   }, [itemsWithAdded, searchQuery, showUnavailable]);
-
-  // --- Log 5: Final list after search filter and sort ---
-  useEffect(() => {
-    console.group(`[useUserQuery] ${isChartMode ? 'Charts' : 'Tables'} — final rendered list (${filteredItems.length} items)`);
-    console.log('searchQuery:', searchQuery || '(none)');
-    console.log('showUnavailable:', showUnavailable);
-    console.table(filteredItems.map((i, idx) => ({
-      '#': idx + 1,
-      QueryName: i.QueryName,
-      TableHeader: i.TableHeader,
-      HasData: i.HasData,
-      Added: i.Added,
-      Description: stripXmlDescription(i.Description).slice(0, 60) || '(none)',
-    })));
-    console.groupEnd();
-  }, [filteredItems, searchQuery, showUnavailable, isChartMode]);
 
   const unavailableCount = useMemo(
     () => queryTypeItems.filter((i) => i.HasData === false).length,

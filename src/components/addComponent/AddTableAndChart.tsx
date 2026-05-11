@@ -170,19 +170,6 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
 
   const { progress } = useLoadingProgress(isFetching);
 
-  // --- Log: items about to be rendered ---
-  useEffect(() => {
-    console.group(`[AddTableAndChart] ${isChartMode ? 'Charts' : 'Tables'} — rendering ${itemsToRender.length} items`);
-    console.table(itemsToRender.map((i, idx) => ({
-      '#': idx + 1,
-      QueryName: i.QueryName,
-      TableHeader: i.TableHeader || '(none)',
-      HasData: i.HasData,
-      Added: i.Added,
-    })));
-    console.groupEnd();
-  }, [itemsToRender, isChartMode]);
-
   const languageId = getCurrentLanguageIdFromSettings(settings.selectedLanguage);
   const hasAccount = !!(account?.AccountID && account?.AccountName && account?.SrvrID && account?.UserID);
 
@@ -248,19 +235,33 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
     updateItem(item.QueryName, { isInserting: true });
     dispatch(unlockQuery(item.QueryName));
 
-    try {
-      const commonOpts = {
-        insertAt: expanded.insertAt,
-        queryName: item.QueryName,
-        accountName: account.AccountName,
-        accountID: account.AccountID,
-        corpIDs: expanded.corpID || effectiveCorpID || '',
-        srvrID: account.SrvrID,
-        languageID: languageId,
-        userID: account.UserID,
-        firmID: settings.userInfo?.FirmID ? parseInt(settings.userInfo.FirmID) : undefined,
-      };
+    const commonOpts = {
+      insertAt: expanded.insertAt,
+      queryName: item.QueryName,
+      accountName: account.AccountName,
+      accountID: account.AccountID,
+      corpIDs: expanded.corpID || effectiveCorpID || '',
+      srvrID: account.SrvrID,
+      languageID: languageId,
+      userID: account.UserID,
+      firmID: settings.userInfo?.FirmID ? parseInt(settings.userInfo.FirmID) : undefined,
+    };
 
+    console.group(`[Insert] ${isChartMode ? 'Chart' : 'Table'}: ${item.QueryName}`);
+    console.log('QueryName:', item.QueryName);
+    console.log('TableHeader:', item.TableHeader);
+    console.log('insertAt:', expanded.insertAt);
+    console.log('corpIDs:', commonOpts.corpIDs);
+    console.log('accountName:', commonOpts.accountName);
+    console.log('accountID:', commonOpts.accountID);
+    console.log('srvrID:', commonOpts.srvrID);
+    console.log('languageID:', commonOpts.languageID);
+    if (isChartMode) {
+      console.log('chartType:', expanded.chartType);
+      console.log('logScale:', expanded.logScale);
+    }
+
+    try {
       if (isChartMode) {
         await insertChartToPresentation({
           ...commonOpts,
@@ -270,10 +271,13 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
       } else {
         await insertTableToPresentation(commonOpts);
       }
+      console.log('✓ Insert succeeded');
       dispatch(markQueryInserted(item.QueryName));
     } catch (e) {
+      console.error('✗ Insert failed:', e);
       // error already locked in Redux by the feature function
     } finally {
+      console.groupEnd();
       updateItem(item.QueryName, { isInserting: false });
     }
   };

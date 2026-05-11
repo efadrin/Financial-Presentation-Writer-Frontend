@@ -73,52 +73,52 @@ async function insertChartToPresentation(opts: InsertChartOptions): Promise<void
 
   const base64 = result.data.Data[0].Charts[0];
 
+  if (opts.insertAt === 'Cursor') {
+    await new Promise<void>((resolve, reject) => {
+      Office.context.document.setSelectedDataAsync(
+        base64,
+        { coercionType: Office.CoercionType.Image },
+        (asyncResult) => {
+          if (asyncResult.status === Office.AsyncResultStatus.Succeeded) resolve();
+          else reject(new Error(asyncResult.error?.message ?? 'Failed to insert image at cursor'));
+        }
+      );
+    });
+    return;
+  }
+
   await PowerPoint.run(async (context) => {
     const slides = context.presentation.slides;
     slides.load('items');
     await context.sync();
 
-    if (opts.insertAt === 'Cursor') {
-      // Insert on the active/first slide at full slide dimensions
-      const slide = slides.items[0];
-      slide.load('width,height');
+    // Replace a named shape
+    for (const slide of slides.items) {
+      const shapes = slide.shapes;
+      shapes.load('items');
       await context.sync();
 
-      const image = slide.shapes.addImage(base64);
-      image.left = 0;
-      image.top = 0;
-      image.width = (slide as any).width ?? 960;
-      image.height = (slide as any).height ?? 540;
-      await context.sync();
-    } else {
-      // Replace a named shape
-      for (const slide of slides.items) {
-        const shapes = slide.shapes;
-        shapes.load('items');
+      for (const shape of shapes.items) {
+        shape.load('name,left,top,width,height');
         await context.sync();
 
-        for (const shape of shapes.items) {
-          shape.load('name,left,top,width,height');
+        if (shape.name === opts.insertAt) {
+          const { left, top, width, height } = shape;
+          shape.delete();
           await context.sync();
 
-          if (shape.name === opts.insertAt) {
-            const { left, top, width, height } = shape;
-            shape.delete();
-            await context.sync();
-
-            const newShape = slide.shapes.addImage(base64);
-            newShape.left = left;
-            newShape.top = top;
-            newShape.width = width;
-            newShape.height = height;
-            newShape.name = opts.insertAt;
-            newShape.tags.add(
-              ShapeNamePrefixes.EFA_FILLED_TAG_KEY,
-              ShapeNamePrefixes.EFA_FILLED_TAG_VALUE
-            );
-            await context.sync();
-            break;
-          }
+          const newShape = slide.shapes.addImage(base64);
+          newShape.left = left;
+          newShape.top = top;
+          newShape.width = width;
+          newShape.height = height;
+          newShape.name = opts.insertAt;
+          newShape.tags.add(
+            ShapeNamePrefixes.EFA_FILLED_TAG_KEY,
+            ShapeNamePrefixes.EFA_FILLED_TAG_VALUE
+          );
+          await context.sync();
+          break;
         }
       }
     }
@@ -126,7 +126,7 @@ async function insertChartToPresentation(opts: InsertChartOptions): Promise<void
 
   // Update filledShapes in Redux
   const currentFilled = store.getState().presentationInsert.filledShapes;
-  if (!currentFilled.includes(opts.insertAt) && opts.insertAt !== 'Cursor') {
+  if (!currentFilled.includes(opts.insertAt)) {
     store.dispatch(setFilledShapes([...currentFilled, opts.insertAt]));
   }
 }
