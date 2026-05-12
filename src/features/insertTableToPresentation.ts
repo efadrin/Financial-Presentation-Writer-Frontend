@@ -18,26 +18,28 @@ export interface InsertTableOptions {
   periodOffset?: string;
   wordID?: string;
   priceDate?: string;
+  devDataFlags?: string;
 }
 
 async function insertTableToPresentation(opts: InsertTableOptions): Promise<void> {
   const req: FinancialTableRequest = {
-    ApiName: 'EFAFinancialTableImage',
+    ApiName: 'EFAMVQueryPreDefMulti_WithCorpsForecastYears',
     AccountName: opts.accountName,
-    UserID: opts.userID,
+    UserID: String(opts.userID),
     CorpIDs: opts.corpIDs,
     QueryNames: opts.queryName,
     ForceUnits: '',
-    ForceAnnualise: '0',
-    ForceAnnMonth: '0',
+    ForceAnnualise: '',
+    ForceAnnMonth: '',
+    NumberOfForecastYears: '3',
     UseInterimTables: '0',
-    DevDataFlags: '',
+    DevDataFlags: opts.devDataFlags ?? '1',
     PriceDate: opts.priceDate ?? '',
-    IsCorpNote: '0',
+    IsCorpNote: '1',
     LanguageID: opts.languageID,
-    OutputFormat: 'PNG',
-    SrvrID: opts.srvrID,
-    WordID: opts.wordID ?? '',
+    OutputFormat: '1',
+    SrvrID: String(opts.srvrID),
+    WordID: opts.wordID ?? '0',
     FirmID: opts.firmID,
     PeriodOffset: opts.periodOffset,
   };

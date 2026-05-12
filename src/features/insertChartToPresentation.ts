@@ -20,6 +20,7 @@ export interface InsertChartOptions {
   userID?: string;
   firmID?: number;
   periodOffset?: string;
+  devDataFlags?: string;
 }
 
 async function insertChartToPresentation(opts: InsertChartOptions): Promise<void> {
@@ -46,10 +47,11 @@ async function insertChartToPresentation(opts: InsertChartOptions): Promise<void
     CorpIDs: opts.corpIDs,
     QueryNames: opts.queryName,
     LanguageID: opts.languageID,
-    SrvrID: opts.srvrID,
-    UserID: opts.userID,
+    SrvrID: String(opts.srvrID),
+    UserID: opts.userID != null ? String(opts.userID) : undefined,
     FirmID: opts.firmID,
     PeriodOffset: opts.periodOffset,
+    DevData: opts.devDataFlags ?? '1',
     Config: JSON.stringify(configObj),
   };
 

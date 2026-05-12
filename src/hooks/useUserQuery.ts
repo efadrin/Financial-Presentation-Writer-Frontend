@@ -68,6 +68,16 @@ const useUserQuery = (isChartMode: boolean) => {
     return parseCustomPropertyValue(customPropertiesXml, 'EFAModel');
   }, [customPropertiesXml]);
 
+  const wordIDFromXml = useMemo(() => {
+    if (!customPropertiesXml) return null;
+    return parseCustomPropertyValue(customPropertiesXml, 'FDRW_WordID');
+  }, [customPropertiesXml]);
+
+  const devDataFlagsFromXml = useMemo(() => {
+    if (!customPropertiesXml) return '1';
+    return parseCustomPropertyValue(customPropertiesXml, 'EFADevData') ?? '1';
+  }, [customPropertiesXml]);
+
   const isNonCorporate = !corpIdFromXml || corpIdFromXml === '-1';
 
   const effectiveCorpID = isNonCorporate
@@ -162,6 +172,8 @@ const useUserQuery = (isChartMode: boolean) => {
     defaultCorpName,
     effectiveCorpID,
     effectiveModel,
+    wordID: wordIDFromXml ?? undefined,
+    devDataFlags: devDataFlagsFromXml,
   };
 };
 

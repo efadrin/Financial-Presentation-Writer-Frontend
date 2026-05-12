@@ -166,6 +166,8 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
     defaultCorpName,
     effectiveCorpID,
     effectiveModel,
+    wordID,
+    devDataFlags,
   } = useUserQuery(isChartMode);
 
   const { progress } = useLoadingProgress(isFetching);
@@ -245,6 +247,8 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
       languageID: languageId,
       userID: account.UserID,
       firmID: settings.userInfo?.FirmID ? parseInt(settings.userInfo.FirmID) : undefined,
+      wordID,
+      devDataFlags,
     };
 
     console.group(`[Insert] ${isChartMode ? 'Chart' : 'Table'}: ${item.QueryName}`);

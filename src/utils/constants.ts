@@ -43,6 +43,8 @@ export const DocVariables = {
   EFADocStatus: 'EFADocStatus',
   EFADRINReport: 'EFADRINReport',
   EFAModel: 'EFAModel',
+  FDRW_WordID: 'FDRW_WordID',
+  EFADevData: 'EFADevData',
 };
 
 export const ShapeNamePrefixes = {
