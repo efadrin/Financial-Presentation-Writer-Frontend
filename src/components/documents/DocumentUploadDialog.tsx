@@ -168,6 +168,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const accountName = account?.AccountName || "";
   const userID = account?.UserID ? parseInt(account.UserID, 10) : 0;
   const srvrID = account?.SrvrID ? parseInt(account.SrvrID, 10) : 0;
+  const firmID = settings.userInfo?.FirmID ? parseInt(settings.userInfo.FirmID, 10) : 0;
 
   // Check if we have required params for company query
   const hasRequiredParams = !!(account?.AccountID && account?.AccountName && account?.SrvrID && account?.UserID);
@@ -249,11 +250,17 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   
   // Get templates from workflow filters
   const workflowTemplates = workflowFilters?.Data?.Templates || [];
+  console.log('[DocumentUploadDialog] workflowFilters raw:', workflowFilters);
+  console.log('[DocumentUploadDialog] workflowTemplates:', workflowTemplates);
+  console.log('[DocumentUploadDialog] selectedTemplateId:', selectedTemplateId);
 
   // Default to the last template when templates load
   useEffect(() => {
+    console.log('[DocumentUploadDialog] useEffect templates — length:', workflowTemplates.length, 'selectedTemplateId:', selectedTemplateId);
     if (workflowTemplates.length > 0 && selectedTemplateId === null) {
-      setSelectedTemplateId(workflowTemplates[workflowTemplates.length - 1].TemplateID);
+      const defaultTemplate = workflowTemplates[workflowTemplates.length - 1];
+      console.log('[DocumentUploadDialog] Auto-selecting default template:', defaultTemplate);
+      setSelectedTemplateId(defaultTemplate.TemplateID);
     }
   }, [workflowTemplates.length]);
 
@@ -388,6 +395,10 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       docVariables.push({ Name: 'EFADocID', Value: newDocID.toString() });
       // EFACorpID - The corporation ID (integer, -1 for None)
       docVariables.push({ Name: 'EFACorpID', Value: selectedCompany.corpId.toString() });
+      // EFAModel - The company model (e.g. 'Life', 'Banks', '' for non-corporate)
+      docVariables.push({ Name: 'EFAModel', Value: selectedCompany.model || '' });
+      // EFADevData - '1' = unpublished/dev data (drafts always start unpublished)
+      docVariables.push({ Name: 'EFADevData', Value: '1' });
       
       // For PowerPoint files, add template and additional variables
       if (isPowerPoint && selectedTemplateId) {
@@ -497,9 +508,9 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       setSuccess(false);
       setSelectedTemplateId(null);
       setSelectedCompany(NONE_COMPANY);
-      setCompanySearchText("None");
-      setSubmissionDate(new Date().toISOString().split("T")[0]);
-      setSelectedLanguageKey(settings.selectedLanguage || "en");
+      setCompanySearchText('Non-Corporate');
+      setSubmissionDate(new Date().toISOString().split('T')[0]);
+      setSelectedLanguageKey(settings.selectedLanguage || 'en');
       setSelectedAuthors([]);
       setAuthorSearchText('');
       setFdrwWordID('21');
@@ -721,13 +732,19 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                       placeholder={isLoadingTemplates ? 'Loading templates...' : 'Select a template'}
                       disabled={isLoadingTemplates || isLoading}
                       value={workflowTemplates?.find(t => t.TemplateID === selectedTemplateId)?.TemplateName || ''}
+                      selectedOptions={selectedTemplateId !== null ? [String(selectedTemplateId)] : []}
                       onOptionSelect={(_, data) => {
-                        const template = workflowTemplates?.find(t => t.TemplateName === data.optionValue);
-                        setSelectedTemplateId(template?.TemplateID || null);
+                        console.log('[DocumentUploadDialog] Template onOptionSelect — optionValue:', data.optionValue, 'optionText:', data.optionText);
+                        const id = parseInt(data.optionValue ?? '', 10);
+                        const template = workflowTemplates?.find(t => t.TemplateID === id);
+                        console.log('[DocumentUploadDialog] Template found:', template);
+                        const newId = isNaN(id) ? null : id;
+                        console.log('[DocumentUploadDialog] Setting selectedTemplateId:', newId);
+                        setSelectedTemplateId(newId);
                       }}
                     >
                       {workflowTemplates?.map(template => (
-                        <Option key={template.TemplateID} value={template.TemplateName} text={template.TemplateName}>
+                        <Option key={template.TemplateID} value={String(template.TemplateID)} text={template.TemplateName}>
                           {template.TemplateName}
                           {template.TemplateDescription && ` (${template.TemplateDescription})`}
                         </Option>

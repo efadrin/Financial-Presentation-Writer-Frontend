@@ -30,19 +30,37 @@ type AuthStatusKey = keyof typeof AuthStatusConst;
 export type AuthStatus = (typeof AuthStatusConst)[AuthStatusKey];
 
 export const DocVariables = {
-  FDRW_DocID: "FDRW_DocID",
-  FDRW_Account: "FDRW_Account",
-  FDRW_SrvrID: "FDRW_SrvrID",
-  EFAAccountID: "EFAAccountID",
-  EFACorpID: "EFACorpID",
-  EFADocID: "EFADocID",
-  EFAUserID: "EFAUserID",
-  EFAAccountName: "EFAAccountName",
-  EFASrvrID: "EFASrvrID",
-  EFADocName: "EFADocName",
-  EFADocStatus: "EFADocStatus",
-  EFADRINReport: "EFADRINReport",
+  FDRW_DocID: 'FDRW_DocID',
+  FDRW_Account: 'FDRW_Account',
+  FDRW_SrvrID: 'FDRW_SrvrID',
+  EFAAccountID: 'EFAAccountID',
+  EFACorpID: 'EFACorpID',
+  EFADocID: 'EFADocID',
+  EFAUserID: 'EFAUserID',
+  EFAAccountName: 'EFAAccountName',
+  EFASrvrID: 'EFASrvrID',
+  EFADocName: 'EFADocName',
+  EFADocStatus: 'EFADocStatus',
+  EFADRINReport: 'EFADRINReport',
+  EFAModel: 'EFAModel',
+  FDRW_WordID: 'FDRW_WordID',
+  EFADevData: 'EFADevData',
 };
+
+export const ShapeNamePrefixes = {
+  EFA_CHART: 'EFAChart',
+  EFA_TABLE: 'EFATable',
+  EFA_HEADER_SUFFIX: 'Header',
+  EFA_FILLED_TAG_KEY: 'EFAFilled',
+  EFA_FILLED_TAG_VALUE: '1',
+} as const;
+
+export const AddComponentTabKeys = {
+  Workflow: 'workflow',
+  Table: 'table',
+  Chart: 'chart',
+} as const;
+export type AddComponentTabKey = (typeof AddComponentTabKeys)[keyof typeof AddComponentTabKeys];
 
 export const ApiName = {
   AnalystCoverage: "EFAAnalystCoverage",

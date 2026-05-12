@@ -48,6 +48,15 @@ import { ReportType, UseReportTypes } from "@/interfaces/ReportType";
 import { docIDRequest, docIDResponse } from "@/interfaces/DocID";
 import { submitReportRequest } from "@/interfaces/SubmitToEFA";
 import {
+  GetAvailableUserQueryRequest,
+  GetUserQueryResponse,
+} from '@/interfaces/UserQuery';
+import { QueryChartRequest, QueryChartResponse } from '@/interfaces/QueryChart';
+import {
+  FinancialTableRequest,
+  FinancialTableImageResponse,
+} from '@/interfaces/FinancialTable';
+import {
   BaseQueryFn,
   createApi,
   FetchArgs,
@@ -172,8 +181,8 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 300,
-  invalidationBehavior: "immediate",
-  tagTypes: ["DocumentList"],
+  invalidationBehavior: 'immediate',
+  tagTypes: ['DocumentList', 'UserQuery', 'CompanyList'],
   endpoints: (builder) => ({
     // Account & Auth
     getAccounts: builder.query<AccountData[], UseAccounts>({
@@ -639,6 +648,45 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["DocumentList"],
     }),
+
+    // ---- Table & Chart insertion endpoints ----
+    getAvailableUserQueries: builder.query<
+      GetUserQueryResponse[],
+      GetAvailableUserQueryRequest
+    >({
+      query: (params) => ({
+        url: 'userquery/getavailableuserqueries',
+        method: 'POST',
+        body: params,
+      }),
+      transformResponse: (response: ApiResponse<GetUserQueryResponse[]>) =>
+        response.Data,
+      providesTags: ['UserQuery'],
+    }),
+
+    getFinancialTableImage: builder.mutation<
+      FinancialTableImageResponse[],
+      FinancialTableRequest
+    >({
+      query: (params) => ({
+        url: 'financial/getfinancialtableimage',
+        method: 'POST',
+        body: params,
+      }),
+      transformResponse: (response: ApiResponse<FinancialTableImageResponse[]>) =>
+        response.Data,
+    }),
+
+    getQueryChart: builder.query<
+      ApiResponse<QueryChartResponse[]>,
+      QueryChartRequest
+    >({
+      query: (params: QueryChartRequest): FetchArgs => ({
+        url: 'chart/getquerychartfromxml',
+        method: 'GET',
+        params,
+      }),
+    }),
   }),
 });
 
@@ -695,4 +743,9 @@ export const {
   // Upload / Submit
   useGetDocIDMutation,
   useSubmitReportToEFAMutation,
+  // Table & Chart insertion
+  useGetAvailableUserQueriesQuery,
+  useGetFinancialTableImageMutation,
+  useGetQueryChartQuery,
+  useLazyGetQueryChartQuery,
 } = apiSlice;
