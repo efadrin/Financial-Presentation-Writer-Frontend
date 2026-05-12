@@ -18,6 +18,9 @@ import settingsReducer, { settingSlice } from './services/settingSlice';
 import openedDocumentReducer, {
   openedDocumentSlice,
 } from './services/openedDocumentSlice';
+import presentationInsertReducer, {
+  presentationInsertSlice,
+} from './store/presentationInsertSlice';
 import { errorLoggerMiddleware } from './store/errorLoggerMiddleware';
 
 const localStoragePersistConfig = {
@@ -33,6 +36,7 @@ const rootReducers = combineReducers({
     settingsReducer
   ),
   [openedDocumentSlice.name]: openedDocumentReducer,
+  [presentationInsertSlice.name]: presentationInsertReducer,
 });
 
 const rootPersistConfig = {
