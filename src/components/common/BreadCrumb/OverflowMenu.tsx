@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 import {
   Menu,
   MenuTrigger,
   MenuPopover,
   MenuList,
   Button,
-} from '@fluentui/react-components';
-import { MoreHorizontal20Regular } from '@fluentui/react-icons';
-import { Item } from './types';
-import { MenuItem } from './MenuItem';
+} from "@fluentui/react-components";
+import { MoreHorizontal20Regular } from "@fluentui/react-icons";
+import { Item } from "./types";
+import { MenuItem } from "./MenuItem";
 
 interface OverflowMenuProps {
   items: Item[];
@@ -24,7 +24,7 @@ export const OverflowMenu: React.FC<OverflowMenuProps> = ({ items }) => {
           appearance="subtle"
           size="small"
           icon={<MoreHorizontal20Regular />}
-          style={{ minWidth: 'auto', padding: '2px 4px' }}
+          style={{ minWidth: "auto", padding: "2px 4px" }}
         />
       </MenuTrigger>
       <MenuPopover>

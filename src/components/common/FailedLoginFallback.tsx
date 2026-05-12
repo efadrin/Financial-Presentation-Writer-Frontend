@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { RootState } from '@/store';
-import { Button } from '@fluentui/react-components';
-import { useSelector } from 'react-redux';
-import RenderWhen from './RenderWhen';
+import React, { useEffect, useRef, useState } from "react";
+import { RootState } from "@/store";
+import { Button } from "@fluentui/react-components";
+import { useSelector } from "react-redux";
+import RenderWhen from "./RenderWhen";
 
 const ONE_MINUTE = 60 * 1000;
 
@@ -23,7 +23,7 @@ const FailedLoginFallback = () => {
     if (timeSinceLastLogin < ONE_MINUTE) {
       setIsButtonDisabled(true);
       const remainingSeconds = Math.floor(
-        (ONE_MINUTE - timeSinceLastLogin) / 1000
+        (ONE_MINUTE - timeSinceLastLogin) / 1000,
       );
       setRemainingSecond(remainingSeconds);
       counterRef.current = setInterval(() => {
@@ -58,7 +58,7 @@ const FailedLoginFallback = () => {
         <p>Please login to your microsoft account to continue.</p>
       </RenderWhen>
       <Button
-        appearance='primary'
+        appearance="primary"
         onClick={handleLoginButtonClick}
         disabled={isButtonDisabled}
       >

@@ -4,26 +4,26 @@
 
 export function serializeError(error: unknown): string {
   if (error === null || error === undefined) {
-    return 'An unknown error occurred';
+    return "An unknown error occurred";
   }
 
   if (error instanceof Error) {
     return `${error.name}: ${error.message}`;
   }
 
-  if (typeof error === 'string') {
-    return error || 'An unknown error occurred';
+  if (typeof error === "string") {
+    return error || "An unknown error occurred";
   }
 
-  if (typeof error === 'object' && error !== null) {
+  if (typeof error === "object" && error !== null) {
     try {
       const errorObj = error as Record<string, unknown>;
 
-      if ('status' in errorObj && 'data' in errorObj) {
+      if ("status" in errorObj && "data" in errorObj) {
         const status = errorObj.status;
         const data = errorObj.data;
 
-        if (typeof data === 'object' && data !== null) {
+        if (typeof data === "object" && data !== null) {
           const dataObj = data as Record<string, unknown>;
           if (dataObj.message) {
             return `Error ${status}: ${String(dataObj.message)}`;
@@ -33,7 +33,7 @@ export function serializeError(error: unknown): string {
           }
         }
 
-        if (typeof data === 'string') {
+        if (typeof data === "string") {
           return `Error ${status}: ${data}`;
         }
 
@@ -49,7 +49,7 @@ export function serializeError(error: unknown): string {
 
       if (
         errorObj.data &&
-        typeof errorObj.data === 'object' &&
+        typeof errorObj.data === "object" &&
         errorObj.data !== null
       ) {
         const dataObj = errorObj.data as Record<string, unknown>;
@@ -59,23 +59,23 @@ export function serializeError(error: unknown): string {
       }
 
       const stringified = JSON.stringify(error, null, 2);
-      if (stringified && stringified !== '{}') {
+      if (stringified && stringified !== "{}") {
         return stringified;
       }
 
-      return 'An unknown error occurred';
+      return "An unknown error occurred";
     } catch {
       return `[Object: ${Object.prototype.toString.call(error)}]`;
     }
   }
 
   const stringValue = String(error);
-  return stringValue || 'An unknown error occurred';
+  return stringValue || "An unknown error occurred";
 }
 
 export function serializeErrorWithStackOnlyMessage(error: unknown): string {
   if (error instanceof Error) {
-    return `${error.name}: ${error.message}${error.stack ? '\n' + error.stack : ''}`;
+    return `${error.name}: ${error.message}${error.stack ? "\n" + error.stack : ""}`;
   }
 
   return serializeError(error);
@@ -89,7 +89,7 @@ export function serializeErrorWithStack(error: unknown): string {
       error.stack ? `Stack:\n${error.stack}` : undefined,
     ]
       .filter(Boolean)
-      .join('\n');
+      .join("\n");
   }
 
   try {

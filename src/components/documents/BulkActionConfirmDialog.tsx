@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 import {
   makeStyles,
   tokens,
@@ -17,7 +17,7 @@ import {
   ProgressBar,
   MessageBar,
   MessageBarBody,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   Warning20Regular,
   Delete20Regular,
@@ -28,49 +28,52 @@ import {
   Send20Regular,
   ArrowDownload20Regular,
   LockClosed16Regular,
-} from '@fluentui/react-icons';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
-import { BulkActionType, BulkActionProgress } from '@/hooks/useBulkDocumentActions';
+} from "@fluentui/react-icons";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
+import {
+  BulkActionType,
+  BulkActionProgress,
+} from "@/hooks/useBulkDocumentActions";
 
 const useStyles = makeStyles({
   dialogContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
   },
   documentList: {
-    maxHeight: '200px',
-    overflowY: 'auto',
+    maxHeight: "200px",
+    overflowY: "auto",
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
-    padding: '8px',
+    padding: "8px",
   },
   documentItem: {
-    padding: '6px 8px',
+    padding: "6px 8px",
     borderBottom: `1px solid ${tokens.colorNeutralStroke3}`,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '&:last-child': {
-      borderBottom: 'none',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    "&:last-child": {
+      borderBottom: "none",
     },
   },
   documentName: {
     fontSize: tokens.fontSizeBase200,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
     flex: 1,
   },
   lockedBadge: {
-    marginLeft: '8px',
+    marginLeft: "8px",
     flexShrink: 0,
   },
   warningMessage: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '12px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "12px",
     backgroundColor: tokens.colorPaletteYellowBackground1,
     borderRadius: tokens.borderRadiusMedium,
     border: `1px solid ${tokens.colorPaletteYellowBorder1}`,
@@ -91,23 +94,23 @@ const useStyles = makeStyles({
     color: tokens.colorPaletteRedForeground1,
   },
   textarea: {
-    minHeight: '80px',
+    minHeight: "80px",
   },
   progressSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
   },
   progressText: {
     fontSize: tokens.fontSizeBase200,
     color: tokens.colorNeutralForeground2,
-    textAlign: 'center',
+    textAlign: "center",
   },
   resultsSummary: {
-    display: 'flex',
-    gap: '16px',
-    justifyContent: 'center',
-    marginTop: '8px',
+    display: "flex",
+    gap: "16px",
+    justifyContent: "center",
+    marginTop: "8px",
   },
   successCount: {
     color: tokens.colorPaletteGreenForeground1,
@@ -118,7 +121,7 @@ const useStyles = makeStyles({
     fontWeight: tokens.fontWeightSemibold,
   },
   lockWarningSection: {
-    marginBottom: '8px',
+    marginBottom: "8px",
   },
 });
 
@@ -146,57 +149,60 @@ const ACTION_CONFIG: Record<
   }
 > = {
   delete: {
-    title: 'Delete Documents',
-    confirmText: 'Delete',
+    title: "Delete Documents",
+    confirmText: "Delete",
     icon: <Delete20Regular />,
     isDangerous: true,
-    description: 'This action cannot be undone. The following documents will be permanently deleted:',
+    description:
+      "This action cannot be undone. The following documents will be permanently deleted:",
   },
   submitForReview: {
-    title: 'Submit for Review',
-    confirmText: 'Submit',
+    title: "Submit for Review",
+    confirmText: "Submit",
     icon: <ArrowForward20Regular />,
     isDangerous: false,
-    description: 'The following documents will be submitted for review:',
+    description: "The following documents will be submitted for review:",
   },
   approve: {
-    title: 'Approve Documents',
-    confirmText: 'Approve',
+    title: "Approve Documents",
+    confirmText: "Approve",
     icon: <Checkmark20Regular />,
     isDangerous: false,
-    description: 'The following documents will be approved:',
+    description: "The following documents will be approved:",
   },
   reject: {
-    title: 'Reject Documents',
-    confirmText: 'Reject',
+    title: "Reject Documents",
+    confirmText: "Reject",
     icon: <Dismiss20Regular />,
     isDangerous: false,
-    description: 'The following documents will be rejected:',
+    description: "The following documents will be rejected:",
   },
   analystSignOff: {
-    title: 'Analyst Sign-off',
-    confirmText: 'Sign Off',
+    title: "Analyst Sign-off",
+    confirmText: "Sign Off",
     icon: <Signature20Regular />,
     isDangerous: false,
-    description: 'The following documents will receive analyst sign-off:',
+    description: "The following documents will receive analyst sign-off:",
   },
   publish: {
-    title: 'Publish Documents',
-    confirmText: 'Publish',
+    title: "Publish Documents",
+    confirmText: "Publish",
     icon: <Send20Regular />,
     isDangerous: false,
-    description: 'The following documents will be published:',
+    description: "The following documents will be published:",
   },
   download: {
-    title: 'Download Documents',
-    confirmText: 'Download',
+    title: "Download Documents",
+    confirmText: "Download",
     icon: <ArrowDownload20Regular />,
     isDangerous: false,
-    description: 'The following documents will be downloaded:',
+    description: "The following documents will be downloaded:",
   },
 };
 
-export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = ({
+export const BulkActionConfirmDialog: React.FC<
+  BulkActionConfirmDialogProps
+> = ({
   open,
   onOpenChange,
   action,
@@ -205,7 +211,7 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
   onConfirm,
   onCancel,
   progress,
-  rejectReason = '',
+  rejectReason = "",
   onRejectReasonChange,
 }) => {
   const styles = useStyles();
@@ -213,11 +219,11 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
 
   const unlockedDocuments = useMemo(
     () => documents.filter((doc) => !doc.LockingUser),
-    [documents]
+    [documents],
   );
 
   const hasLockedDocs = lockedDocuments.length > 0;
-  const isRejectAction = action === 'reject';
+  const isRejectAction = action === "reject";
   const canConfirm =
     !progress.inProgress &&
     documents.length > 0 &&
@@ -238,8 +244,13 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
   };
 
   return (
-    <Dialog open={open} onOpenChange={(_, data) => !progress.inProgress && onOpenChange(data.open)}>
-      <DialogSurface style={{ maxWidth: '500px' }}>
+    <Dialog
+      open={open}
+      onOpenChange={(_, data) =>
+        !progress.inProgress && onOpenChange(data.open)
+      }
+    >
+      <DialogSurface style={{ maxWidth: "500px" }}>
         <DialogBody>
           <DialogTitle>{config.title}</DialogTitle>
           <DialogContent className={styles.dialogContent}>
@@ -248,7 +259,8 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
               <div className={styles.lockWarningSection}>
                 <MessageBar intent="warning">
                   <MessageBarBody>
-                    {lockedDocuments.length} document(s) are currently locked and will be skipped.
+                    {lockedDocuments.length} document(s) are currently locked
+                    and will be skipped.
                   </MessageBarBody>
                 </MessageBar>
               </div>
@@ -256,7 +268,9 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
 
             {/* Danger warning for delete */}
             {config.isDangerous && !progress.inProgress && (
-              <div className={`${styles.warningMessage} ${styles.dangerMessage}`}>
+              <div
+                className={`${styles.warningMessage} ${styles.dangerMessage}`}
+              >
                 <Warning20Regular className={styles.warningIcon} />
                 <span className={`${styles.warningText} ${styles.dangerText}`}>
                   This action cannot be undone!
@@ -269,7 +283,8 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
               <div className={styles.progressSection}>
                 <ProgressBar value={progressPercent / 100} />
                 <Text className={styles.progressText}>
-                  Processing {progress.completed} of {progress.total} documents...
+                  Processing {progress.completed} of {progress.total}{" "}
+                  documents...
                 </Text>
               </div>
             )}
@@ -283,7 +298,9 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
                     {progress.completed - progress.failed} succeeded
                   </span>
                   {progress.failed > 0 && (
-                    <span className={styles.failedCount}>{progress.failed} failed</span>
+                    <span className={styles.failedCount}>
+                      {progress.failed} failed
+                    </span>
                   )}
                 </div>
               </div>
@@ -317,14 +334,16 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
             )}
 
             {/* Reject reason textarea */}
-            {isRejectAction && !progress.inProgress && progress.completed === 0 && (
-              <Textarea
-                value={rejectReason}
-                onChange={(_, data) => onRejectReasonChange?.(data.value)}
-                placeholder="Enter reason for rejection (required)..."
-                className={styles.textarea}
-              />
-            )}
+            {isRejectAction &&
+              !progress.inProgress &&
+              progress.completed === 0 && (
+                <Textarea
+                  value={rejectReason}
+                  onChange={(_, data) => onRejectReasonChange?.(data.value)}
+                  placeholder="Enter reason for rejection (required)..."
+                  className={styles.textarea}
+                />
+              )}
           </DialogContent>
           <DialogActions>
             {progress.completed > 0 && !progress.inProgress ? (
@@ -344,10 +363,12 @@ export const BulkActionConfirmDialog: React.FC<BulkActionConfirmDialogProps> = (
                   appearance="primary"
                   onClick={handleConfirm}
                   disabled={!canConfirm}
-                  icon={progress.inProgress ? <Spinner size="tiny" /> : undefined}
+                  icon={
+                    progress.inProgress ? <Spinner size="tiny" /> : undefined
+                  }
                 >
                   {progress.inProgress
-                    ? 'Processing...'
+                    ? "Processing..."
                     : hasLockedDocs
                       ? `${config.confirmText} (${unlockedDocuments.length})`
                       : config.confirmText}

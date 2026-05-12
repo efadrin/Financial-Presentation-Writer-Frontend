@@ -1,13 +1,13 @@
-import React from 'react';
-import { makeStyles, mergeClasses } from '@fluentui/react-components';
+import React from "react";
+import { makeStyles, mergeClasses } from "@fluentui/react-components";
 
 const useStyles = makeStyles({
   root: {
-    textAlign: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
   },
 });
 

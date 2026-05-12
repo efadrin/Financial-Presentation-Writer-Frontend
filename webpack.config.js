@@ -1,48 +1,48 @@
 /* eslint-disable */
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const { getHttpsServerOptions } = require('office-addin-dev-certs');
-const Dotenv = require('dotenv-webpack');
+const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const { getHttpsServerOptions } = require("office-addin-dev-certs");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = async (env, options) => {
   const httpsOptions = await getHttpsServerOptions();
-  const dev = options.mode === 'development';
+  const dev = options.mode === "development";
 
   return [
     {
-      devtool: dev ? 'source-map' : false,
+      devtool: dev ? "source-map" : false,
       entry: {
-        polyfill: ['core-js/stable', 'regenerator-runtime/runtime'],
-        main: ['./src/entry/index.tsx'],
+        polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
+        main: ["./src/entry/index.tsx"],
       },
       output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, "dist"),
         clean: true,
-        filename: '[name].[contenthash].js',
-        chunkFilename: '[name].[contenthash].js',
+        filename: "[name].[contenthash].js",
+        chunkFilename: "[name].[contenthash].js",
       },
       performance: {
-        hints: dev ? false : 'warning',
+        hints: dev ? false : "warning",
         maxEntrypointSize: 400000,
         maxAssetSize: 400000,
       },
       resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.html', '.css'],
+        extensions: [".ts", ".tsx", ".js", ".html", ".css"],
         alias: {
-          '@': path.resolve(__dirname, 'src'),
-          '@entry': path.resolve(__dirname, 'src/entry'),
-          '@components': path.resolve(__dirname, 'src/components'),
-          '@services': path.resolve(__dirname, 'src/services'),
-          '@public': path.resolve(__dirname, 'src/public'),
-          '@utils': path.resolve(__dirname, 'src/utils'),
-          '@assets': path.resolve(__dirname, 'src/assets'),
-          '@features': path.resolve(__dirname, 'src/features'),
-          '@hooks': path.resolve(__dirname, 'src/hooks'),
-          '@common': path.resolve(__dirname, 'src/components/common'),
+          "@": path.resolve(__dirname, "src"),
+          "@entry": path.resolve(__dirname, "src/entry"),
+          "@components": path.resolve(__dirname, "src/components"),
+          "@services": path.resolve(__dirname, "src/services"),
+          "@public": path.resolve(__dirname, "src/public"),
+          "@utils": path.resolve(__dirname, "src/utils"),
+          "@assets": path.resolve(__dirname, "src/assets"),
+          "@features": path.resolve(__dirname, "src/features"),
+          "@hooks": path.resolve(__dirname, "src/hooks"),
+          "@common": path.resolve(__dirname, "src/components/common"),
         },
       },
       module: {
@@ -51,12 +51,12 @@ module.exports = async (env, options) => {
             test: /\.tsx?$/,
             exclude: /node_modules/,
             use: {
-              loader: 'babel-loader',
+              loader: "babel-loader",
               options: {
                 presets: [
-                  '@babel/preset-env',
-                  '@babel/preset-react',
-                  '@babel/preset-typescript',
+                  "@babel/preset-env",
+                  "@babel/preset-react",
+                  "@babel/preset-typescript",
                 ],
               },
             },
@@ -64,72 +64,75 @@ module.exports = async (env, options) => {
           {
             test: /\.html$/,
             exclude: /node_modules/,
-            use: 'html-loader',
+            use: "html-loader",
           },
           {
             test: /\.css$/,
-            use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            use: [MiniCssExtractPlugin.loader, "css-loader"],
           },
           {
             test: /\.(png|jpg|jpeg|gif|ico|lottie)$/,
-            type: 'asset/resource',
+            type: "asset/resource",
             generator: {
-              filename: 'assets/[name][ext][query]',
+              filename: "assets/[name][ext][query]",
             },
           },
           {
             test: /\.svg$/,
-            type: 'asset/resource',
+            type: "asset/resource",
             generator: {
-              filename: 'assets/[name][ext][query]',
+              filename: "assets/[name][ext][query]",
             },
           },
           {
             test: /\.json$/,
-            use: 'json-loader',
-            type: 'javascript/auto',
+            use: "json-loader",
+            type: "javascript/auto",
           },
         ],
       },
       plugins: [
         new Dotenv(),
         new MiniCssExtractPlugin({
-          filename: '[name].[contenthash].css',
-          chunkFilename: '[name].[contenthash].css',
+          filename: "[name].[contenthash].css",
+          chunkFilename: "[name].[contenthash].css",
         }),
         new HtmlWebpackPlugin({
-          filename: 'index.html',
-          template: './src/public/index.html',
-          chunks: ['polyfill', 'main'],
+          filename: "index.html",
+          template: "./src/public/index.html",
+          chunks: ["polyfill", "main"],
         }),
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: 'assets/*',
-              to: 'assets/[name][ext][query]',
+              from: "assets/*",
+              to: "assets/[name][ext][query]",
             },
             {
-              from: dev ? 'manifest_local.xml' : 'manifest.xml',
-              to: 'manifest.xml',
+              from: dev ? "manifest_local.xml" : "manifest.xml",
+              to: "manifest.xml",
               transform(content) {
                 if (dev) {
                   const timestamp = Date.now();
                   return content
                     .toString()
-                    .replace(/https:\/\/localhost:3010/g, `https://localhost:3010?v=${timestamp}`);
+                    .replace(
+                      /https:\/\/localhost:3010/g,
+                      `https://localhost:3010?v=${timestamp}`,
+                    );
                 }
                 return content;
               },
             },
             {
-              from: 'web.config',
-              to: 'web.config',
+              from: "web.config",
+              to: "web.config",
             },
           ],
         }),
       ],
       optimization: {
-        moduleIds: 'deterministic',
+        moduleIds: "deterministic",
         usedExports: true,
         concatenateModules: true,
         sideEffects: true,
@@ -154,79 +157,79 @@ module.exports = async (env, options) => {
           }),
         ],
         splitChunks: {
-          chunks: 'all',
+          chunks: "all",
           maxInitialRequests: 25,
           minSize: 20000,
           cacheGroups: {
             reactCore: {
               test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-              name: 'vendor-react-core',
+              name: "vendor-react-core",
               priority: 50,
               reuseExistingChunk: true,
               enforce: true,
             },
             reactRouter: {
               test: /[\\/]node_modules[\\/](react-router|react-router-dom)[\\/]/,
-              name: 'vendor-react-router',
+              name: "vendor-react-router",
               priority: 45,
               reuseExistingChunk: true,
             },
             fluentuiComponents: {
               test: /[\\/]node_modules[\\/]@fluentui[\\/]react-components[\\/]/,
-              name: 'vendor-fluentui-components',
+              name: "vendor-fluentui-components",
               priority: 35,
               reuseExistingChunk: true,
             },
             fluentuiIcons: {
               test: /[\\/]node_modules[\\/]@fluentui[\\/]react-icons[\\/]/,
-              name: 'vendor-fluentui-icons',
+              name: "vendor-fluentui-icons",
               priority: 31,
               reuseExistingChunk: true,
             },
             fluentuiOther: {
               test: /[\\/]node_modules[\\/]@fluentui[\\/]/,
-              name: 'vendor-fluentui-other',
+              name: "vendor-fluentui-other",
               priority: 30,
               reuseExistingChunk: true,
             },
             redux: {
               test: /[\\/]node_modules[\\/](@reduxjs|react-redux|redux-persist)[\\/]/,
-              name: 'vendor-redux',
+              name: "vendor-redux",
               priority: 25,
               reuseExistingChunk: true,
             },
             msal: {
               test: /[\\/]node_modules[\\/]@azure[\\/]/,
-              name: 'vendor-msal',
+              name: "vendor-msal",
               priority: 22,
               reuseExistingChunk: true,
             },
             i18n: {
               test: /[\\/]node_modules[\\/](i18next|react-i18next)[\\/]/,
-              name: 'vendor-i18n',
+              name: "vendor-i18n",
               priority: 18,
               reuseExistingChunk: true,
             },
             vendors: {
               test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
+              name: "vendors",
               priority: 10,
               reuseExistingChunk: true,
             },
           },
         },
-        runtimeChunk: 'single',
+        runtimeChunk: "single",
       },
       devServer: {
         static: {
-          directory: path.join(__dirname, 'dist'),
-          publicPath: '/',
+          directory: path.join(__dirname, "dist"),
+          publicPath: "/",
         },
         historyApiFallback: true,
         compress: true,
         port: 3010,
         server: {
-          type: 'https',
+          type: "https",
           options: httpsOptions,
         },
       },
