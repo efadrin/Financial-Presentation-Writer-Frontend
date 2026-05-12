@@ -30,3 +30,5 @@ export interface GetAvailableUserQueryRequest {
 export interface AddTableChartItem extends GetUserQueryResponse {
   Added?: boolean;
 }
+
+export type AuthorMap = Record<string, boolean>;

@@ -26,6 +26,7 @@ import insertChartToPresentation, { ChartType } from '@/features/insertChartToPr
 import insertTableToPresentation from '@/features/insertTableToPresentation';
 import { setNamedChartShapes, setNamedTableShapes, setFilledShapes } from '@/store/presentationInsertSlice';
 import { AddTableChartItem } from '@/interfaces/UserQuery';
+import AuthorFilterPopover from '@/components/addComponent/AuthorFilterPopover';
 
 /** Strip XML wrapper from Description fields like <Options><Description>text</Description>...</Options> */
 function parseDescription(raw: string | undefined): string {
@@ -168,6 +169,9 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
     effectiveModel,
     wordID,
     devDataFlags,
+    authorList,
+    selectedAuthorMap,
+    handleAuthorClick,
   } = useUserQuery(isChartMode);
 
   const { progress } = useLoadingProgress(isFetching);
@@ -319,12 +323,26 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
       )}
 
       {/* Search */}
-      <SearchBox
-        placeholder={isChartMode ? 'Search charts…' : 'Search tables…'}
-        value={searchQuery}
-        onChange={(_, d) => setSearchQuery(d.value ?? '')}
-        style={{ width: '100%' }}
-      />
+      <div style={{ position: 'relative', display: 'grid' }}>
+        <SearchBox
+          placeholder={isChartMode ? 'Search charts…' : 'Search tables…'}
+          value={searchQuery}
+          onChange={(_, d) => setSearchQuery(d.value ?? '')}
+          style={{ width: '100%', paddingRight: 40 }}
+        />
+        <AuthorFilterPopover
+          authors={authorList}
+          selectedAuthorMap={selectedAuthorMap}
+          onAuthorClick={handleAuthorClick}
+          style={{
+            position: 'absolute',
+            right: 5,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 1,
+          }}
+        />
+      </div>
 
       {/* Progress bar */}
       <div className={styles.progressBar}>

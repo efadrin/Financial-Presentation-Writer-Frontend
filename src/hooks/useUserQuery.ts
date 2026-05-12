@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { AddTableChartItem } from '@/interfaces/UserQuery';
+import { AddTableChartItem, AuthorMap } from '@/interfaces/UserQuery';
+import { CheckboxOnChangeData } from '@fluentui/react-components';
 import { useGetAvailableUserQueriesQuery } from '@/services/apiSlice';
 
 /** Strip XML from Description fields like <Options><Description>text</Description>...</Options> */
@@ -57,6 +58,7 @@ const useUserQuery = (isChartMode: boolean) => {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [showUnavailable, setShowUnavailable] = useState(false);
+  const [selectedAuthorMap, setSelectedAuthorMap] = useState<AuthorMap>({});
 
   const corpIdFromXml = useMemo(() => {
     if (!customPropertiesXml) return null;
@@ -127,11 +129,41 @@ const useUserQuery = (isChartMode: boolean) => {
     [queryTypeItems, insertedQueryNames]
   );
 
+  const authorList = useMemo(() => {
+    const names = queryTypeItems.map((item) => item.FullName).filter(Boolean);
+    return Array.from(new Set(names));
+  }, [queryTypeItems]);
+
+  // Whenever authorList changes (e.g. after fetch), initialise any new authors as selected.
+  useEffect(() => {
+    setSelectedAuthorMap((prev) => {
+      const next: AuthorMap = { ...prev };
+      let changed = false;
+      authorList.forEach((author) => {
+        if (!(author in next)) {
+          next[author] = true;
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [authorList]);
+
+  const handleAuthorClick = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    data: CheckboxOnChangeData
+  ) => {
+    const value = event.currentTarget.value;
+    setSelectedAuthorMap((prev) => ({ ...prev, [value]: !!data.checked }));
+  };
+
   const filteredItems = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return itemsWithAdded
       .filter((item) => {
         if (!showUnavailable && item.HasData === false) return false;
+        // Author filter — default to showing if author not yet in map
+        if (item.FullName && selectedAuthorMap[item.FullName] === false) return false;
         if (!q) return true;
         // Strip XML from Description before matching
         const descText = stripXmlDescription(item.Description);
@@ -151,7 +183,7 @@ const useUserQuery = (isChartMode: boolean) => {
         // Alphabetical by TableHeader
         return (a.TableHeader ?? a.QueryName).localeCompare(b.TableHeader ?? b.QueryName);
       });
-  }, [itemsWithAdded, searchQuery, showUnavailable]);
+  }, [itemsWithAdded, searchQuery, showUnavailable, selectedAuthorMap]);
 
   const unavailableCount = useMemo(
     () => queryTypeItems.filter((i) => i.HasData === false).length,
@@ -167,6 +199,9 @@ const useUserQuery = (isChartMode: boolean) => {
     unavailableCount,
     showUnavailable,
     setShowUnavailable,
+    authorList,
+    selectedAuthorMap,
+    handleAuthorClick,
     isNonCorporate,
     defaultCorpID,
     defaultCorpName,
