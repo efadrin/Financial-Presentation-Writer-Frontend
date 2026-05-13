@@ -15,6 +15,7 @@ export interface GetUserQueryResponse {
   IsChart: boolean;
   Description: string;
   HasData?: boolean;
+  SeriesPerChart?: number;
 }
 
 export interface GetAvailableUserQueryRequest {
