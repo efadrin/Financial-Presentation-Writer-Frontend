@@ -6,13 +6,13 @@
            xsi:type="TaskPaneApp">
   
   <Id>510fb58a-55ee-4a6c-b196-05a324f4b804</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.1.0.0</Version>
   <ProviderName>EFADRIN</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="EFADRIN"/>
   <Description DefaultValue="Financial Data Presentation Writer"/>
-  <IconUrl DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-64.png"/>
+  <IconUrl DefaultValue="https://app.efadrin.com/fpw/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://app.efadrin.com/fpw/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://efadrin.com/support"/>
   <AppDomains>
     <AppDomain>https://app.efadrin.com</AppDomain>
@@ -71,9 +71,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://app.efadrin.com/fpw/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://app.efadrin.com/fpw/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://app.efadrin.com/fpw/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://www.efadrin.com/the-powerpoint-tool"/>
