@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dropdown,
   Option,
@@ -6,8 +6,8 @@ import {
   Spinner,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
-import type { DropdownProps } from '@fluentui/react-components';
+} from "@fluentui/react-components";
+import type { DropdownProps } from "@fluentui/react-components";
 
 export interface DropdownOption {
   key: string;
@@ -27,19 +27,19 @@ interface SimpleDropdownProps {
 
 const useStyles = makeStyles({
   wrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    marginBottom: '12px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    marginBottom: "12px",
   },
   label: {
     fontWeight: tokens.fontWeightSemibold,
     fontSize: tokens.fontSizeBase200,
   },
   spinnerOverlay: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
 });
 
@@ -57,7 +57,7 @@ export const SimpleDropdown: React.FC<SimpleDropdownProps> = ({
 
   const selectedOption = options.find((o) => o.key === selectedKey);
 
-  const handleOptionSelect: DropdownProps['onOptionSelect'] = (_, data) => {
+  const handleOptionSelect: DropdownProps["onOptionSelect"] = (_, data) => {
     if (data.optionValue) {
       onSelect(data.optionValue);
     }
@@ -76,7 +76,7 @@ export const SimpleDropdown: React.FC<SimpleDropdownProps> = ({
       ) : (
         <Dropdown
           placeholder={placeholder}
-          value={selectedOption?.text ?? ''}
+          value={selectedOption?.text ?? ""}
           selectedOptions={selectedKey ? [selectedKey] : []}
           onOptionSelect={handleOptionSelect}
           disabled={disabled || options.length === 0}

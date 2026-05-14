@@ -11,11 +11,11 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="EFADRIN"/>
   <Description DefaultValue="Financial Data Presentation Writer"/>
-  <IconUrl DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/assets/fdrw-logo-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/assets/fdrw-logo-64.png"/>
+  <IconUrl DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-64.png"/>
   <SupportUrl DefaultValue="https://efadrin.com/support"/>
   <AppDomains>
-    <AppDomain>https://hkg.efadrin.biz:8453</AppDomain>
+    <AppDomain>https://app.efadrin.com</AppDomain>
   </AppDomains>
   
   <Hosts>
@@ -23,7 +23,7 @@
   </Hosts>
   
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/"/>
+    <SourceLocation DefaultValue="https://app.efadrin.com/fpw/"/>
   </DefaultSettings>
   
   <Permissions>ReadWriteDocument</Permissions>
@@ -71,28 +71,28 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/assets/fdrw-logo-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/assets/fdrw-logo-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/assets/fdrw-logo-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://app.efadrin.com/fpw/assets/fdrw-logo-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>
-        <bt:Url id="Commands.Url" DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/commands/commands.html"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-react-frontend/"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://www.efadrin.com/the-powerpoint-tool"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://app.efadrin.com/fpw/commands/commands.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://app.efadrin.com/fpw/"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="Get started with EFADRIN PowerPoint add-in!"/>
-        <bt:String id="CommandsGroup.Label" DefaultValue="Version 1.0"/>
+        <bt:String id="GetStarted.Title" DefaultValue="Get started with EFADRIN PowerPoint Tool!"/>
+        <bt:String id="CommandsGroup.Label" DefaultValue="V.1.0.0"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="EFADRIN"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="EFADRIN loaded successfully"/>
+        <bt:String id="GetStarted.Description" DefaultValue="EFADRIN PowerPoint Tool loaded successfully"/>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to open add-in"/>
       </bt:LongStrings>
     </Resources>
     <WebApplicationInfo>
-      <Id>70b9f153-be7d-4172-9663-52b3dee72ce7</Id>
-      <Resource>api://hkg.efadrin.biz:8453/efadrin/v3.0/fpw-add-on/70b9f153-be7d-4172-9663-52b3dee72ce7</Resource>
+      <Id>33285dcc-8f3b-4cbe-adf4-0d1bb4a034bc</Id>
+      <Resource>api://app.efadrin.com/33285dcc-8f3b-4cbe-adf4-0d1bb4a034bc</Resource>
       <Scopes>
         <Scope>user.read</Scope>
         <Scope>profile</Scope>

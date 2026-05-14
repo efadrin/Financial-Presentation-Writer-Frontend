@@ -1,36 +1,36 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@fluentui/react-components';
-import { DocumentListTable } from './DocumentListTable';
-import { CommentsPanel } from './CommentsPanel';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
+import React, { useState } from "react";
+import { makeStyles } from "@fluentui/react-components";
+import { DocumentListTable } from "./DocumentListTable";
+import { CommentsPanel } from "./CommentsPanel";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
 
 const useStyles = makeStyles({
   container: {
-    display: 'flex',
-    flexDirection: 'row',
-    height: '100%',
-    position: 'relative',
-    overflow: 'hidden',
+    display: "flex",
+    flexDirection: "row",
+    height: "100%",
+    position: "relative",
+    overflow: "hidden",
   },
   mainContent: {
     flex: 1,
-    height: '100%',
-    overflow: 'hidden',
-    transition: 'transform 0.3s ease',
+    height: "100%",
+    overflow: "hidden",
+    transition: "transform 0.3s ease",
   },
   panelContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: 'white',
-    transform: 'translateX(100%)',
-    transition: 'transform 0.3s ease',
+    backgroundColor: "white",
+    transform: "translateX(100%)",
+    transition: "transform 0.3s ease",
     zIndex: 10,
   },
   panelContainerVisible: {
-    transform: 'translateX(0)',
+    transform: "translateX(0)",
   },
 });
 
@@ -44,7 +44,9 @@ interface DocumentsWithCommentsPanelProps {
   onDocumentSelect?: (docId: number, selected: boolean) => void;
 }
 
-export const DocumentsWithCommentsPanel: React.FC<DocumentsWithCommentsPanelProps> = ({
+export const DocumentsWithCommentsPanel: React.FC<
+  DocumentsWithCommentsPanelProps
+> = ({
   documents,
   status,
   onDocumentClick,
@@ -55,7 +57,8 @@ export const DocumentsWithCommentsPanel: React.FC<DocumentsWithCommentsPanelProp
 }) => {
   const styles = useStyles();
   const [commentsPanelOpen, setCommentsPanelOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<DocumentListResponse | null>(null);
+  const [selectedDocument, setSelectedDocument] =
+    useState<DocumentListResponse | null>(null);
 
   const handleOpenCommentsPanel = (document: DocumentListResponse) => {
     setSelectedDocument(document);
@@ -85,7 +88,7 @@ export const DocumentsWithCommentsPanel: React.FC<DocumentsWithCommentsPanelProp
       {/* Slide-in Comments Panel */}
       {selectedDocument && (
         <div
-          className={`${styles.panelContainer} ${commentsPanelOpen ? styles.panelContainerVisible : ''}`}
+          className={`${styles.panelContainer} ${commentsPanelOpen ? styles.panelContainerVisible : ""}`}
         >
           <CommentsPanel
             docId={selectedDocument.DocID}

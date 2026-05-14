@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from "react";
 import {
   makeStyles,
   tokens,
@@ -6,7 +6,7 @@ import {
   Text,
   Divider,
   Tooltip,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   Delete20Regular,
   ArrowForward20Regular,
@@ -16,27 +16,32 @@ import {
   Send20Regular,
   ArrowDownload20Regular,
   DismissCircle20Regular,
-} from '@fluentui/react-icons';
-import { DocumentListResponse, WorkflowStatus } from '@/interfaces/DocumentList';
-import { BulkActionConfirmDialog } from './BulkActionConfirmDialog';
-import useBulkDocumentActions, { BulkActionType } from '@/hooks/useBulkDocumentActions';
+} from "@fluentui/react-icons";
+import {
+  DocumentListResponse,
+  WorkflowStatus,
+} from "@/interfaces/DocumentList";
+import { BulkActionConfirmDialog } from "./BulkActionConfirmDialog";
+import useBulkDocumentActions, {
+  BulkActionType,
+} from "@/hooks/useBulkDocumentActions";
 
 const useStyles = makeStyles({
   toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '10px 12px',
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "10px 12px",
     backgroundColor: tokens.colorNeutralBackground3,
     borderRadius: tokens.borderRadiusMedium,
-    marginBottom: '12px',
-    flexWrap: 'wrap',
+    marginBottom: "12px",
+    flexWrap: "wrap",
   },
   selectionInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginRight: '8px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginRight: "8px",
   },
   selectionCount: {
     fontWeight: tokens.fontWeightSemibold,
@@ -44,15 +49,15 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
   },
   divider: {
-    height: '24px',
+    height: "24px",
   },
   actionGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
   clearButton: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
 });
 
@@ -72,37 +77,42 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   userRoles,
 }) => {
   const styles = useStyles();
-  const { executeBulkAction, progress, resetProgress, isExecuting } = useBulkDocumentActions();
+  const { executeBulkAction, progress, resetProgress, isExecuting } =
+    useBulkDocumentActions();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentAction, setCurrentAction] = useState<BulkActionType | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
+  const [currentAction, setCurrentAction] = useState<BulkActionType | null>(
+    null,
+  );
+  const [rejectReason, setRejectReason] = useState("");
 
   const hasRole = useCallback(
     (roleName: string) =>
-      userRoles.some((r) => r.RoleName.toLowerCase() === roleName.toLowerCase()),
-    [userRoles]
+      userRoles.some(
+        (r) => r.RoleName.toLowerCase() === roleName.toLowerCase(),
+      ),
+    [userRoles],
   );
 
-  const isAnalyst = hasRole('Analyst');
-  const isCompliance = hasRole('Compliance');
-  const isPublisher = hasRole('Publisher');
-  const isAdmin = hasRole('Admin');
-  const isSupervisory = hasRole('Supervisory');
+  const isAnalyst = hasRole("Analyst");
+  const isCompliance = hasRole("Compliance");
+  const isPublisher = hasRole("Publisher");
+  const isAdmin = hasRole("Admin");
+  const isSupervisory = hasRole("Supervisory");
 
   const lockedDocuments = useMemo(
     () => selectedDocuments.filter((doc) => doc.LockingUser),
-    [selectedDocuments]
+    [selectedDocuments],
   );
 
   const unlockedDocuments = useMemo(
     () => selectedDocuments.filter((doc) => !doc.LockingUser),
-    [selectedDocuments]
+    [selectedDocuments],
   );
 
   const handleActionClick = (action: BulkActionType) => {
     setCurrentAction(action);
-    setRejectReason('');
+    setRejectReason("");
     resetProgress();
     setDialogOpen(true);
   };
@@ -115,7 +125,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
       return;
     }
     const options: { rejectReason?: string } = {};
-    if (currentAction === 'reject') {
+    if (currentAction === "reject") {
       options.rejectReason = rejectReason;
     }
     await executeBulkAction(currentAction, docsToProcess, options);
@@ -125,7 +135,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
     if (!isExecuting) {
       setDialogOpen(false);
       setCurrentAction(null);
-      setRejectReason('');
+      setRejectReason("");
       if (progress.completed > 0) {
         onClearSelection();
         onActionComplete();
@@ -136,41 +146,85 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
 
   const renderActions = () => {
     switch (currentTab) {
-      case 'Drafts':
+      case "Drafts":
         return (
           <div className={styles.actionGroup}>
-            <Tooltip content="Submit selected documents for review" relationship="label">
-              <Button appearance="primary" icon={<ArrowForward20Regular />} onClick={() => handleActionClick('submitForReview')} disabled={isExecuting} size="small">
+            <Tooltip
+              content="Submit selected documents for review"
+              relationship="label"
+            >
+              <Button
+                appearance="primary"
+                icon={<ArrowForward20Regular />}
+                onClick={() => handleActionClick("submitForReview")}
+                disabled={isExecuting}
+                size="small"
+              >
                 Submit for Review
               </Button>
             </Tooltip>
             <Tooltip content="Delete selected documents" relationship="label">
-              <Button appearance="secondary" icon={<Delete20Regular />} onClick={() => handleActionClick('delete')} disabled={isExecuting} size="small" style={{ color: tokens.colorPaletteRedForeground1 }}>
+              <Button
+                appearance="secondary"
+                icon={<Delete20Regular />}
+                onClick={() => handleActionClick("delete")}
+                disabled={isExecuting}
+                size="small"
+                style={{ color: tokens.colorPaletteRedForeground1 }}
+              >
                 Delete
               </Button>
             </Tooltip>
           </div>
         );
 
-      case 'Review':
+      case "Review":
         return (
           <div className={styles.actionGroup}>
             {isAnalyst && (
-              <Tooltip content="Analyst sign-off for selected documents" relationship="label">
-                <Button appearance="secondary" icon={<Signature20Regular />} onClick={() => handleActionClick('analystSignOff')} disabled={isExecuting} size="small">
+              <Tooltip
+                content="Analyst sign-off for selected documents"
+                relationship="label"
+              >
+                <Button
+                  appearance="secondary"
+                  icon={<Signature20Regular />}
+                  onClick={() => handleActionClick("analystSignOff")}
+                  disabled={isExecuting}
+                  size="small"
+                >
                   Analyst Sign-off
                 </Button>
               </Tooltip>
             )}
             {(isCompliance || isSupervisory || isPublisher || isAdmin) && (
               <>
-                <Tooltip content="Approve selected documents" relationship="label">
-                  <Button appearance="primary" icon={<Checkmark20Regular />} onClick={() => handleActionClick('approve')} disabled={isExecuting} size="small">
+                <Tooltip
+                  content="Approve selected documents"
+                  relationship="label"
+                >
+                  <Button
+                    appearance="primary"
+                    icon={<Checkmark20Regular />}
+                    onClick={() => handleActionClick("approve")}
+                    disabled={isExecuting}
+                    size="small"
+                  >
                     Approve
                   </Button>
                 </Tooltip>
-                <Tooltip content="Reject selected documents" relationship="label">
-                  <Button appearance="secondary" icon={<Dismiss20Regular />} onClick={() => handleActionClick('reject')} disabled={isExecuting} size="small" style={{ color: tokens.colorPaletteRedForeground1 }}>
+                <Tooltip
+                  content="Reject selected documents"
+                  relationship="label"
+                >
+                  <Button
+                    appearance="secondary"
+                    icon={<Dismiss20Regular />}
+                    onClick={() => handleActionClick("reject")}
+                    disabled={isExecuting}
+                    size="small"
+                    style={{ color: tokens.colorPaletteRedForeground1 }}
+                  >
                     Reject
                   </Button>
                 </Tooltip>
@@ -179,13 +233,22 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
           </div>
         );
 
-      case 'Final':
-      case 'Finalised':
+      case "Final":
+      case "Finalised":
         if (isPublisher || isAdmin) {
           return (
             <div className={styles.actionGroup}>
-              <Tooltip content="Publish selected documents" relationship="label">
-                <Button appearance="primary" icon={<Send20Regular />} onClick={() => handleActionClick('publish')} disabled={isExecuting} size="small">
+              <Tooltip
+                content="Publish selected documents"
+                relationship="label"
+              >
+                <Button
+                  appearance="primary"
+                  icon={<Send20Regular />}
+                  onClick={() => handleActionClick("publish")}
+                  disabled={isExecuting}
+                  size="small"
+                >
                   Publish
                 </Button>
               </Tooltip>
@@ -194,11 +257,20 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
         }
         return null;
 
-      case 'Published':
+      case "Published":
         return (
           <div className={styles.actionGroup}>
-            <Tooltip content="Download selected documents as PDFs" relationship="label">
-              <Button appearance="primary" icon={<ArrowDownload20Regular />} onClick={() => handleActionClick('download')} disabled={isExecuting} size="small">
+            <Tooltip
+              content="Download selected documents as PDFs"
+              relationship="label"
+            >
+              <Button
+                appearance="primary"
+                icon={<ArrowDownload20Regular />}
+                onClick={() => handleActionClick("download")}
+                disabled={isExecuting}
+                size="small"
+              >
                 Download PDFs
               </Button>
             </Tooltip>
@@ -219,17 +291,30 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
       <div className={styles.toolbar}>
         <div className={styles.selectionInfo}>
           <Text className={styles.selectionCount}>
-            {selectedDocuments.length} document{selectedDocuments.length !== 1 ? 's' : ''} selected
+            {selectedDocuments.length} document
+            {selectedDocuments.length !== 1 ? "s" : ""} selected
           </Text>
           {lockedDocuments.length > 0 && (
-            <Text style={{ fontSize: tokens.fontSizeBase200, color: tokens.colorNeutralForeground3 }}>
+            <Text
+              style={{
+                fontSize: tokens.fontSizeBase200,
+                color: tokens.colorNeutralForeground3,
+              }}
+            >
               ({lockedDocuments.length} locked)
             </Text>
           )}
         </div>
         <Divider vertical className={styles.divider} />
         {renderActions()}
-        <Button appearance="subtle" icon={<DismissCircle20Regular />} onClick={onClearSelection} disabled={isExecuting} size="small" className={styles.clearButton}>
+        <Button
+          appearance="subtle"
+          icon={<DismissCircle20Regular />}
+          onClick={onClearSelection}
+          disabled={isExecuting}
+          size="small"
+          className={styles.clearButton}
+        >
           Clear
         </Button>
       </div>

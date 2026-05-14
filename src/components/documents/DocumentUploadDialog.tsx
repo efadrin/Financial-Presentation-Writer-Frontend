@@ -77,32 +77,32 @@ const NONE_COMPANY: Company = {
   industry: '',
   annPub: false,
   annUnPub: false,
-  userID: '',
-  relationshipIds: '',
+  userID: "",
+  relationshipIds: "",
 };
 
 const useStyles = makeStyles({
   dialogContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
   },
   uploadArea: {
-    border: '2px dashed #ccc',
-    borderRadius: '4px',
-    padding: '32px',
-    textAlign: 'center' as const,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    backgroundColor: '#f5f5f5',
+    border: "2px dashed #ccc",
+    borderRadius: "4px",
+    padding: "32px",
+    textAlign: "center" as const,
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    backgroundColor: "#f5f5f5",
   },
   fileSelected: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '12px',
-    backgroundColor: '#f0f0f0',
-    borderRadius: '4px',
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "12px",
+    backgroundColor: "#f0f0f0",
+    borderRadius: "4px",
   },
   fileInfo: {
     flex: 1,
@@ -127,7 +127,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
 
   const [useCurrentPresentation, setUseCurrentPresentation] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [docName, setDocName] = useState('');
+  const [docName, setDocName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const docNameConflict = useMemo(() => {
@@ -139,14 +139,16 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   }, [docName, existingDocNames]);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
+    null,
+  );
   const [selectedCompany, setSelectedCompany] = useState<Company>(NONE_COMPANY);
   const [companySearchText, setCompanySearchText] = useState('Non-Corporate');
   const [submissionDate, setSubmissionDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split("T")[0],
   );
   const [selectedLanguageKey, setSelectedLanguageKey] = useState<string>(
-    settings.selectedLanguage || 'en'
+    settings.selectedLanguage || "en",
   );
   const [selectedAuthors, setSelectedAuthors] = useState<Author[]>([]);
   const [authorSearchText, setAuthorSearchText] = useState('');
@@ -169,7 +171,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   // Get account info for API calls
   const account = settings.account;
   const accountID = account?.AccountID ? parseInt(account.AccountID, 10) : 0;
-  const accountName = account?.AccountName || '';
+  const accountName = account?.AccountName || "";
   const userID = account?.UserID ? parseInt(account.UserID, 10) : 0;
   const srvrID = account?.SrvrID ? parseInt(account.SrvrID, 10) : 0;
   const firmID = settings.userInfo?.FirmID ? parseInt(settings.userInfo.FirmID, 10) : 0;
@@ -179,29 +181,32 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const languageId = getCurrentLanguageIdFromSettings(settings.selectedLanguage);
 
   // Fetch companies for the user
-  const { data: companiesResponse, isLoading: isLoadingCompanies } = useGetCompaniesbyUserQuery(
-    {
-      SrvrID: account?.SrvrID || '',
-      AccountID: account?.AccountID || '',
-      LanguageID: languageId,
-      UserID: userID,
-      AccountName: account?.AccountName || '',
-    },
-    { skip: !hasRequiredParams }
-  );
+  const { data: companiesResponse, isLoading: isLoadingCompanies } =
+    useGetCompaniesbyUserQuery(
+      {
+        SrvrID: account?.SrvrID || "",
+        AccountID: account?.AccountID || "",
+        LanguageID: languageId,
+        UserID: userID,
+        AccountName: account?.AccountName || "",
+      },
+      { skip: !hasRequiredParams },
+    );
 
   // Filter companies based on search text
   const filteredCompanies = useMemo(() => {
-    const companies = companiesResponse?.Data && Array.isArray(companiesResponse.Data) 
-      ? companiesResponse.Data 
-      : [];
+    const companies =
+      companiesResponse?.Data && Array.isArray(companiesResponse.Data)
+        ? companiesResponse.Data
+        : [];
     const isShowingSelection = companySearchText === selectedCompany.corpName;
     if (!companySearchText || isShowingSelection) return companies.slice(0, 50);
     const searchLower = companySearchText.toLowerCase();
     return companies
-      .filter(c => 
-        c.corpName.toLowerCase().includes(searchLower) || 
-        c.shortName.toLowerCase().includes(searchLower)
+      .filter(
+        (c) =>
+          c.corpName.toLowerCase().includes(searchLower) ||
+          c.shortName.toLowerCase().includes(searchLower),
       )
       .slice(0, 50);
   }, [companiesResponse, companySearchText, selectedCompany.corpName]);
@@ -222,20 +227,25 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const allAuthors = useMemo<Author[]>(() => {
     if (!allAuthorsData?.Data || !Array.isArray(allAuthorsData.Data)) return [];
     const seen = new Set<string>();
-    return allAuthorsData.Data
-      .flatMap((corp: { authors?: Author[] }) => corp.authors || [])
+    return allAuthorsData.Data.flatMap(
+      (corp: { authors?: Author[] }) => corp.authors || [],
+    )
       .filter((author: Author) => {
         if (seen.has(author.authorId)) return false;
         seen.add(author.authorId);
         return true;
       })
-      .sort((a: Author, b: Author) => (a.fullName ?? '').localeCompare(b.fullName ?? ''));
+      .sort((a: Author, b: Author) =>
+        (a.fullName ?? "").localeCompare(b.fullName ?? ""),
+      );
   }, [allAuthorsData]);
 
   const filteredAuthorsOptions = useMemo<Author[]>(() => {
     if (!authorSearchText) return allAuthors.slice(0, 50);
     const lower = authorSearchText.toLowerCase();
-    return allAuthors.filter((a: Author) => a.fullName.toLowerCase().includes(lower)).slice(0, 50);
+    return allAuthors
+      .filter((a: Author) => a.fullName.toLowerCase().includes(lower))
+      .slice(0, 50);
   }, [allAuthors, authorSearchText]);
 
   // Fetch workflow templates for PowerPoint files
@@ -266,8 +276,10 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
 
   const handleFileSelect = useCallback((file: File) => {
     const fileName = file.name.toLowerCase();
-    const isSupported = SUPPORTED_EXTENSIONS.some(ext => fileName.endsWith(ext));
-    
+    const isSupported = SUPPORTED_EXTENSIONS.some((ext) =>
+      fileName.endsWith(ext),
+    );
+
     if (isSupported) {
       setSelectedFile(file);
       // Remove extension from filename for document name
@@ -288,7 +300,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         handleFileSelect(e.dataTransfer.files[0]);
       }
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -307,7 +319,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         handleFileSelect(e.target.files[0]);
       }
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   const handleUpload = useCallback(async () => {
@@ -339,7 +351,9 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
     }
 
     if (!accountID || !userID || !accountName) {
-      setError('Account information not available. Please try logging in again.');
+      setError(
+        "Account information not available. Please try logging in again.",
+      );
       return;
     }
 
@@ -383,7 +397,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       }).unwrap();
 
       if (!docIdResponse?.Data?.DocID) {
-        throw new Error('Failed to generate document ID');
+        throw new Error("Failed to generate document ID");
       }
 
       const newDocID = docIdResponse.Data.DocID;
@@ -457,7 +471,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       }).unwrap();
 
       if (saveResponse?.StatusCode !== 200) {
-        throw new Error(saveResponse?.Message || 'Failed to save document');
+        throw new Error(saveResponse?.Message || "Failed to save document");
       }
 
       setSuccess(true);
@@ -467,7 +481,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         // Reset state
         setUseCurrentPresentation(true);
         setSelectedFile(null);
-        setDocName('');
+        setDocName("");
         setSuccess(false);
         setIsLoading(false);
         setSelectedTemplateId(null);
@@ -480,7 +494,8 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         setFdrwWordID('21');
       }, 1500);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Upload failed. Please try again.';
+      const errorMessage =
+        err instanceof Error ? err.message : "Upload failed. Please try again.";
       setError(errorMessage);
       setIsLoading(false);
     }
@@ -512,7 +527,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       onOpenChange(false);
       setUseCurrentPresentation(true);
       setSelectedFile(null);
-      setDocName('');
+      setDocName("");
       setError(null);
       setSuccess(false);
       setSelectedTemplateId(null);
@@ -539,7 +554,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
           <DialogTitle>Upload Document to Drafts</DialogTitle>
           <DialogContent className={styles.dialogContent}>
             {success ? (
-              <MessageBar intent='success'>
+              <MessageBar intent="success">
                 <MessageBarBody>
                   <MessageBarTitle>Success!</MessageBarTitle>
                   Document uploaded successfully to Drafts.
@@ -548,7 +563,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
             ) : (
               <>
                 {error && (
-                  <MessageBar intent='error'>
+                  <MessageBar intent="error">
                     <MessageBarBody>
                       <MessageBarTitle>Error</MessageBarTitle>
                       {error}
@@ -587,12 +602,19 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                   <label>
                     <div
                       className={styles.uploadArea}
-                      style={isDragging ? { borderColor: '#0078d4', backgroundColor: '#f0f6fc' } : undefined}
+                      style={
+                        isDragging
+                          ? {
+                              borderColor: "#0078d4",
+                              backgroundColor: "#f0f6fc",
+                            }
+                          : undefined
+                      }
                       onDrop={handleDrop}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                     >
-                      <div style={{ marginBottom: '12px' }}>
+                      <div style={{ marginBottom: "12px" }}>
                         <ArrowUpload20Regular />
                       </div>
                       <div style={{ marginBottom: '8px' }}>
@@ -619,8 +641,8 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                       </div>
                     </div>
                     <Button
-                      appearance='subtle'
-                      size='small'
+                      appearance="subtle"
+                      size="small"
                       onClick={() => {
                         setSelectedFile(null);
                         setSelectedTemplateId(null);
@@ -702,17 +724,25 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                   hint='Select a company for this document (Non-Corporate = EFACorpID: -1)'
                 >
                   <Combobox
-                    placeholder={isLoadingCompanies ? 'Loading companies...' : 'Search and select a company'}
+                    placeholder={
+                      isLoadingCompanies
+                        ? "Loading companies..."
+                        : "Search and select a company"
+                    }
                     disabled={isLoadingCompanies || isLoading}
                     value={companySearchText}
                     selectedOptions={[selectedCompany.corpId]}
-                    onInput={(e) => setCompanySearchText((e.target as HTMLInputElement).value)}
+                    onInput={(e) =>
+                      setCompanySearchText((e.target as HTMLInputElement).value)
+                    }
                     onOptionSelect={(_, data) => {
-                      if (data.optionValue === '-1') {
+                      if (data.optionValue === "-1") {
                         setSelectedCompany(NONE_COMPANY);
                         setCompanySearchText('Non-Corporate');
                       } else {
-                        const company = filteredCompanies.find(c => c.corpId === data.optionValue);
+                        const company = filteredCompanies.find(
+                          (c) => c.corpId === data.optionValue,
+                        );
                         if (company) {
                           setSelectedCompany(company);
                           setCompanySearchText(company.corpName);
@@ -720,15 +750,23 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                       }
                     }}
                     positioning={{ autoSize: false }}
-                    listbox={{ style: { maxHeight: '240px', overflowY: 'auto' } }}
+                    listbox={{
+                      style: { maxHeight: "240px", overflowY: "auto" },
+                    }}
                   >
                     <Option key='none' value='-1' text='Non-Corporate'>
                       Non-corporate
                     </Option>
-                    {filteredCompanies.map(company => (
-                      <Option key={company.corpId} value={company.corpId} text={company.corpName}>
+                    {filteredCompanies.map((company) => (
+                      <Option
+                        key={company.corpId}
+                        value={company.corpId}
+                        text={company.corpName}
+                      >
                         {company.corpName}
-                        {company.shortName && company.shortName !== company.corpName && ` (${company.shortName})`}
+                        {company.shortName &&
+                          company.shortName !== company.corpName &&
+                          ` (${company.shortName})`}
                       </Option>
                     ))}
                   </Combobox>
@@ -813,13 +851,21 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
           </DialogContent>
           <DialogActions>
             <DialogTrigger disableButtonEnhancement>
-              <Button appearance='secondary' disabled={isLoading}>
+              <Button appearance="secondary" disabled={isLoading}>
                 Cancel
               </Button>
             </DialogTrigger>
             <Button
-              appearance='primary'
-              icon={isLoading ? <Spinner size='tiny' /> : success ? <Checkmark20Filled /> : <ArrowUpload20Regular />}
+              appearance="primary"
+              icon={
+                isLoading ? (
+                  <Spinner size="tiny" />
+                ) : success ? (
+                  <Checkmark20Filled />
+                ) : (
+                  <ArrowUpload20Regular />
+                )
+              }
               onClick={handleUpload}
               disabled={
                 (!useCurrentPresentation && !selectedFile) || 
@@ -831,7 +877,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                 (isPowerPoint && selectedTemplateId === null)
               }
             >
-              {isLoading ? 'Uploading...' : success ? 'Done' : 'Upload'}
+              {isLoading ? "Uploading..." : success ? "Done" : "Upload"}
             </Button>
           </DialogActions>
         </DialogBody>

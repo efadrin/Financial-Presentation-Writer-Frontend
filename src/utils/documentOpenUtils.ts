@@ -153,13 +153,17 @@ export async function replaceCurrentPresentationFromBase64(
  * NOTE: prefer replaceCurrentPresentationFromBase64 when the add-in context
  * must remain active (e.g. for check-in/check-out workflows).
  */
-export async function openPresentationFromBase64(base64Data: string): Promise<void> {
+export async function openPresentationFromBase64(
+  base64Data: string,
+): Promise<void> {
   try {
     await PowerPoint.createPresentation(base64Data);
   } catch (error) {
-    console.error('Failed to open presentation:', error);
+    console.error("Failed to open presentation:", error);
     throw new Error(
-      error instanceof Error ? error.message : 'Failed to open presentation in PowerPoint'
+      error instanceof Error
+        ? error.message
+        : "Failed to open presentation in PowerPoint",
     );
   }
 }
@@ -168,7 +172,7 @@ export async function openPresentationFromBase64(base64Data: string): Promise<vo
  * Convert a Uint8Array to base64 string
  */
 export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
-  let binary = '';
+  let binary = "";
   const len = uint8Array.byteLength;
   for (let i = 0; i < len; i++) {
     binary += String.fromCharCode(uint8Array[i]);
@@ -228,9 +232,9 @@ export function getCurrentPresentationBlob(): Promise<string> {
           readSlice(0);
         } else {
           file.closeAsync();
-          resolve('');
+          resolve("");
         }
-      }
+      },
     );
   });
 }

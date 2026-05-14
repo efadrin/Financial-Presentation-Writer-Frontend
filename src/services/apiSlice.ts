@@ -1,6 +1,6 @@
 // src/services/apiSlice.ts - PowerPoint Workflow API
-import { ApiResponse } from '@/interfaces/ApiResponses';
-import { LoginData, LoginRequest } from '@/interfaces/Authentication';
+import { ApiResponse } from "@/interfaces/ApiResponses";
+import { LoginData, LoginRequest } from "@/interfaces/Authentication";
 import {
   DocumentListRequest,
   DocumentListResponse,
@@ -36,14 +36,17 @@ import {
   SaveToDraftResponse,
   SubmitForDistributionRequest,
   SubmitForDistributionResponse,
-} from '@/interfaces/DocumentList';
-import { LoggerInfo, UserInfoLog } from '@/interfaces/LoggerInfo';
-import { Company, CompaniesbyUser } from '@/interfaces/Company';
-import { AuthorsResponse, UseAuthors } from '@/interfaces/Author';
-import { AuthorAvatarResponse, AuthorAvatarRequest } from '@/interfaces/AuthorImage';
-import { ReportType, UseReportTypes } from '@/interfaces/ReportType';
-import { docIDRequest, docIDResponse } from '@/interfaces/DocID';
-import { submitReportRequest } from '@/interfaces/SubmitToEFA';
+} from "@/interfaces/DocumentList";
+import { LoggerInfo, UserInfoLog } from "@/interfaces/LoggerInfo";
+import { Company, CompaniesbyUser } from "@/interfaces/Company";
+import { AuthorsResponse, UseAuthors } from "@/interfaces/Author";
+import {
+  AuthorAvatarResponse,
+  AuthorAvatarRequest,
+} from "@/interfaces/AuthorImage";
+import { ReportType, UseReportTypes } from "@/interfaces/ReportType";
+import { docIDRequest, docIDResponse } from "@/interfaces/DocID";
+import { submitReportRequest } from "@/interfaces/SubmitToEFA";
 import {
   GetAvailableUserQueryRequest,
   GetUserQueryResponse,
@@ -59,11 +62,11 @@ import {
   FetchArgs,
   fetchBaseQuery,
   FetchBaseQueryError,
-} from '@reduxjs/toolkit/query/react';
-import { RootState } from '@/store';
-import { isTokenExpired } from '@/utils/tokenUtils';
-import { BASE_API_URL } from '@/utils/constants';
-import { login, selectSessionToken } from './authSlice';
+} from "@reduxjs/toolkit/query/react";
+import { RootState } from "@/store";
+import { isTokenExpired } from "@/utils/tokenUtils";
+import { BASE_API_URL } from "@/utils/constants";
+import { login, selectSessionToken } from "./authSlice";
 
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
@@ -81,7 +84,7 @@ const baseQueryWithReauth: BaseQueryFn<
   sessionToken = selectSessionToken(state);
 
   const isFormDataRequest =
-    typeof args === 'object' &&
+    typeof args === "object" &&
     args !== null &&
     (args as FetchArgs).body instanceof FormData;
 
@@ -90,9 +93,9 @@ const baseQueryWithReauth: BaseQueryFn<
     timeout: 600000,
     prepareHeaders: (headers) => {
       if (!isFormDataRequest) {
-        headers.set('Content-Type', 'application/json');
+        headers.set("Content-Type", "application/json");
       }
-      headers.set('Authorization', `Bearer ${sessionToken}`);
+      headers.set("Authorization", `Bearer ${sessionToken}`);
       return headers;
     },
     validateStatus: (response) => {
@@ -104,7 +107,7 @@ const baseQueryWithReauth: BaseQueryFn<
     return {
       data: {
         Data: {},
-        Message: 'No content',
+        Message: "No content",
         Succeeded: true,
         StatusCode: 204,
       },
@@ -147,7 +150,11 @@ export interface FinancialDatabasesData {
   Email: string;
   FirmID: string;
   FirmKey: string;
-  FinancialSources: { FinancialSourceID: string; FinancialSourceKey: string; FinancialSourceName: string }[];
+  FinancialSources: {
+    FinancialSourceID: string;
+    FinancialSourceKey: string;
+    FinancialSourceName: string;
+  }[];
 }
 
 export interface CompanyImagesRequest {
@@ -171,7 +178,7 @@ export interface ReportTemplateImagesResponse {
 }
 
 export const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   keepUnusedDataFor: 300,
   invalidationBehavior: 'immediate',
@@ -180,12 +187,12 @@ export const apiSlice = createApi({
     // Account & Auth
     getAccounts: builder.query<AccountData[], UseAccounts>({
       query: (params) => ({
-        url: 'account/account',
-        method: 'POST',
+        url: "account/account",
+        method: "POST",
         body: params,
       }),
       transformResponse: (
-        response: ApiResponse<AccountsApiResponseData>
+        response: ApiResponse<AccountsApiResponseData>,
       ): AccountData[] => response.Data.Accounts,
     }),
     getFinancialDatabases: builder.query<
@@ -193,30 +200,30 @@ export const apiSlice = createApi({
       void
     >({
       query: () => ({
-        url: 'user/info',
-        method: 'GET',
+        url: "user/info",
+        method: "GET",
       }),
     }),
 
     // Logging
     logUserActivity: builder.mutation<ApiResponse<boolean>, LoggerInfo>({
       query: (logInfo) => ({
-        url: 'useractivity/log',
-        method: 'POST',
+        url: "useractivity/log",
+        method: "POST",
         body: logInfo,
       }),
     }),
     createUser: builder.mutation<ApiResponse<boolean>, UserInfoLog>({
       query: (userInfo) => ({
-        url: 'useractivity/createupdateuser',
-        method: 'POST',
+        url: "useractivity/createupdateuser",
+        method: "POST",
         body: userInfo,
       }),
     }),
     getUserInfo: builder.query<ApiResponse<UserInfo>, void>({
       query: () => ({
-        url: 'user/info',
-        method: 'GET',
+        url: "user/info",
+        method: "GET",
       }),
     }),
 
@@ -226,19 +233,19 @@ export const apiSlice = createApi({
       DocumentListRequest
     >({
       query: (params: DocumentListRequest): FetchArgs => ({
-        url: 'workflow/documentlist',
-        method: 'GET',
+        url: "workflow/documentlist",
+        method: "GET",
         params,
       }),
-      providesTags: ['DocumentList'],
+      providesTags: ["DocumentList"],
     }),
     getWorkflowFilters: builder.query<
       ApiResponse<WorkflowFilterResponse>,
       WorkflowFilterRequest
     >({
       query: (params: WorkflowFilterRequest): FetchArgs => ({
-        url: 'workflow/filters',
-        method: 'GET',
+        url: "workflow/filters",
+        method: "GET",
         params,
       }),
     }),
@@ -247,8 +254,8 @@ export const apiSlice = createApi({
       UserPermissionsRequest
     >({
       query: (params: UserPermissionsRequest): FetchArgs => ({
-        url: 'workflow/userpermissions',
-        method: 'GET',
+        url: "workflow/userpermissions",
+        method: "GET",
         params,
       }),
     }),
@@ -257,162 +264,162 @@ export const apiSlice = createApi({
       SaveToDraftRequest
     >({
       query: (request) => ({
-        url: 'workflow/SaveToDraft',
-        method: 'POST',
+        url: "workflow/SaveToDraft",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     checkoutDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       DocumentActionRequest
     >({
       query: (request) => ({
-        url: 'workflow/checkout',
-        method: 'POST',
+        url: "workflow/checkout",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     checkinDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       CheckinRequest
     >({
       query: (request) => ({
-        url: 'workflow/checkin',
-        method: 'POST',
+        url: "workflow/checkin",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     updateDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       UpdateDocumentRequest
     >({
       query: (request) => ({
-        url: 'workflow/updateDocument',
-        method: 'POST',
+        url: "workflow/updateDocument",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     approveDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       ApproveRejectRequest
     >({
       query: (request) => ({
-        url: 'workflow/approve',
-        method: 'POST',
+        url: "workflow/approve",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     rejectDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       ApproveRejectRequest
     >({
       query: (request) => ({
-        url: 'workflow/reject',
-        method: 'POST',
+        url: "workflow/reject",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     changePriority: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       ChangePriorityRequest
     >({
       query: (request) => ({
-        url: 'workflow/changePriority',
-        method: 'POST',
+        url: "workflow/changePriority",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     changeStatus: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       ChangeStatusRequest
     >({
       query: (request) => ({
-        url: 'workflow/changeStatus',
-        method: 'POST',
+        url: "workflow/changeStatus",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     updateWallCrossStatus: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       UpdateWallCrossStatusRequest
     >({
       query: (request) => ({
-        url: 'workflow/updateWallCrossStatus',
-        method: 'POST',
+        url: "workflow/updateWallCrossStatus",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     submitForReview: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       SubmitForReviewRequest
     >({
       query: (request) => ({
-        url: 'workflow/submitForReview',
-        method: 'POST',
+        url: "workflow/submitForReview",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     killDocument: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       DocumentActionRequest
     >({
       query: (request) => ({
-        url: 'workflow/kill',
-        method: 'POST',
+        url: "workflow/kill",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     breakDocumentLock: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       DocumentActionRequest
     >({
       query: (request) => ({
-        url: 'workflow/breakLock',
-        method: 'POST',
+        url: "workflow/breakLock",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     addDocumentComment: builder.mutation<
       ApiResponse<DocumentActionResponse>,
       AddCommentRequest
     >({
       query: (request) => ({
-        url: 'workflow/addComment',
-        method: 'POST',
+        url: "workflow/addComment",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     analystSignOff: builder.mutation<
       ApiResponse<AnalystSignOffResponse>,
       AnalystSignOffRequest
     >({
       query: (request) => ({
-        url: 'workflow/analystSignOff',
-        method: 'POST',
+        url: "workflow/analystSignOff",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     getDocumentStatus: builder.query<
       ApiResponse<DocumentStatusResponse>,
       { accountName: string; docID: number; accountID: number; srvrID?: number }
     >({
       query: (params) => ({
-        url: 'workflow/documentStatus',
-        method: 'GET',
+        url: "workflow/documentStatus",
+        method: "GET",
         params,
       }),
     }),
@@ -421,8 +428,8 @@ export const apiSlice = createApi({
       { accountName: string; docID: number; srvrID?: number }
     >({
       query: (params) => ({
-        url: 'workflow/documentComments',
-        method: 'GET',
+        url: "workflow/documentComments",
+        method: "GET",
         params,
       }),
     }),
@@ -431,8 +438,8 @@ export const apiSlice = createApi({
       { accountName: string; docID: number; srvrID?: number }
     >({
       query: (params) => ({
-        url: 'workflow/documentHistory',
-        method: 'GET',
+        url: "workflow/documentHistory",
+        method: "GET",
         params,
       }),
     }),
@@ -441,8 +448,8 @@ export const apiSlice = createApi({
       DownloadDocumentRequest
     >({
       query: (params) => ({
-        url: 'workflow/download',
-        method: 'GET',
+        url: "workflow/download",
+        method: "GET",
         params,
       }),
     }),
@@ -452,8 +459,8 @@ export const apiSlice = createApi({
       { accountName: string; docID: number }
     >({
       query: (params) => ({
-        url: 'workflow/attachments',
-        method: 'GET',
+        url: "workflow/attachments",
+        method: "GET",
         params,
       }),
     }),
@@ -462,8 +469,8 @@ export const apiSlice = createApi({
       { accountName: string; docID: number; fileName: string }
     >({
       query: (params) => ({
-        url: 'workflow/attachment/download',
-        method: 'GET',
+        url: "workflow/attachment/download",
+        method: "GET",
         params,
       }),
     }),
@@ -472,11 +479,11 @@ export const apiSlice = createApi({
       { accountName: string; docID: number; fileName: string }
     >({
       query: (request) => ({
-        url: 'workflow/attachment',
-        method: 'DELETE',
+        url: "workflow/attachment",
+        method: "DELETE",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     // Compliance Override
     overrideComplianceBlock: builder.mutation<
@@ -484,11 +491,11 @@ export const apiSlice = createApi({
       OverrideComplianceRequest
     >({
       query: (request) => ({
-        url: 'workflow/overrideCompliance',
-        method: 'POST',
+        url: "workflow/overrideCompliance",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     // Company Mentions
     getCompanyMentions: builder.query<
@@ -502,8 +509,8 @@ export const apiSlice = createApi({
       }
     >({
       query: (params) => ({
-        url: 'workflow/companyMentions',
-        method: 'GET',
+        url: "workflow/companyMentions",
+        method: "GET",
         params,
       }),
     }),
@@ -513,8 +520,8 @@ export const apiSlice = createApi({
       { accountName: string; accountID: number; srvrID: number }
     >({
       query: (params) => ({
-        url: 'workflow/rixmlSubjects',
-        method: 'GET',
+        url: "workflow/rixmlSubjects",
+        method: "GET",
         params,
       }),
     }),
@@ -523,11 +530,11 @@ export const apiSlice = createApi({
       PublishDocumentRequest
     >({
       query: (request) => ({
-        url: 'workflow/publish',
-        method: 'POST',
+        url: "workflow/publish",
+        method: "POST",
         body: request,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
     // Download RIXML
     downloadRIXML: builder.query<
@@ -535,8 +542,8 @@ export const apiSlice = createApi({
       { AccountName: string; DocGUID: string; SrvrID: number }
     >({
       query: (params) => ({
-        url: 'report/getpdf',
-        method: 'POST',
+        url: "report/getpdf",
+        method: "POST",
         body: { ...params, DocType: 5 },
       }),
     }),
@@ -547,11 +554,11 @@ export const apiSlice = createApi({
       FormData
     >({
       query: (formData) => ({
-        url: 'workflow/attachment/upload',
-        method: 'POST',
+        url: "workflow/attachment/upload",
+        method: "POST",
         body: formData,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
 
     // Distribution
@@ -560,8 +567,8 @@ export const apiSlice = createApi({
       SubmitForDistributionRequest
     >({
       query: (request) => ({
-        url: 'workflow/submitForDistribution',
-        method: 'POST',
+        url: "workflow/submitForDistribution",
+        method: "POST",
         body: request,
       }),
     }),
@@ -569,8 +576,8 @@ export const apiSlice = createApi({
     // ---- Company / Author / Template Endpoints ----
     getCompaniesbyUser: builder.query<ApiResponse<Company[]>, CompaniesbyUser>({
       query: (params) => ({
-        url: 'company/getlistbyuserid',
-        method: 'POST',
+        url: "company/getlistbyuserid",
+        method: "POST",
         body: params,
       }),
     }),
@@ -579,15 +586,15 @@ export const apiSlice = createApi({
       CompanyImagesRequest
     >({
       query: (params) => ({
-        url: 'company/getimages',
-        method: 'POST',
+        url: "company/getimages",
+        method: "POST",
         body: params,
       }),
     }),
     getAuthors: builder.query<AuthorsResponse, UseAuthors>({
       query: (params) => ({
-        url: 'company/getcorpbyanalyst',
-        method: 'POST',
+        url: "company/getcorpbyanalyst",
+        method: "POST",
         body: params,
       }),
     }),
@@ -596,15 +603,18 @@ export const apiSlice = createApi({
       AuthorAvatarRequest
     >({
       query: (params) => ({
-        url: 'author/getavatars',
-        method: 'POST',
+        url: "author/getavatars",
+        method: "POST",
         body: params,
       }),
     }),
-    getReportTemplates: builder.query<ApiResponse<ReportType[]>, UseReportTypes>({
+    getReportTemplates: builder.query<
+      ApiResponse<ReportType[]>,
+      UseReportTypes
+    >({
       query: (params) => ({
-        url: 'reporttemplate/getreporttemplates',
-        method: 'POST',
+        url: "reporttemplate/getreporttemplates",
+        method: "POST",
         body: params,
       }),
     }),
@@ -613,8 +623,8 @@ export const apiSlice = createApi({
       ReportTemplateImagesRequest
     >({
       query: (params) => ({
-        url: 'reporttemplate/getimages',
-        method: 'POST',
+        url: "reporttemplate/getimages",
+        method: "POST",
         body: params,
       }),
     }),
@@ -622,18 +632,21 @@ export const apiSlice = createApi({
     // Upload / Submit
     getDocID: builder.mutation<ApiResponse<docIDResponse>, docIDRequest>({
       query: (params) => ({
-        url: 'reportdocid/generatenewdocid',
-        method: 'POST',
+        url: "reportdocid/generatenewdocid",
+        method: "POST",
         body: params,
       }),
     }),
-    submitReportToEFA: builder.mutation<ApiResponse<string>, submitReportRequest>({
+    submitReportToEFA: builder.mutation<
+      ApiResponse<string>,
+      submitReportRequest
+    >({
       query: (params) => ({
-        url: 'workflow/submittoefa',
-        method: 'POST',
+        url: "workflow/submittoefa",
+        method: "POST",
         body: params,
       }),
-      invalidatesTags: ['DocumentList'],
+      invalidatesTags: ["DocumentList"],
     }),
 
     // ---- Table & Chart insertion endpoints ----

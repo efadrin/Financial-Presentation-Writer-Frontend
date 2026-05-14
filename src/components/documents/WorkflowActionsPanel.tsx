@@ -4,9 +4,9 @@ import React, {
   useRef,
   useMemo,
   useEffect,
-} from 'react';
-import { useSelector } from 'react-redux';
-import { useUIOverlay } from '@/hooks/useUIOverlay';
+} from "react";
+import { useSelector } from "react-redux";
+import { useUIOverlay } from "@/hooks/useUIOverlay";
 import {
   makeStyles,
   tokens,
@@ -27,11 +27,11 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   BottomSheet,
   useBottomSheetStyles,
-} from '@/components/common/BottomSheet';
+} from "@/components/common/BottomSheet";
 import {
   MoreHorizontal20Regular,
   ArrowDownload20Regular,
@@ -69,9 +69,9 @@ import {
   ShieldCheckmark24Regular,
   ShieldLock24Regular,
   ShieldError24Regular,
-} from '@fluentui/react-icons';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '@/store';
+} from "@fluentui/react-icons";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/store";
 import {
   setOpenedDocument,
   setLoading,
@@ -106,7 +106,7 @@ import {
   useOverrideComplianceBlockMutation,
   useGetCompanyMentionsQuery,
   useUpdateWallCrossStatusMutation,
-} from '@/services/apiSlice';
+} from "@/services/apiSlice";
 import {
   DocumentListResponse,
   WorkflowStatus,
@@ -117,118 +117,118 @@ import {
   CompanyMention,
   RIXMLSubject,
   WallCrossStatus,
-} from '@/interfaces/DocumentList';
-import { formatDistanceToNow, format } from 'date-fns';
+} from "@/interfaces/DocumentList";
+import { formatDistanceToNow, format } from "date-fns";
 
 const useStyles = makeStyles({
   container: {
-    display: 'flex',
-    gap: '4px',
-    alignItems: 'center',
+    display: "flex",
+    gap: "4px",
+    alignItems: "center",
   },
   actionButton: {
-    minWidth: '28px',
-    padding: '4px',
+    minWidth: "28px",
+    padding: "4px",
   },
   sheetContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
   },
   textarea: {
-    minHeight: '80px',
+    minHeight: "80px",
   },
   statusBadge: {
-    marginLeft: '8px',
+    marginLeft: "8px",
   },
   historyItem: {
-    padding: '12px',
+    padding: "12px",
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    '&:last-child': {
-      borderBottom: 'none',
+    "&:last-child": {
+      borderBottom: "none",
     },
   },
   historyHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '4px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "4px",
   },
   historyStatus: {
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
   },
   historyTime: {
-    fontSize: '12px',
+    fontSize: "12px",
     color: tokens.colorNeutralForeground3,
   },
   historyUser: {
-    fontSize: '13px',
+    fontSize: "13px",
     color: tokens.colorNeutralForeground2,
   },
   commentItem: {
-    padding: '12px',
+    padding: "12px",
     backgroundColor: tokens.colorNeutralBackground2,
-    borderRadius: '6px',
-    marginBottom: '8px',
+    borderRadius: "6px",
+    marginBottom: "8px",
   },
   commentHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '6px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "6px",
   },
   commentUser: {
     fontWeight: 600,
-    fontSize: '13px',
+    fontSize: "13px",
   },
   commentTime: {
-    fontSize: '11px',
+    fontSize: "11px",
     color: tokens.colorNeutralForeground3,
   },
   commentText: {
-    fontSize: '13px',
-    lineHeight: '1.4',
+    fontSize: "13px",
+    lineHeight: "1.4",
   },
   versionItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 12px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 12px",
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: tokens.colorNeutralBackground1Hover,
     },
   },
   versionInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '2px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "2px",
   },
   versionNumber: {
     fontWeight: 600,
   },
   versionMeta: {
-    fontSize: '12px',
+    fontSize: "12px",
     color: tokens.colorNeutralForeground3,
   },
   emptyState: {
-    padding: '24px',
-    textAlign: 'center',
+    padding: "24px",
+    textAlign: "center",
     color: tokens.colorNeutralForeground3,
   },
   addCommentSection: {
-    marginTop: '12px',
-    paddingTop: '12px',
+    marginTop: "12px",
+    paddingTop: "12px",
     borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   menuList: {
-    maxHeight: '60vh',
-    overflowY: 'auto',
+    maxHeight: "60vh",
+    overflowY: "auto",
   },
   warningText: {
-    fontSize: '14px',
-    lineHeight: '1.5',
+    fontSize: "14px",
+    lineHeight: "1.5",
     color: tokens.colorNeutralForeground2,
   },
   warningHighlight: {
@@ -236,22 +236,22 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground1,
   },
   optionsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
   },
   optionCard: {
-    position: 'relative',
-    padding: '12px',
-    borderRadius: '8px',
+    position: "relative",
+    padding: "12px",
+    borderRadius: "8px",
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground1,
-    cursor: 'pointer',
-    transition: 'border-color 0.15s ease',
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'flex-start',
-    '&:hover': {
+    cursor: "pointer",
+    transition: "border-color 0.15s ease",
+    display: "flex",
+    gap: "10px",
+    alignItems: "flex-start",
+    "&:hover": {
       borderTopColor: tokens.colorBrandStroke1,
       borderRightColor: tokens.colorBrandStroke1,
       borderBottomColor: tokens.colorBrandStroke1,
@@ -266,17 +266,17 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorBrandBackground2,
   },
   optionIconWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '36px',
-    height: '36px',
-    borderRadius: '8px',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "36px",
+    height: "36px",
+    borderRadius: "8px",
     flexShrink: 0,
     backgroundColor: tokens.colorNeutralBackground3,
   },
   optionIcon: {
-    fontSize: '20px',
+    fontSize: "20px",
     color: tokens.colorBrandForeground1,
   },
   optionContent: {
@@ -284,107 +284,107 @@ const useStyles = makeStyles({
     minWidth: 0,
   },
   optionTitle: {
-    fontSize: '13px',
+    fontSize: "13px",
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
-    marginBottom: '2px',
+    marginBottom: "2px",
   },
   optionDescription: {
-    fontSize: '11px',
+    fontSize: "11px",
     color: tokens.colorNeutralForeground3,
-    lineHeight: '1.3',
+    lineHeight: "1.3",
   },
   checkmark: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    fontSize: '16px',
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    fontSize: "16px",
     color: tokens.colorBrandForeground1,
   },
   // Wall-cross specific colors
   optionCardNone: {
-    '&:hover': {
-      borderTopColor: '#10b981',
-      borderRightColor: '#10b981',
-      borderBottomColor: '#10b981',
-      borderLeftColor: '#10b981',
+    "&:hover": {
+      borderTopColor: "#10b981",
+      borderRightColor: "#10b981",
+      borderBottomColor: "#10b981",
+      borderLeftColor: "#10b981",
     },
   },
   optionCardNoneSelected: {
-    borderTopColor: '#10b981',
-    borderRightColor: '#10b981',
-    borderBottomColor: '#10b981',
-    borderLeftColor: '#10b981',
-    backgroundColor: '#f0fdf4',
+    borderTopColor: "#10b981",
+    borderRightColor: "#10b981",
+    borderBottomColor: "#10b981",
+    borderLeftColor: "#10b981",
+    backgroundColor: "#f0fdf4",
   },
   optionCardPublic: {
-    '&:hover': {
-      borderTopColor: '#f59e0b',
-      borderRightColor: '#f59e0b',
-      borderBottomColor: '#f59e0b',
-      borderLeftColor: '#f59e0b',
+    "&:hover": {
+      borderTopColor: "#f59e0b",
+      borderRightColor: "#f59e0b",
+      borderBottomColor: "#f59e0b",
+      borderLeftColor: "#f59e0b",
     },
   },
   optionCardPublicSelected: {
-    borderTopColor: '#f59e0b',
-    borderRightColor: '#f59e0b',
-    borderBottomColor: '#f59e0b',
-    borderLeftColor: '#f59e0b',
-    backgroundColor: '#fffbeb',
+    borderTopColor: "#f59e0b",
+    borderRightColor: "#f59e0b",
+    borderBottomColor: "#f59e0b",
+    borderLeftColor: "#f59e0b",
+    backgroundColor: "#fffbeb",
   },
   optionCardNonPublic: {
-    '&:hover': {
-      borderTopColor: '#ef4444',
-      borderRightColor: '#ef4444',
-      borderBottomColor: '#ef4444',
-      borderLeftColor: '#ef4444',
+    "&:hover": {
+      borderTopColor: "#ef4444",
+      borderRightColor: "#ef4444",
+      borderBottomColor: "#ef4444",
+      borderLeftColor: "#ef4444",
     },
   },
   optionCardNonPublicSelected: {
-    borderTopColor: '#ef4444',
-    borderRightColor: '#ef4444',
-    borderBottomColor: '#ef4444',
-    borderLeftColor: '#ef4444',
-    backgroundColor: '#fef2f2',
+    borderTopColor: "#ef4444",
+    borderRightColor: "#ef4444",
+    borderBottomColor: "#ef4444",
+    borderLeftColor: "#ef4444",
+    backgroundColor: "#fef2f2",
   },
   optionIconWrapperNone: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: "#f0fdf4",
   },
   optionIconWrapperPublic: {
-    backgroundColor: '#fffbeb',
+    backgroundColor: "#fffbeb",
   },
   optionIconWrapperNonPublic: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: "#fef2f2",
   },
   optionIconNone: {
-    fontSize: '20px',
-    color: '#10b981',
+    fontSize: "20px",
+    color: "#10b981",
   },
   optionIconPublic: {
-    fontSize: '20px',
-    color: '#f59e0b',
+    fontSize: "20px",
+    color: "#f59e0b",
   },
   optionIconNonPublic: {
-    fontSize: '20px',
-    color: '#ef4444',
+    fontSize: "20px",
+    color: "#ef4444",
   },
   checkmarkNone: {
-    color: '#10b981',
+    color: "#10b981",
   },
   checkmarkPublic: {
-    color: '#f59e0b',
+    color: "#f59e0b",
   },
   checkmarkNonPublic: {
-    color: '#ef4444',
+    color: "#ef4444",
   },
   fileUploadArea: {
     border: `2px dashed ${tokens.colorNeutralStroke2}`,
-    borderRadius: '8px',
-    padding: '20px',
-    textAlign: 'center',
-    cursor: 'pointer',
-    transition: 'border-color 0.2s ease',
-    '&:hover': {
+    borderRadius: "8px",
+    padding: "20px",
+    textAlign: "center",
+    cursor: "pointer",
+    transition: "border-color 0.2s ease",
+    "&:hover": {
       borderTopColor: tokens.colorBrandStroke1,
       borderRightColor: tokens.colorBrandStroke1,
       borderBottomColor: tokens.colorBrandStroke1,
@@ -399,10 +399,10 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorBrandBackground2,
   },
   distributionOption: {
-    padding: '12px',
-    borderRadius: '8px',
+    padding: "12px",
+    borderRadius: "8px",
     border: `1px solid ${tokens.colorNeutralStroke2}`,
-    marginBottom: '8px',
+    marginBottom: "8px",
   },
 });
 
@@ -441,9 +441,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
   // Dialog states
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [rejectReason, setRejectReason] = useState("");
   const [priorityDialogOpen, setPriorityDialogOpen] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState<string>('');
+  const [selectedPriority, setSelectedPriority] = useState<string>("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [breakLockDialogOpen, setBreakLockDialogOpen] = useState(false);
   const [checkinDialogOpen, setCheckinDialogOpen] = useState(false);
@@ -471,7 +471,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     }
   }, [commentsOpen, commentsDialogOpenInternal]);
 
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
   const [attachmentsDialogOpen, setAttachmentsDialogOpen] = useState(false);
   const [companyMentionsDialogOpen, setCompanyMentionsDialogOpen] =
     useState(false);
@@ -479,13 +479,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   const [distributeToPeelHunt, setDistributeToPeelHunt] = useState(true);
   const [distributeToSingleTrack, setDistributeToSingleTrack] = useState(true);
   const [retractDialogOpen, setRetractDialogOpen] = useState(false);
-  const [retractReason, setRetractReason] = useState('');
+  const [retractReason, setRetractReason] = useState("");
   const [nonFpwPublishWarningOpen, setNonFpwPublishWarningOpen] =
     useState(false);
   const [wallCrossDialogOpenInternal, setWallCrossDialogOpenInternal] =
     useState(false);
   const [selectedWallCrossStatus, setSelectedWallCrossStatus] =
-    useState<WallCrossStatus>('none');
+    useState<WallCrossStatus>("none");
   const [openInPowerPointDialogOpen, setOpenInPowerPointDialogOpen] =
     useState(false);
 
@@ -505,10 +505,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       setWallCrossDialogOpenInternal(true);
       if (document.IsWallCrossed) {
         setSelectedWallCrossStatus(
-          document.IsNonPublic ? 'nonPublic' : 'public'
+          document.IsNonPublic ? "nonPublic" : "public",
         );
       } else {
-        setSelectedWallCrossStatus('none');
+        setSelectedWallCrossStatus("none");
       }
     }
   }, [
@@ -558,10 +558,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   const { showToast } = useUIOverlay();
 
   // Query params
-  const accountName = settings.account?.AccountName || '';
-  const srvrID = parseInt(settings.account?.SrvrID || '0', 10);
-  const userID = parseInt(settings.account?.UserID?.toString() || '0', 10);
-  const accountID = parseInt(settings.account?.AccountID || '0', 10);
+  const accountName = settings.account?.AccountName || "";
+  const srvrID = parseInt(settings.account?.SrvrID || "0", 10);
+  const userID = parseInt(settings.account?.UserID?.toString() || "0", 10);
+  const accountID = parseInt(settings.account?.AccountID || "0", 10);
 
   // Fetch user permissions for role-based visibility
   const permissionsParams =
@@ -577,7 +577,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     permissionsParams!,
     {
       skip: !permissionsParams,
-    }
+    },
   );
   const userRoles = permissionsResponse?.Data?.Roles || [];
   const controlPermissions =
@@ -586,10 +586,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   const hasRole = useCallback(
     (roleName: string) => {
       return userRoles.some(
-        (r) => r.RoleName.toLowerCase() === roleName.toLowerCase()
+        (r) => r.RoleName.toLowerCase() === roleName.toLowerCase(),
       );
     },
-    [userRoles]
+    [userRoles],
   );
 
   const canPerformAction = useCallback(
@@ -600,15 +600,15 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         .map((cp) => cp.RoleID);
       return userRoles.some((r) => allowedRoleIds.includes(r.RoleID));
     },
-    [controlPermissions, userRoles]
+    [controlPermissions, userRoles],
   );
 
   // Role-based visibility flags
-  const isAnalyst = hasRole('Analyst');
-  const isCompliance = hasRole('Compliance');
-  const isPublisher = hasRole('Publisher');
-  const isAdmin = hasRole('Admin');
-  const isSupervisory = hasRole('Supervisory');
+  const isAnalyst = hasRole("Analyst");
+  const isCompliance = hasRole("Compliance");
+  const isPublisher = hasRole("Publisher");
+  const isAdmin = hasRole("Admin");
+  const isSupervisory = hasRole("Supervisory");
 
   // Get filters for priority dropdown and publisher type
   const filterParams =
@@ -620,8 +620,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       skip: !filterParams || (!priorityDialogOpen && !publishDialogOpen),
     });
   const priorities: PriorityOption[] = filtersResponse?.Data?.Priorities || [];
-  const publisherType = filtersResponse?.Data?.PublisherType || 'Default';
-  const isPeelHuntPublisher = publisherType === 'PeelHunt';
+  const publisherType = filtersResponse?.Data?.PublisherType || "Default";
+  const isPeelHuntPublisher = publisherType === "PeelHunt";
 
   // Fetch document history when status dialog or versions dialog opens
   const { data: historyResponse, isLoading: historyLoading } =
@@ -630,7 +630,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       {
         skip:
           (!statusDialogOpen && !versionsDialogOpen) || !accountName || !srvrID,
-      }
+      },
     );
   const history: DocumentHistoryResponse[] = historyResponse?.Data || [];
 
@@ -641,7 +641,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     refetch: refetchComments,
   } = useGetDocumentCommentsQuery(
     { accountName, docID: document.DocID, srvrID },
-    { skip: !commentsDialogOpen || !accountName || !srvrID }
+    { skip: !commentsDialogOpen || !accountName || !srvrID },
   );
   const comments: DocumentCommentResponse[] = commentsResponse?.Data || [];
 
@@ -658,7 +658,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     refetch: refetchAttachments,
   } = useGetDocumentAttachmentsQuery(
     { accountName, docID: document.DocID },
-    { skip: !attachmentsDialogOpen || !accountName }
+    { skip: !attachmentsDialogOpen || !accountName },
   );
   const attachments: AttachmentInfo[] = attachmentsResponse?.Data || [];
 
@@ -672,7 +672,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         srvrID,
         corpMentionIds: document.CorpMentionIDs || undefined,
       },
-      { skip: !companyMentionsDialogOpen || !accountName || !srvrID }
+      { skip: !companyMentionsDialogOpen || !accountName || !srvrID },
     );
   const companyMentions: CompanyMention[] =
     companyMentionsResponse?.Data?.Mentions || [];
@@ -681,7 +681,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   const { data: rixmlSubjectsResponse, isLoading: rixmlSubjectsLoading } =
     useGetRIXMLSubjectsQuery(
       { accountName, accountID, srvrID },
-      { skip: !publishDialogOpen || !accountName || !srvrID }
+      { skip: !publishDialogOpen || !accountName || !srvrID },
     );
   const rixmlSubjects: RIXMLSubject[] =
     rixmlSubjectsResponse?.Data?.Subjects || [];
@@ -699,7 +699,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       }
     });
     return Array.from(versionMap.values()).sort(
-      (a, b) => b.DocVersion - a.DocVersion
+      (a, b) => b.DocVersion - a.DocVersion,
     );
   }, [history]);
 
@@ -723,7 +723,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       UserID: userID,
       AccountID: accountID,
     }),
-    [accountName, srvrID, document.DocID, userID, accountID]
+    [accountName, srvrID, document.DocID, userID, accountID],
   );
 
   // Helper function to trigger file download from base64
@@ -737,7 +737,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: contentType });
       const url = URL.createObjectURL(blob);
-      const link = window.document.createElement('a');
+      const link = window.document.createElement("a");
       link.href = url;
       link.download = fileName;
       window.document.body.appendChild(link);
@@ -745,7 +745,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       window.document.body.removeChild(link);
       URL.revokeObjectURL(url);
     },
-    []
+    [],
   );
 
   // DocType: 0=Original, 1=PDF
@@ -766,13 +766,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
             result.Data.DocName || `Presentation_${document.DocID}.pptx`;
           const contentType =
             result.Data.ContentType ||
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation";
           downloadFile(result.Data.BlobBase64, fileName, contentType);
         } else {
-          console.error('Download failed:', result.Data?.Message);
+          console.error("Download failed:", result.Data?.Message);
         }
       } catch (error) {
-        console.error('Download failed:', error);
+        console.error("Download failed:", error);
       }
     },
     [downloadDoc, accountName, srvrID, accountID, document.DocID, downloadFile]
@@ -781,7 +781,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   // Download RIXML via EFADocRetrieve for published documents
   const handleDownloadRIXML = useCallback(async () => {
     if (!document.DocGUID) {
-      console.error('DocGUID not available for RIXML download');
+      console.error("DocGUID not available for RIXML download");
       return;
     }
     try {
@@ -793,16 +793,22 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
       if (result.Data?.PDFBinary) {
         const fileName =
-          result.Data.FileName ||
-          `${document.DocName || 'Document'}_RIXML.xml`;
-        downloadFile(result.Data.PDFBinary, fileName, 'application/xml');
+          result.Data.FileName || `${document.DocName || "Document"}_RIXML.xml`;
+        downloadFile(result.Data.PDFBinary, fileName, "application/xml");
       } else {
-        console.error('RIXML download failed: no data returned');
+        console.error("RIXML download failed: no data returned");
       }
     } catch (error) {
-      console.error('RIXML download failed:', error);
+      console.error("RIXML download failed:", error);
     }
-  }, [downloadRIXML, accountName, srvrID, document.DocGUID, document.DocName, downloadFile]);
+  }, [
+    downloadRIXML,
+    accountName,
+    srvrID,
+    document.DocGUID,
+    document.DocName,
+    downloadFile,
+  ]);
 
   const handleCheckout = useCallback(async () => {
     try {
@@ -810,7 +816,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       await handleDownload(0);
       onActionComplete?.();
     } catch (error) {
-      console.error('Checkout failed:', error);
+      console.error("Checkout failed:", error);
     }
   }, [checkout, baseRequest, handleDownload, onActionComplete]);
 
@@ -826,7 +832,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         setCheckinFile(file);
       }
     },
-    []
+    [],
   );
 
   const handleCheckinWithoutUpload = useCallback(async () => {
@@ -835,7 +841,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       setCheckinDialogOpen(false);
       onActionComplete?.();
     } catch (error) {
-      console.error('Checkin failed:', error);
+      console.error("Checkin failed:", error);
     }
   }, [checkin, baseRequest, onActionComplete]);
 
@@ -847,7 +853,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       reader.onload = async () => {
         try {
           const dataUrl = reader.result as string;
-          const base64Content = dataUrl.split(',')[1];
+          const base64Content = dataUrl.split(",")[1];
 
           await checkin({
             ...baseRequest(),
@@ -858,14 +864,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           setCheckinFile(null);
           onActionComplete?.();
         } catch (error) {
-          console.error('Checkin with upload failed:', error);
+          console.error("Checkin with upload failed:", error);
         } finally {
           setUploadingCheckin(false);
         }
       };
       reader.readAsDataURL(checkinFile);
     } catch (error) {
-      console.error('File read failed:', error);
+      console.error("File read failed:", error);
       setUploadingCheckin(false);
     }
   }, [checkin, baseRequest, checkinFile, onActionComplete, document.DocName]);
@@ -875,7 +881,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       await approve(baseRequest()).unwrap();
       onActionComplete?.();
     } catch (error) {
-      console.error('Approve failed:', error);
+      console.error("Approve failed:", error);
     }
   }, [approve, baseRequest, onActionComplete]);
 
@@ -887,7 +893,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       }).unwrap();
       onActionComplete?.();
     } catch (error) {
-      console.error('Analyst sign-off failed:', error);
+      console.error("Analyst sign-off failed:", error);
     }
   }, [analystSignOff, baseRequest, document.DocName, onActionComplete]);
 
@@ -895,10 +901,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     try {
       await reject({ ...baseRequest(), Reason: rejectReason }).unwrap();
       setRejectDialogOpen(false);
-      setRejectReason('');
+      setRejectReason("");
       onActionComplete?.();
     } catch (error) {
-      console.error('Reject failed:', error);
+      console.error("Reject failed:", error);
     }
   }, [reject, baseRequest, rejectReason, onActionComplete]);
 
@@ -907,7 +913,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       await submitForReview(baseRequest()).unwrap();
       onActionComplete?.();
     } catch (error) {
-      console.error('Submit for review failed:', error);
+      console.error("Submit for review failed:", error);
     }
   }, [submitForReview, baseRequest, onActionComplete]);
 
@@ -918,7 +924,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       onDocumentDeleted?.(document.DocID);
       onActionComplete?.();
     } catch (error) {
-      console.error('Kill failed:', error);
+      console.error("Kill failed:", error);
     }
   }, [
     killDocument,
@@ -934,7 +940,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       setBreakLockDialogOpen(false);
       onActionComplete?.();
     } catch (error) {
-      console.error('Break lock failed:', error);
+      console.error("Break lock failed:", error);
     }
   }, [breakLock, baseRequest, onActionComplete]);
 
@@ -946,10 +952,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         PriorityID: parseInt(selectedPriority, 10),
       }).unwrap();
       setPriorityDialogOpen(false);
-      setSelectedPriority('');
+      setSelectedPriority("");
       onActionComplete?.();
     } catch (error) {
-      console.error('Change priority failed:', error);
+      console.error("Change priority failed:", error);
     }
   }, [changePriority, baseRequest, selectedPriority, onActionComplete]);
 
@@ -961,12 +967,12 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         ...baseRequest(),
         Comment: newComment,
         DocVersion: latestVersion,
-        StatusName: document.StatusName || 'Review',
+        StatusName: document.StatusName || "Review",
       }).unwrap();
-      setNewComment('');
+      setNewComment("");
       refetchComments();
     } catch (error) {
-      console.error('Add comment failed:', error);
+      console.error("Add comment failed:", error);
     }
   }, [
     addComment,
@@ -986,22 +992,23 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         onActionComplete?.();
       }
     } catch (error) {
-      console.error('Override compliance failed:', error);
+      console.error("Override compliance failed:", error);
     }
   }, [overrideCompliance, baseRequest, onActionComplete]);
 
   const handlePublish = useCallback(async () => {
     try {
-      const templateName = document.TemplateName || '';
+      const templateName = document.TemplateName || "";
       const matchingSubject = rixmlSubjects.find(
         (s) =>
-          s.SubjectPublisherDefined.toLowerCase() === templateName.toLowerCase()
+          s.SubjectPublisherDefined.toLowerCase() ===
+          templateName.toLowerCase(),
       );
 
       const result = await publishDocument({
         ...baseRequest(),
         DocName: document.DocName,
-        SubjectEnum: matchingSubject?.SubjectEnum || '',
+        SubjectEnum: matchingSubject?.SubjectEnum || "",
         SubjectPublisherDefined:
           matchingSubject?.SubjectPublisherDefined || templateName,
         DistributeToPeelHunt: distributeToPeelHunt,
@@ -1010,27 +1017,27 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       if (result.Data?.Success) {
         setPublishDialogOpen(false);
         showToast(
-          'Document Published',
-          result.Data?.Message || 'Document has been published successfully.',
-          'success'
+          "Document Published",
+          result.Data?.Message || "Document has been published successfully.",
+          "success",
         );
         onActionComplete?.();
       } else {
         showToast(
-          'Publish Failed',
+          "Publish Failed",
           result.Message ||
             result.Data?.Message ||
-            'Failed to publish document.',
-          'error'
+            "Failed to publish document.",
+          "error",
         );
       }
     } catch (error: unknown) {
-      console.error('Publish failed:', error);
+      console.error("Publish failed:", error);
       const errorMessage =
         (error as { data?: { Message?: string } })?.data?.Message ||
         (error as Error)?.message ||
-        'An unexpected error occurred while publishing.';
-      showToast('Publish Failed', errorMessage, 'error');
+        "An unexpected error occurred while publishing.";
+      showToast("Publish Failed", errorMessage, "error");
     }
   }, [
     publishDocument,
@@ -1048,15 +1055,15 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
     try {
       const result = await changeStatus({
         ...baseRequest(),
-        NewStatus: 'Review',
+        NewStatus: "Review",
       }).unwrap();
       if (result.Data?.Success) {
         setRetractDialogOpen(false);
-        setRetractReason('');
+        setRetractReason("");
         onActionComplete?.();
       }
     } catch (error) {
-      console.error('Retract failed:', error);
+      console.error("Retract failed:", error);
     }
   }, [changeStatus, baseRequest, onActionComplete]);
 
@@ -1071,7 +1078,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         onActionComplete?.();
       }
     } catch (error) {
-      console.error('Update wall-cross status failed:', error);
+      console.error("Update wall-cross status failed:", error);
     }
   }, [
     updateWallCrossStatus,
@@ -1083,9 +1090,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
   // Initialize wall-cross status when dialog opens
   const openWallCrossDialog = useCallback(() => {
     if (document.IsWallCrossed) {
-      setSelectedWallCrossStatus(document.IsNonPublic ? 'nonPublic' : 'public');
+      setSelectedWallCrossStatus(document.IsNonPublic ? "nonPublic" : "public");
     } else {
-      setSelectedWallCrossStatus('none');
+      setSelectedWallCrossStatus("none");
     }
     setWallCrossDialogOpen(true);
   }, [document.IsWallCrossed, document.IsNonPublic]);
@@ -1097,13 +1104,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
    * without navigating to a new window.
    */
   const handleOpenInPowerPoint = useCallback(
-    async (mode: 'edit' | 'view') => {
+    async (mode: "edit" | "view") => {
       setOpenInPowerPointLoading(true);
       dispatch(setLoading(true));
 
       try {
         // If edit mode, checkout the document first
-        if (mode === 'edit') {
+        if (mode === "edit") {
           await checkout(baseRequest()).unwrap();
         }
 
@@ -1118,7 +1125,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
         if (!result.Data?.Success || !result.Data.BlobBase64) {
           throw new Error(
-            result.Data?.Message || 'Failed to download presentation'
+            result.Data?.Message || "Failed to download presentation",
           );
         }
 
@@ -1134,8 +1141,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         dispatch(
           setOpenedDocument({
             document: document,
-            isCheckedOut: mode === 'edit',
-            isViewOnly: mode === 'view',
+            isCheckedOut: mode === "edit",
+            isViewOnly: mode === "view",
             originalBlob: result.Data.BlobBase64,
             customPropertiesXml,
           })
@@ -1145,19 +1152,19 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         setOpenInPowerPointDialogOpen(false);
 
         // Navigate to the document workflow page
-        navigate('/document-workflow');
+        navigate("/document-workflow");
       } catch (error) {
-        console.error('Open in PowerPoint failed:', error);
+        console.error("Open in PowerPoint failed:", error);
         dispatch(
           setError(
             error instanceof Error
               ? error.message
-              : 'Failed to open presentation'
-          )
+              : "Failed to open presentation",
+          ),
         );
 
         // If we checked out but failed to open, check back in
-        if (mode === 'edit') {
+        if (mode === "edit") {
           try {
             await checkin(baseRequest()).unwrap();
           } catch {
@@ -1180,7 +1187,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       document,
       dispatch,
       navigate,
-    ]
+    ],
   );
 
   const handleDeleteAttachment = useCallback(
@@ -1193,10 +1200,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         }).unwrap();
         refetchAttachments();
       } catch (error) {
-        console.error('Delete attachment failed:', error);
+        console.error("Delete attachment failed:", error);
       }
     },
-    [deleteAttachment, accountName, document.DocID, refetchAttachments]
+    [deleteAttachment, accountName, document.DocID, refetchAttachments],
   );
 
   const handleDownloadAttachment = useCallback(
@@ -1216,10 +1223,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], {
-            type: 'application/octet-stream',
+            type: "application/octet-stream",
           });
           const url = window.URL.createObjectURL(blob);
-          const a = window.document.createElement('a');
+          const a = window.document.createElement("a");
           a.href = url;
           a.download = fileName;
           window.document.body.appendChild(a);
@@ -1228,10 +1235,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           window.document.body.removeChild(a);
         }
       } catch (error) {
-        console.error('Download attachment failed:', error);
+        console.error("Download attachment failed:", error);
       }
     },
-    [downloadAttachment, accountName, document.DocID]
+    [downloadAttachment, accountName, document.DocID],
   );
 
   const isDocumentLocked = !!document.LockingUser;
@@ -1239,51 +1246,51 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
   // Role-based action visibility
   const canCheckout =
-    status !== 'Published' && canPerformAction('btnLock_Unlock');
+    status !== "Published" && canPerformAction("btnLock_Unlock");
   const canBreakLock =
     isDocumentLocked &&
-    (isAdmin || isSupervisory || canPerformAction('btnBreakLock'));
+    (isAdmin || isSupervisory || canPerformAction("btnBreakLock"));
   const canSubmitForReview =
-    status === 'Drafts' && canPerformAction('btnReview');
+    status === "Drafts" && canPerformAction("btnReview");
   const canApprove =
-    status === 'Review' &&
+    status === "Review" &&
     (isCompliance ||
       isSupervisory ||
       isPublisher ||
-      canPerformAction('btnApprove'));
+      canPerformAction("btnApprove"));
   const canReject =
-    status === 'Review' &&
-    (isCompliance || isSupervisory || canPerformAction('btnReject'));
+    status === "Review" &&
+    (isCompliance || isSupervisory || canPerformAction("btnReject"));
   const canAnalystSignOff =
-    status === 'Review' && isAnalyst && canPerformAction('btnApproveAnalyst');
+    status === "Review" && isAnalyst && canPerformAction("btnApproveAnalyst");
   const canChangePriority =
-    status !== 'Published' && canPerformAction('btnPriority');
-  const canDelete = status === 'Drafts' && canPerformAction('btnKillDraft');
+    status !== "Published" && canPerformAction("btnPriority");
+  const canDelete = status === "Drafts" && canPerformAction("btnKillDraft");
   const canPublish =
-    (status === 'Final' || status === 'Finalised') &&
-    (isPublisher || isAdmin || canPerformAction('btnPublish'));
+    (status === "Final" || status === "Finalised") &&
+    (isPublisher || isAdmin || canPerformAction("btnPublish"));
   const canRetract =
-    (status === 'Final' || status === 'Finalised') &&
-    (isPublisher || isAdmin || canPerformAction('btnRetractFinal'));
+    (status === "Final" || status === "Finalised") &&
+    (isPublisher || isAdmin || canPerformAction("btnRetractFinal"));
   const canViewStatus =
-    canPerformAction('btnStatusReview') ||
-    canPerformAction('btnStatusDraft') ||
-    canPerformAction('btnStatusFinal');
+    canPerformAction("btnStatusReview") ||
+    canPerformAction("btnStatusDraft") ||
+    canPerformAction("btnStatusFinal");
   const canViewComments =
-    canPerformAction('btnCommentaryReview') ||
-    canPerformAction('btnCommentaryDraft');
+    canPerformAction("btnCommentaryReview") ||
+    canPerformAction("btnCommentaryDraft");
 
   return (
     <>
-      {isLoading && <Spinner size='tiny' />}
+      {isLoading && <Spinner size="tiny" />}
 
       <Menu open={open} onOpenChange={(_, data) => onOpenChange?.(data.open)}>
         <MenuTrigger disableButtonEnhancement>
           {children || (
             <Button
               icon={<MoreHorizontal20Regular />}
-              appearance='subtle'
-              size='small'
+              appearance="subtle"
+              size="small"
               className={styles.actionButton}
               disabled={isLoading}
             />
@@ -1292,10 +1299,10 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
         <MenuPopover
           positioning={{
-            position: 'below-start',
-            autoSize: 'height',
-            flipBoundary: 'window',
-            overflowBoundary: 'window',
+            position: "below-start",
+            autoSize: "height",
+            flipBoundary: "window",
+            overflowBoundary: "window",
           }}
         >
           <MenuList className={styles.menuList}>
@@ -1379,8 +1386,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 onClick={() => {
                   // PowerPoint files are always allowed; non-FPW reports need warning
                   const isPowerPoint =
-                    document.DocName?.toLowerCase().endsWith('.pptx') ||
-                    document.DocName?.toLowerCase().endsWith('.ppt');
+                    document.DocName?.toLowerCase().endsWith(".pptx") ||
+                    document.DocName?.toLowerCase().endsWith(".ppt");
                   if (!document.EFADRINReport && !isPowerPoint) {
                     setNonFpwPublishWarningOpen(true);
                   } else {
@@ -1436,8 +1443,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 Change Priority
                 {document.PriorityName && (
                   <Badge
-                    appearance='tint'
-                    size='small'
+                    appearance="tint"
+                    size="small"
                     className={styles.statusBadge}
                   >
                     {document.PriorityName}
@@ -1461,17 +1468,17 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               Wall-Cross Status
               {document.IsWallCrossed && (
                 <Badge
-                  appearance='filled'
-                  size='small'
+                  appearance="filled"
+                  size="small"
                   className={styles.statusBadge}
                   style={{
                     backgroundColor: document.IsNonPublic
-                      ? '#d13438'
-                      : '#ffc83d',
-                    color: document.IsNonPublic ? 'white' : 'black',
+                      ? "#d13438"
+                      : "#ffc83d",
+                    color: document.IsNonPublic ? "white" : "black",
                   }}
                 >
-                  {document.IsNonPublic ? 'Non-Public' : 'Public'}
+                  {document.IsNonPublic ? "Non-Public" : "Public"}
                 </Badge>
               )}
             </MenuItem>
@@ -1517,8 +1524,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               Manage Attachments
               {document.Attachment && (
                 <Badge
-                  appearance='filled'
-                  size='small'
+                  appearance="filled"
+                  size="small"
                   className={styles.statusBadge}
                 >
                   {document.Attachment}
@@ -1536,9 +1543,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
             {/* Override Compliance Block - Admin only */}
             {isAdmin &&
-              (status === 'Review' ||
-                status === 'Final' ||
-                status === 'Published') &&
+              (status === "Review" ||
+                status === "Final" ||
+                status === "Published") &&
               document.ComplianceWarning === 2 && (
                 <MenuItem
                   icon={<Shield20Regular />}
@@ -1546,8 +1553,8 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                   disabled={overrideLoading}
                 >
                   {overrideLoading
-                    ? 'Overriding...'
-                    : 'Override Compliance Block'}
+                    ? "Overriding..."
+                    : "Override Compliance Block"}
                 </MenuItem>
               )}
 
@@ -1560,7 +1567,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
             >
               Download Presentation
             </MenuItem>
-            {status === 'Published' && (
+            {status === "Published" && (
               <MenuItem
                 icon={<ArrowDownload20Regular />}
                 onClick={() => handleDownload(1)}
@@ -1568,13 +1575,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 Download PDF
               </MenuItem>
             )}
-            {status === 'Published' && document.DocGUID && (
+            {status === "Published" && document.DocGUID && (
               <MenuItem
                 icon={<ArrowDownload20Regular />}
                 onClick={handleDownloadRIXML}
                 disabled={rixmlDownloadLoading}
               >
-                {rixmlDownloadLoading ? 'Downloading...' : 'Download RIXML'}
+                {rixmlDownloadLoading ? "Downloading..." : "Download RIXML"}
               </MenuItem>
             )}
 
@@ -1596,13 +1603,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={statusDialogOpen}
         onClose={() => setStatusDialogOpen(false)}
-        title='Document Status History'
+        title="Document Status History"
         subtitle={document.DocName}
         icon={<History24Regular />}
       >
         {historyLoading ? (
           <div className={styles.emptyState}>
-            <Spinner size='small' />
+            <Spinner size="small" />
           </div>
         ) : history.length === 0 ? (
           <div className={styles.emptyState}>No history available</div>
@@ -1612,7 +1619,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               <div className={styles.historyHeader}>
                 <Text className={styles.historyStatus}>{item.StatusName}</Text>
                 <Text className={styles.historyTime}>
-                  {format(new Date(item.TimeStamp), 'MMM d, yyyy h:mm a')}
+                  {format(new Date(item.TimeStamp), "MMM d, yyyy h:mm a")}
                 </Text>
               </div>
               <Text className={styles.historyUser}>
@@ -1627,30 +1634,30 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={commentsDialogOpen}
         onClose={() => setCommentsDialogOpen(false)}
-        title='Document Commentary'
+        title="Document Commentary"
         subtitle={document.DocName}
-        maxHeight='80vh'
+        maxHeight="80vh"
         footer={
-          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+          <div style={{ display: "flex", gap: "8px", width: "100%" }}>
             <Textarea
               value={newComment}
               onChange={(_, data) => setNewComment(data.value)}
-              placeholder='Add a comment...'
-              style={{ flex: 1, minHeight: '36px' }}
+              placeholder="Add a comment..."
+              style={{ flex: 1, minHeight: "36px" }}
             />
             <Button
-              appearance='primary'
-              icon={addingComment ? <Spinner size='tiny' /> : <Add20Regular />}
+              appearance="primary"
+              icon={addingComment ? <Spinner size="tiny" /> : <Add20Regular />}
               onClick={handleAddComment}
               disabled={!newComment.trim() || addingComment}
-              style={{ minWidth: '36px', height: '36px' }}
+              style={{ minWidth: "36px", height: "36px" }}
             />
           </div>
         }
       >
         {commentsLoading ? (
           <div className={styles.emptyState}>
-            <Spinner size='small' />
+            <Spinner size="small" />
           </div>
         ) : comments.length === 0 ? (
           <div className={styles.emptyState}>No comments yet</div>
@@ -1667,9 +1674,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               </div>
               <Text className={styles.commentText}>{comment.Comment}</Text>
               <Badge
-                appearance='outline'
-                size='small'
-                style={{ marginTop: '6px' }}
+                appearance="outline"
+                size="small"
+                style={{ marginTop: "6px" }}
               >
                 {comment.StatusName} • v{comment.DocVersion}
               </Badge>
@@ -1682,13 +1689,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={versionsDialogOpen}
         onClose={() => setVersionsDialogOpen(false)}
-        title='Previous Versions'
+        title="Previous Versions"
         subtitle={document.DocName}
         icon={<DocumentMultiple24Regular />}
       >
         {historyLoading ? (
           <div className={styles.emptyState}>
-            <Spinner size='small' />
+            <Spinner size="small" />
           </div>
         ) : versions.length === 0 ? (
           <div className={styles.emptyState}>No versions available</div>
@@ -1700,15 +1707,15 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                   Version {version.DocVersion}
                 </Text>
                 <Text className={styles.versionMeta}>
-                  {version.FullName} •{' '}
-                  {format(new Date(version.TimeStamp), 'MMM d, yyyy')}
+                  {version.FullName} •{" "}
+                  {format(new Date(version.TimeStamp), "MMM d, yyyy")}
                 </Text>
               </div>
               <Button
-                appearance='subtle'
+                appearance="subtle"
                 icon={<ArrowDownload20Regular />}
                 onClick={() => handleDownload(0, version.DocVersion)}
-                size='small'
+                size="small"
               >
                 Download
               </Button>
@@ -1721,25 +1728,25 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={rejectDialogOpen}
         onClose={() => setRejectDialogOpen(false)}
-        title='Reject Document'
+        title="Reject Document"
         subtitle={document.DocName}
         icon={<Dismiss24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setRejectDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleReject}
               disabled={!rejectReason.trim() || rejectLoading}
               className={bottomSheetStyles.footerButton}
             >
-              {rejectLoading ? <Spinner size='tiny' /> : 'Reject'}
+              {rejectLoading ? <Spinner size="tiny" /> : "Reject"}
             </Button>
           </>
         }
@@ -1751,7 +1758,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           <Textarea
             value={rejectReason}
             onChange={(_, data) => setRejectReason(data.value)}
-            placeholder='Enter reason for rejection...'
+            placeholder="Enter reason for rejection..."
             className={styles.textarea}
           />
         </div>
@@ -1761,25 +1768,25 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={priorityDialogOpen}
         onClose={() => setPriorityDialogOpen(false)}
-        title='Change Priority'
+        title="Change Priority"
         subtitle={document.DocName}
         icon={<Flag24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setPriorityDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleChangePriority}
               disabled={!selectedPriority || priorityLoading}
               className={bottomSheetStyles.footerButton}
             >
-              {priorityLoading ? <Spinner size='tiny' /> : 'Change Priority'}
+              {priorityLoading ? <Spinner size="tiny" /> : "Change Priority"}
             </Button>
           </>
         }
@@ -1787,7 +1794,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         <div className={styles.sheetContent}>
           {filtersLoading ? (
             <div className={styles.emptyState}>
-              <Spinner size='small' label='Loading priorities...' />
+              <Spinner size="small" label="Loading priorities..." />
             </div>
           ) : priorities.length === 0 ? (
             <Text>No priorities available</Text>
@@ -1798,12 +1805,12 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 return (
                   <div
                     key={p.PriorityID}
-                    className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ''}`}
+                    className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ""}`}
                     onClick={() => setSelectedPriority(p.PriorityID.toString())}
-                    role='button'
+                    role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                      if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         setSelectedPriority(p.PriorityID.toString());
                       }
@@ -1830,40 +1837,40 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        title='Delete Document'
+        title="Delete Document"
         subtitle={document.DocName}
         icon={<Delete24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setDeleteDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleKill}
               disabled={killLoading}
               className={bottomSheetStyles.footerButton}
               style={{ backgroundColor: tokens.colorPaletteRedBackground3 }}
             >
-              {killLoading ? <Spinner size='tiny' /> : 'Delete'}
+              {killLoading ? <Spinner size="tiny" /> : "Delete"}
             </Button>
           </>
         }
       >
         <div className={styles.sheetContent}>
           <Text className={styles.warningText}>
-            Are you sure you want to delete{' '}
+            Are you sure you want to delete{" "}
             <span className={styles.warningHighlight}>{document.DocName}</span>?
           </Text>
           <Text
             className={styles.warningText}
             style={{
               color: tokens.colorPaletteRedForeground1,
-              marginTop: '8px',
+              marginTop: "8px",
             }}
           >
             This action cannot be undone.
@@ -1875,25 +1882,25 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={breakLockDialogOpen}
         onClose={() => setBreakLockDialogOpen(false)}
-        title='Break Document Lock'
+        title="Break Document Lock"
         subtitle={document.DocName}
         icon={<LockOpen24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setBreakLockDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleBreakLock}
               disabled={breakLockLoading}
               className={bottomSheetStyles.footerButton}
             >
-              {breakLockLoading ? <Spinner size='tiny' /> : 'Break Lock'}
+              {breakLockLoading ? <Spinner size="tiny" /> : "Break Lock"}
             </Button>
           </>
         }
@@ -1906,7 +1913,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
             className={styles.warningText}
             style={{
               color: tokens.colorPaletteYellowForeground2,
-              marginTop: '8px',
+              marginTop: "8px",
             }}
           >
             The user who locked it may lose unsaved changes.
@@ -1918,13 +1925,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={checkinDialogOpen}
         onClose={() => setCheckinDialogOpen(false)}
-        title='Check In Document'
+        title="Check In Document"
         subtitle={document.DocName}
         icon={<ArrowUpload24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setCheckinDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
               disabled={checkinLoading || uploadingCheckin}
@@ -1932,20 +1939,20 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               Cancel
             </Button>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={handleCheckinWithoutUpload}
               disabled={checkinLoading || uploadingCheckin}
               className={bottomSheetStyles.footerButton}
             >
-              {checkinLoading ? <Spinner size='tiny' /> : 'Check In Only'}
+              {checkinLoading ? <Spinner size="tiny" /> : "Check In Only"}
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleCheckinWithUpload}
               disabled={!checkinFile || checkinLoading || uploadingCheckin}
               className={bottomSheetStyles.footerButton}
             >
-              {uploadingCheckin ? <Spinner size='tiny' /> : 'Upload & Check In'}
+              {uploadingCheckin ? <Spinner size="tiny" /> : "Upload & Check In"}
             </Button>
           </>
         }
@@ -1956,19 +1963,19 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
             in?
           </Text>
           <input
-            type='file'
+            type="file"
             ref={fileInputRef}
             onChange={handleCheckinFileChange}
-            accept='.pptx,.ppt'
-            style={{ display: 'none' }}
+            accept=".pptx,.ppt"
+            style={{ display: "none" }}
           />
           <div
-            className={`${styles.fileUploadArea} ${checkinFile ? styles.fileSelected : ''}`}
+            className={`${styles.fileUploadArea} ${checkinFile ? styles.fileSelected : ""}`}
             onClick={() => fileInputRef.current?.click()}
-            role='button'
+            role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 fileInputRef.current?.click();
               }
@@ -1979,9 +1986,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 <Text style={{ fontWeight: 600 }}>{checkinFile.name}</Text>
                 <Text
                   style={{
-                    fontSize: '12px',
+                    fontSize: "12px",
                     color: tokens.colorNeutralForeground3,
-                    marginTop: '4px',
+                    marginTop: "4px",
                   }}
                 >
                   Click to change file
@@ -1991,13 +1998,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               <>
                 <ArrowUpload24Regular
                   style={{
-                    fontSize: '32px',
+                    fontSize: "32px",
                     color: tokens.colorNeutralForeground3,
                   }}
                 />
                 <Text
                   style={{
-                    marginTop: '8px',
+                    marginTop: "8px",
                     color: tokens.colorNeutralForeground2,
                   }}
                 >
@@ -2005,9 +2012,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 </Text>
                 <Text
                   style={{
-                    fontSize: '12px',
+                    fontSize: "12px",
                     color: tokens.colorNeutralForeground3,
-                    marginTop: '4px',
+                    marginTop: "4px",
                   }}
                 >
                   Accepts .ppt and .pptx files
@@ -2022,13 +2029,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={attachmentsDialogOpen}
         onClose={() => setAttachmentsDialogOpen(false)}
-        title='Manage Attachments'
+        title="Manage Attachments"
         subtitle={document.DocName}
         icon={<Attach24Regular />}
       >
         {attachmentsLoading ? (
           <div className={styles.emptyState}>
-            <Spinner size='small' />
+            <Spinner size="small" />
           </div>
         ) : attachments.length === 0 ? (
           <div className={styles.emptyState}>No attachments</div>
@@ -2036,27 +2043,27 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           attachments.map((attachment, idx) => (
             <div key={idx} className={styles.historyItem}>
               <div>
-                <Text weight='semibold'>{attachment.FileName}</Text>
+                <Text weight="semibold">{attachment.FileName}</Text>
                 <div
                   style={{
-                    fontSize: '12px',
+                    fontSize: "12px",
                     color: tokens.colorNeutralForeground2,
                   }}
                 >
-                  Uploaded by {attachment.UploadedBy} on{' '}
-                  {format(new Date(attachment.TimeStamp), 'MMM d, yyyy h:mm a')}
+                  Uploaded by {attachment.UploadedBy} on{" "}
+                  {format(new Date(attachment.TimeStamp), "MMM d, yyyy h:mm a")}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: "flex", gap: "8px" }}>
                 <Button
-                  size='small'
-                  appearance='subtle'
+                  size="small"
+                  appearance="subtle"
                   icon={<ArrowDownload20Regular />}
                   onClick={() => handleDownloadAttachment(attachment.FileName)}
                 />
                 <Button
-                  size='small'
-                  appearance='subtle'
+                  size="small"
+                  appearance="subtle"
                   icon={<Delete20Regular />}
                   onClick={() => handleDeleteAttachment(attachment.FileName)}
                 />
@@ -2070,13 +2077,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={companyMentionsDialogOpen}
         onClose={() => setCompanyMentionsDialogOpen(false)}
-        title='Company Mentions'
+        title="Company Mentions"
         subtitle={document.DocName}
         icon={<Building24Regular />}
       >
         {companyMentionsLoading ? (
           <div className={styles.emptyState}>
-            <Spinner size='small' />
+            <Spinner size="small" />
           </div>
         ) : companyMentions.length === 0 ? (
           <div className={styles.emptyState}>No company mentions found</div>
@@ -2084,12 +2091,12 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           companyMentions.map((company) => (
             <div key={company.CorpID} className={styles.historyItem}>
               <div>
-                <Text weight='semibold'>{company.CorpName}</Text>
+                <Text weight="semibold">{company.CorpName}</Text>
                 {company.CorpNameLocal &&
                   company.CorpNameLocal !== company.CorpName && (
                     <div
                       style={{
-                        fontSize: '12px',
+                        fontSize: "12px",
                         color: tokens.colorNeutralForeground2,
                       }}
                     >
@@ -2097,14 +2104,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                     </div>
                   )}
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: "flex", gap: "8px" }}>
                 {company.IsOnWatchList && (
-                  <Badge appearance='tint' color='warning' size='small'>
+                  <Badge appearance="tint" color="warning" size="small">
                     Watch List
                   </Badge>
                 )}
                 {company.IsOnRelationshipList && (
-                  <Badge appearance='tint' color='success' size='small'>
+                  <Badge appearance="tint" color="success" size="small">
                     Relationship
                   </Badge>
                 )}
@@ -2118,25 +2125,25 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={publishDialogOpen}
         onClose={() => setPublishDialogOpen(false)}
-        title='Publish Report'
+        title="Publish Report"
         subtitle={document.DocName}
         icon={<Send24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setPublishDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handlePublish}
               disabled={publishLoading || filtersLoading}
               className={bottomSheetStyles.footerButton}
             >
-              {publishLoading ? <Spinner size='tiny' /> : 'Publish'}
+              {publishLoading ? <Spinner size="tiny" /> : "Publish"}
             </Button>
           </>
         }
@@ -2144,17 +2151,17 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         <div className={styles.sheetContent}>
           {filtersLoading ? (
             <div className={styles.emptyState}>
-              <Spinner size='small' label='Loading options...' />
+              <Spinner size="small" label="Loading options..." />
             </div>
           ) : isPeelHuntPublisher ? (
             <div className={styles.optionsContainer}>
               <div
-                className={`${styles.optionCard} ${distributeToPeelHunt ? styles.optionCardSelected : ''}`}
+                className={`${styles.optionCard} ${distributeToPeelHunt ? styles.optionCardSelected : ""}`}
                 onClick={() => setDistributeToPeelHunt(!distributeToPeelHunt)}
-                role='button'
+                role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setDistributeToPeelHunt(!distributeToPeelHunt);
                   }
@@ -2173,14 +2180,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 )}
               </div>
               <div
-                className={`${styles.optionCard} ${distributeToSingleTrack ? styles.optionCardSelected : ''}`}
+                className={`${styles.optionCard} ${distributeToSingleTrack ? styles.optionCardSelected : ""}`}
                 onClick={() =>
                   setDistributeToSingleTrack(!distributeToSingleTrack)
                 }
-                role='button'
+                role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setDistributeToSingleTrack(!distributeToSingleTrack);
                   }
@@ -2202,14 +2209,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           ) : (
             <div className={styles.optionsContainer}>
               <div
-                className={`${styles.optionCard} ${distributeToSingleTrack ? styles.optionCardSelected : ''}`}
+                className={`${styles.optionCard} ${distributeToSingleTrack ? styles.optionCardSelected : ""}`}
                 onClick={() =>
                   setDistributeToSingleTrack(!distributeToSingleTrack)
                 }
-                role='button'
+                role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setDistributeToSingleTrack(!distributeToSingleTrack);
                   }
@@ -2236,20 +2243,20 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={retractDialogOpen}
         onClose={() => setRetractDialogOpen(false)}
-        title='Retract Document'
+        title="Retract Document"
         subtitle={document.DocName}
         icon={<ArrowUndo24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setRetractDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
             >
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleRetract}
               className={bottomSheetStyles.footerButton}
             >
@@ -2264,7 +2271,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           </Text>
           <Text
             className={styles.warningText}
-            style={{ fontSize: '13px', marginTop: '8px' }}
+            style={{ fontSize: "13px", marginTop: "8px" }}
           >
             The document will need to go through the approval process again
             before it can be finalized.
@@ -2272,9 +2279,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           <Textarea
             value={retractReason}
             onChange={(_, data) => setRetractReason(data.value)}
-            placeholder='Reason for retraction (optional)...'
+            placeholder="Reason for retraction (optional)..."
             className={styles.textarea}
-            style={{ marginTop: '12px' }}
+            style={{ marginTop: "12px" }}
           />
         </div>
       </BottomSheet>
@@ -2283,13 +2290,13 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={wallCrossDialogOpen}
         onClose={() => setWallCrossDialogOpen(false)}
-        title='Wall-Cross Status'
+        title="Wall-Cross Status"
         subtitle={document.DocName}
         icon={<ShieldLock24Regular />}
         footer={
           <>
             <Button
-              appearance='secondary'
+              appearance="secondary"
               onClick={() => setWallCrossDialogOpen(false)}
               className={bottomSheetStyles.footerButton}
               disabled={wallCrossLoading}
@@ -2297,12 +2304,12 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
               Cancel
             </Button>
             <Button
-              appearance='primary'
+              appearance="primary"
               onClick={handleUpdateWallCrossStatus}
               disabled={wallCrossLoading}
               className={bottomSheetStyles.footerButton}
             >
-              {wallCrossLoading ? <Spinner size='tiny' /> : 'Update Status'}
+              {wallCrossLoading ? <Spinner size="tiny" /> : "Update Status"}
             </Button>
           </>
         }
@@ -2310,14 +2317,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
         <div className={styles.optionsContainer}>
           {/* Not Wall-Crossed Option */}
           <div
-            className={`${styles.optionCard} ${styles.optionCardNone} ${selectedWallCrossStatus === 'none' ? styles.optionCardNoneSelected : ''}`}
-            onClick={() => setSelectedWallCrossStatus('none')}
-            role='button'
+            className={`${styles.optionCard} ${styles.optionCardNone} ${selectedWallCrossStatus === "none" ? styles.optionCardNoneSelected : ""}`}
+            onClick={() => setSelectedWallCrossStatus("none")}
+            role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                setSelectedWallCrossStatus('none');
+                setSelectedWallCrossStatus("none");
               }
             }}
           >
@@ -2332,7 +2339,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 This document does not contain wall-crossed information
               </div>
             </div>
-            {selectedWallCrossStatus === 'none' && (
+            {selectedWallCrossStatus === "none" && (
               <Checkmark20Filled
                 className={`${styles.checkmark} ${styles.checkmarkNone}`}
               />
@@ -2341,14 +2348,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
           {/* Public Information Option */}
           <div
-            className={`${styles.optionCard} ${styles.optionCardPublic} ${selectedWallCrossStatus === 'public' ? styles.optionCardPublicSelected : ''}`}
-            onClick={() => setSelectedWallCrossStatus('public')}
-            role='button'
+            className={`${styles.optionCard} ${styles.optionCardPublic} ${selectedWallCrossStatus === "public" ? styles.optionCardPublicSelected : ""}`}
+            onClick={() => setSelectedWallCrossStatus("public")}
+            role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                setSelectedWallCrossStatus('public');
+                setSelectedWallCrossStatus("public");
               }
             }}
           >
@@ -2366,7 +2373,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 event
               </div>
             </div>
-            {selectedWallCrossStatus === 'public' && (
+            {selectedWallCrossStatus === "public" && (
               <Checkmark20Filled
                 className={`${styles.checkmark} ${styles.checkmarkPublic}`}
               />
@@ -2375,14 +2382,14 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
 
           {/* Non-Public Information Option */}
           <div
-            className={`${styles.optionCard} ${styles.optionCardNonPublic} ${selectedWallCrossStatus === 'nonPublic' ? styles.optionCardNonPublicSelected : ''}`}
-            onClick={() => setSelectedWallCrossStatus('nonPublic')}
-            role='button'
+            className={`${styles.optionCard} ${styles.optionCardNonPublic} ${selectedWallCrossStatus === "nonPublic" ? styles.optionCardNonPublicSelected : ""}`}
+            onClick={() => setSelectedWallCrossStatus("nonPublic")}
+            role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                setSelectedWallCrossStatus('nonPublic');
+                setSelectedWallCrossStatus("nonPublic");
               }
             }}
           >
@@ -2399,7 +2406,7 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
                 This document contains material non-public information (MNPI)
               </div>
             </div>
-            {selectedWallCrossStatus === 'nonPublic' && (
+            {selectedWallCrossStatus === "nonPublic" && (
               <Checkmark20Filled
                 className={`${styles.checkmark} ${styles.checkmarkNonPublic}`}
               />
@@ -2412,12 +2419,12 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
       <BottomSheet
         open={nonFpwPublishWarningOpen}
         onClose={() => setNonFpwPublishWarningOpen(false)}
-        title='Cannot Publish from FPW'
+        title="Cannot Publish from FPW"
         subtitle={document.DocName}
         icon={<Send24Regular />}
         footer={
           <Button
-            appearance='primary'
+            appearance="primary"
             onClick={() => setNonFpwPublishWarningOpen(false)}
             className={bottomSheetStyles.footerButton}
           >
@@ -2429,11 +2436,9 @@ export const WorkflowActionsPanel: React.FC<WorkflowActionsPanelProps> = ({
           <Text className={styles.warningText}>
             This document was not created using the FPW PowerPoint tool.
           </Text>
-          <Text className={styles.warningText} style={{ marginTop: '12px' }}>
-            Please publish this document using the{' '}
-            <span className={styles.warningHighlight}>
-              appropriate tool
-            </span>{' '}
+          <Text className={styles.warningText} style={{ marginTop: "12px" }}>
+            Please publish this document using the{" "}
+            <span className={styles.warningHighlight}>appropriate tool</span>{" "}
             instead.
           </Text>
         </div>

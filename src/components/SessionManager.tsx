@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { AppDispatch, RootState } from '@/store';
-import { login } from '@/services/authSlice';
-import { FullPageCenter } from './common/FullPageCenter';
-import { makeStyles } from '@fluentui/react-components';
-import AppSkeleton from './common/AppSkeleton';
+import React, { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { AppDispatch, RootState } from "@/store";
+import { login } from "@/services/authSlice";
+import { FullPageCenter } from "./common/FullPageCenter";
+import { makeStyles } from "@fluentui/react-components";
+import AppSkeleton from "./common/AppSkeleton";
 
 interface SessionManagerProps {
   children: React.ReactNode;
@@ -14,9 +14,9 @@ interface SessionManagerProps {
 
 const useStyles = makeStyles({
   fallbackContainer: {
-    padding: '0 20px',
-    flexDirection: 'column',
-    boxSizing: 'border-box',
+    padding: "0 20px",
+    flexDirection: "column",
+    boxSizing: "border-box",
   },
 });
 
@@ -29,7 +29,7 @@ const SessionManager: React.FC<SessionManagerProps> = ({
   const hasDispatchedLogin = useRef(false);
 
   const { loading, isAuthenticated, sessionToken } = useSelector(
-    (state: RootState) => state.auth
+    (state: RootState) => state.auth,
   );
   const { t } = useTranslation();
 
@@ -41,7 +41,7 @@ const SessionManager: React.FC<SessionManagerProps> = ({
   }, [dispatch, loading, sessionToken]);
 
   if (loading) {
-    return <AppSkeleton message={t('loggingIn')} />;
+    return <AppSkeleton message={t("loggingIn")} />;
   }
 
   if (isAuthenticated) {

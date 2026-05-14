@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { DocumentListTable } from './DocumentListTable';
-import { CommentsBottomSheet } from './CommentsBottomSheet';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
+import React, { useState } from "react";
+import { DocumentListTable } from "./DocumentListTable";
+import { CommentsBottomSheet } from "./CommentsBottomSheet";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
 
 interface DocumentsWithBottomSheetProps {
   documents: DocumentListResponse[];
@@ -13,7 +13,9 @@ interface DocumentsWithBottomSheetProps {
   onDocumentSelect?: (docId: number, selected: boolean) => void;
 }
 
-export const DocumentsWithBottomSheet: React.FC<DocumentsWithBottomSheetProps> = ({
+export const DocumentsWithBottomSheet: React.FC<
+  DocumentsWithBottomSheetProps
+> = ({
   documents,
   status,
   onDocumentClick,
@@ -23,7 +25,8 @@ export const DocumentsWithBottomSheet: React.FC<DocumentsWithBottomSheetProps> =
   onDocumentSelect,
 }) => {
   const [commentsSheetOpen, setCommentsSheetOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<DocumentListResponse | null>(null);
+  const [selectedDocument, setSelectedDocument] =
+    useState<DocumentListResponse | null>(null);
 
   const handleOpenCommentsSheet = (document: DocumentListResponse) => {
     setSelectedDocument(document);

@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useMemo, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import {
   makeStyles,
   tokens,
@@ -9,81 +9,81 @@ import {
   Badge,
   Checkbox,
   mergeClasses,
-} from '@fluentui/react-components';
+} from "@fluentui/react-components";
 import {
   Document20Regular,
   LockClosed16Regular,
   Flag16Filled,
   BuildingMultiple20Regular,
   ShieldLock16Filled,
-} from '@fluentui/react-icons';
-import { DocumentListResponse } from '@/interfaces/DocumentList';
-import { formatDistanceToNow } from 'date-fns';
-import { WorkflowActionsPanel } from './WorkflowActionsPanel';
-import { useCompaniesWithImages } from '@/hooks/useEntityWithImages';
-import { RootState } from '@/store';
-import { getCurrentLanguageIdFromSettings } from '@/utils/languageUtils';
-import { Common } from '@utils/constants';
-import { COLOR_PALETTE } from '@utils/colorPalette';
+} from "@fluentui/react-icons";
+import { DocumentListResponse } from "@/interfaces/DocumentList";
+import { formatDistanceToNow } from "date-fns";
+import { WorkflowActionsPanel } from "./WorkflowActionsPanel";
+import { useCompaniesWithImages } from "@/hooks/useEntityWithImages";
+import { RootState } from "@/store";
+import { getCurrentLanguageIdFromSettings } from "@/utils/languageUtils";
+import { Common } from "@utils/constants";
+import { COLOR_PALETTE } from "@utils/colorPalette";
 
 const useStyles = makeStyles({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
     minHeight: 0,
   },
   listContainer: {
     flex: 1,
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    overflowY: "auto",
+    overflowX: "hidden",
     minHeight: 0,
-    maxHeight: '100%',
-    '&::-webkit-scrollbar': {
-      width: '6px',
+    maxHeight: "100%",
+    "&::-webkit-scrollbar": {
+      width: "6px",
     },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: 'transparent',
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "transparent",
     },
-    '&::-webkit-scrollbar-thumb': {
+    "&::-webkit-scrollbar-thumb": {
       backgroundColor: tokens.colorNeutralStroke2,
-      borderRadius: '3px',
+      borderRadius: "3px",
     },
-    '&::-webkit-scrollbar-thumb:hover': {
+    "&::-webkit-scrollbar-thumb:hover": {
       backgroundColor: tokens.colorNeutralStroke1,
     },
   },
   listItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '10px 12px',
-    cursor: 'pointer',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "10px 12px",
+    cursor: "pointer",
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    transition: 'background-color 0.1s ease',
-    '&:hover': {
+    transition: "background-color 0.1s ease",
+    "&:hover": {
       backgroundColor: tokens.colorNeutralBackground1Hover,
     },
-    '&:last-child': {
-      borderBottom: 'none',
+    "&:last-child": {
+      borderBottom: "none",
     },
   },
   companyImageContainer: {
-    width: '50px',
-    height: '24px',
-    borderRadius: '4px',
+    width: "50px",
+    height: "24px",
+    borderRadius: "4px",
     flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
   },
   companyImage: {
-    maxWidth: '48px',
-    maxHeight: '22px',
-    width: 'auto',
-    height: 'auto',
-    objectFit: 'contain' as const,
+    maxWidth: "48px",
+    maxHeight: "22px",
+    width: "auto",
+    height: "auto",
+    objectFit: "contain" as const,
   },
   iconFallback: {
     color: COLOR_PALETTE.BLUE_DENIM,
@@ -91,103 +91,103 @@ const useStyles = makeStyles({
   docInfo: {
     flex: 1,
     minWidth: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '2px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "2px",
   },
   docName: {
-    fontSize: '13px',
+    fontSize: "13px",
     fontWeight: tokens.fontWeightSemibold,
     color: tokens.colorNeutralForeground1,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   docMeta: {
-    fontSize: '11px',
+    fontSize: "11px",
     color: tokens.colorNeutralForeground3,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   rightSection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
     flexShrink: 0,
   },
   lockIcon: {
     color: tokens.colorPaletteMarigoldForeground1,
-    fontSize: '14px',
+    fontSize: "14px",
   },
   wallCrossPublicBadge: {
-    fontSize: '10px',
-    height: '20px',
+    fontSize: "10px",
+    height: "20px",
     flexShrink: 0,
     backgroundColor: tokens.colorPaletteYellowBackground3,
     color: tokens.colorNeutralForeground1,
   },
   wallCrossNonPublicBadge: {
-    fontSize: '10px',
-    height: '20px',
+    fontSize: "10px",
+    height: "20px",
     flexShrink: 0,
     backgroundColor: tokens.colorPaletteRedBackground3,
     color: tokens.colorNeutralForegroundOnBrand,
     fontWeight: tokens.fontWeightSemibold,
   },
   wallCrossIcon: {
-    fontSize: '12px',
+    fontSize: "12px",
   },
   docNameContainer: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '4px',
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "4px",
   },
   commentCountBadge: {
-    width: '18px',
-    height: '18px',
-    borderRadius: '50%',
+    width: "18px",
+    height: "18px",
+    borderRadius: "50%",
     backgroundColor: tokens.colorPaletteRedBackground3,
     color: tokens.colorNeutralForegroundOnBrand,
-    fontSize: '10px',
+    fontSize: "10px",
     fontWeight: tokens.fontWeightSemibold,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
     flexShrink: 0,
-    marginTop: '-2px',
-    '&:hover': {
+    marginTop: "-2px",
+    "&:hover": {
       backgroundColor: tokens.colorPaletteRedForeground1,
     },
   },
   priorityBadge: {
-    fontSize: '10px',
-    height: '18px',
+    fontSize: "10px",
+    height: "18px",
     flexShrink: 0,
   },
   nonEfadrinBadge: {
-    fontSize: '10px',
-    height: '20px',
+    fontSize: "10px",
+    height: "20px",
     flexShrink: 0,
     backgroundColor: tokens.colorNeutralBackground4,
     color: tokens.colorNeutralForeground2,
   },
   emptyState: {
-    textAlign: 'center' as const,
-    padding: '40px 16px',
+    textAlign: "center" as const,
+    padding: "40px 16px",
     color: tokens.colorNeutralForeground3,
   },
   emptyIcon: {
-    fontSize: '40px',
-    marginBottom: '12px',
+    fontSize: "40px",
+    marginBottom: "12px",
     color: tokens.colorNeutralForeground3,
   },
   listHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '8px 12px',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "8px 12px",
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground2,
   },
@@ -200,7 +200,7 @@ const useStyles = makeStyles({
   },
   checkboxCell: {
     flexShrink: 0,
-    marginRight: '4px',
+    marginRight: "4px",
   },
   listItemSelected: {
     backgroundColor: tokens.colorNeutralBackground1Selected,
@@ -227,7 +227,7 @@ interface DocumentListTableProps {
 
 export const DocumentListTable: React.FC<DocumentListTableProps> = ({
   documents,
-  searchTerm = '',
+  searchTerm = "",
   onActionComplete,
   selectedIds = new Set(),
   onSelectionChange,
@@ -239,25 +239,29 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
   const settings = useSelector((state: RootState) => state.settings);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
-  const [commentsOpenDocId, setCommentsOpenDocId] = useState<number | null>(null);
-  const [wallCrossOpenDocId, setWallCrossOpenDocId] = useState<number | null>(null);
+  const [commentsOpenDocId, setCommentsOpenDocId] = useState<number | null>(
+    null,
+  );
+  const [wallCrossOpenDocId, setWallCrossOpenDocId] = useState<number | null>(
+    null,
+  );
 
   // Fetch company list to get company images
   const queryParams = useMemo(() => {
     const languageId = getCurrentLanguageIdFromSettings(settings);
     const { account } = settings;
     return {
-      SrvrID: account?.SrvrID || '',
-      AccountID: account?.AccountID || '',
+      SrvrID: account?.SrvrID || "",
+      AccountID: account?.AccountID || "",
       LanguageID: languageId,
       UserID: Number(account?.UserID || 0),
-      AccountName: account?.AccountName || '',
+      AccountName: account?.AccountName || "",
     };
   }, [settings]);
 
   const shouldSkipQuery = useMemo(
     () => !settings.account?.AccountName || !settings.account?.SrvrID,
-    [settings.account]
+    [settings.account],
   );
 
   const { data: companiesData } = useCompaniesWithImages(queryParams, {
@@ -296,7 +300,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
         const [companyName, image] = entries[i];
         if (docNameLower.includes(companyName)) {
           if (!imageErrors.has(companyName)) {
-            if (image.startsWith('data:') || image.startsWith('http')) {
+            if (image.startsWith("data:") || image.startsWith("http")) {
               return { url: image, key: companyName };
             }
             return { url: `${Common.IMG_TYPE}${image}`, key: companyName };
@@ -306,7 +310,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
 
       return { url: null, key: null };
     },
-    [companyImageByName, imageErrors]
+    [companyImageByName, imageErrors],
   );
 
   const filteredDocuments = useMemo(() => {
@@ -314,13 +318,13 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
     const deduped = Array.from(
       documents
         .reduce((map, doc) => {
-          const baseName = doc.DocName.replace(/\.[^/.]+$/, '').toLowerCase();
+          const baseName = doc.DocName.replace(/\.[^/.]+$/, "").toLowerCase();
           if (!map.has(baseName)) {
             map.set(baseName, doc);
           }
           return map;
         }, new Map<string, DocumentListResponse>())
-        .values()
+        .values(),
     );
 
     return deduped
@@ -346,7 +350,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
   const someSelected = useMemo(() => {
     if (filteredDocuments.length === 0) return false;
     const selectedCount = filteredDocuments.filter((doc) =>
-      selectedIds.has(doc.DocID)
+      selectedIds.has(doc.DocID),
     ).length;
     return selectedCount > 0 && selectedCount < filteredDocuments.length;
   }, [filteredDocuments, selectedIds]);
@@ -355,14 +359,14 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
     (docId: number, checked: boolean) => {
       onSelectionChange?.(docId, checked);
     },
-    [onSelectionChange]
+    [onSelectionChange],
   );
 
   const handleSelectAllChange = useCallback(
     (checked: boolean) => {
       onSelectAll?.(checked);
     },
-    [onSelectAll]
+    [onSelectAll],
   );
 
   const formatDate = (dateString: string) => {
@@ -382,7 +386,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
         <div className={styles.companyImageContainer}>
           <img
             src={url}
-            alt='Company'
+            alt="Company"
             className={styles.companyImage}
             onError={() => key && handleImageError(key)}
           />
@@ -414,7 +418,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
       {filteredDocuments.length > 0 && onSelectAll && (
         <div className={styles.listHeader}>
           <Checkbox
-            checked={allSelected ? true : someSelected ? 'mixed' : false}
+            checked={allSelected ? true : someSelected ? "mixed" : false}
             onChange={(_, data) => handleSelectAllChange(!!data.checked)}
             className={styles.selectAllCheckbox}
           />
@@ -456,7 +460,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                     styles.listItemWallCrossedPublic,
                   doc.IsWallCrossed &&
                     doc.IsNonPublic &&
-                    styles.listItemWallCrossedNonPublic
+                    styles.listItemWallCrossedNonPublic,
                 )}
               >
                 {onSelectionChange && (
@@ -474,12 +478,12 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                 <div className={styles.docInfo}>
                   <div className={styles.docNameContainer}>
                     <Text className={styles.docName} title={doc.DocName}>
-                      {doc.DocName || 'Untitled Document'}
+                      {doc.DocName || "Untitled Document"}
                     </Text>
                     {doc.Comment != null && doc.Comment > 0 && (
                       <Tooltip
-                        content={`${doc.Comment} comment${doc.Comment > 1 ? 's' : ''} - Click to view`}
-                        relationship='label'
+                        content={`${doc.Comment} comment${doc.Comment > 1 ? "s" : ""} - Click to view`}
+                        relationship="label"
                       >
                         <span
                           className={styles.commentCountBadge}
@@ -491,10 +495,10 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                               setCommentsOpenDocId(doc.DocID);
                             }
                           }}
-                          role='button'
+                          role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
+                            if (e.key === "Enter" || e.key === " ") {
                               e.stopPropagation();
                               if (onOpenCommentsSheet) {
                                 onOpenCommentsSheet(doc);
@@ -504,7 +508,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                             }
                           }}
                         >
-                          {doc.Comment > 99 ? '99+' : doc.Comment}
+                          {doc.Comment > 99 ? "99+" : doc.Comment}
                         </span>
                       </Tooltip>
                     )}
@@ -515,15 +519,15 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                 </div>
                 <div className={styles.rightSection}>
                   {!doc.EFADRINReport &&
-                    (doc.StatusName === 'Final' ||
-                      doc.StatusName === 'Finalised') && (
+                    (doc.StatusName === "Final" ||
+                      doc.StatusName === "Finalised") && (
                       <Tooltip
-                        content='This document was not created using FPW'
-                        relationship='label'
+                        content="This document was not created using FPW"
+                        relationship="label"
                       >
                         <Badge
-                          appearance='filled'
-                          size='small'
+                          appearance="filled"
+                          size="small"
                           className={styles.nonEfadrinBadge}
                         >
                           Non-FPW
@@ -532,12 +536,12 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                     )}
                   {doc.IsWallCrossed && (
                     <Tooltip
-                      content={`${doc.IsNonPublic ? 'Wall Crossed - Contains Non-Public Information' : 'Wall Crossed - Public Information Only'} (Click to change)`}
-                      relationship='label'
+                      content={`${doc.IsNonPublic ? "Wall Crossed - Contains Non-Public Information" : "Wall Crossed - Public Information Only"} (Click to change)`}
+                      relationship="label"
                     >
                       <Badge
-                        appearance='filled'
-                        size='small'
+                        appearance="filled"
+                        size="small"
                         icon={
                           <ShieldLock16Filled
                             className={styles.wallCrossIcon}
@@ -548,7 +552,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                             ? styles.wallCrossNonPublicBadge
                             : styles.wallCrossPublicBadge
                         }
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (onOpenWallCrossSheet) {
@@ -558,17 +562,17 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                           }
                         }}
                       >
-                        {doc.IsNonPublic ? 'Non-Public' : 'Public'}
+                        {doc.IsNonPublic ? "Non-Public" : "Public"}
                       </Badge>
                     </Tooltip>
                   )}
-                  {doc.PriorityName && doc.PriorityName !== 'Normal' && (
+                  {doc.PriorityName && doc.PriorityName !== "Normal" && (
                     <Badge
-                      appearance='tint'
+                      appearance="tint"
                       color={
-                        doc.PriorityName === '1. High' ? 'danger' : 'warning'
+                        doc.PriorityName === "1. High" ? "danger" : "warning"
                       }
-                      size='small'
+                      size="small"
                       icon={<Flag16Filled />}
                       className={styles.priorityBadge}
                     >
@@ -578,7 +582,7 @@ export const DocumentListTable: React.FC<DocumentListTableProps> = ({
                   {doc.LockingUser && (
                     <Tooltip
                       content={`Locked by ${doc.LockingUser}`}
-                      relationship='label'
+                      relationship="label"
                     >
                       <LockClosed16Regular className={styles.lockIcon} />
                     </Tooltip>
