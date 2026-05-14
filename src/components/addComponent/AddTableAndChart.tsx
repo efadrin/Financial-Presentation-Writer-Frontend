@@ -209,6 +209,12 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
   // Per-item expanded state
   const [expandedItems, setExpandedItems] = useState<Record<string, ExpandedItem>>({});
 
+  // Reset expanded items when the default company changes so stale corpIDs are cleared
+  const defaultCorpID = useSelector((s: RootState) => s.presentationInsert.defaultCorpID);
+  useEffect(() => {
+    setExpandedItems({});
+  }, [defaultCorpID]);
+
   const toggleExpand = (queryName: string, corpID: string) => {
     setExpandedItems((prev) => {
       if (prev[queryName]) {
