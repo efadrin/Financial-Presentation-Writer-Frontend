@@ -4,7 +4,7 @@ import { setFilledShapes, lockQuery } from '@/store/presentationInsertSlice';
 import { QueryChartRequest } from '@/interfaces/QueryChart';
 import { ShapeNamePrefixes } from '@/utils/constants';
 
-export type ChartType = 'Bar' | 'Line' | 'Pie' | 'Area' | 'Column';
+export type ChartType = 'Default' | 'Bar' | 'Line' | 'Pie' | 'Area' | 'Column';
 
 export interface InsertChartOptions {
   /** Target named shape (e.g. 'EFAChart1') or 'Cursor' to insert at selection */

@@ -128,8 +128,8 @@ const useStyles = makeStyles({
   },
 });
 
-const ALL_CHART_TYPES: ChartType[] = ['Bar', 'Line', 'Pie', 'Area', 'Column'];
-const MULTI_SERIES_CHART_TYPES: ChartType[] = ['Bar', 'Line', 'Area', 'Column'];
+const ALL_CHART_TYPES: ChartType[] = ['Default', 'Bar', 'Line', 'Pie', 'Area', 'Column'];
+const MULTI_SERIES_CHART_TYPES: ChartType[] = ['Default', 'Bar', 'Line', 'Area', 'Column'];
 const INSERT_AT_CURSOR = 'Cursor';
 
 interface ExpandedItem {
@@ -219,7 +219,7 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
         ...prev,
         [queryName]: {
           corpID,
-          chartType: 'Bar',
+          chartType: 'Default',
           logScale: false,
           insertAt: namedShapes[0] ?? INSERT_AT_CURSOR,
           isInserting: false,
@@ -258,8 +258,8 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
 
     const isMultiSeries = (item.SeriesPerChart ?? 1) > 1;
     const resolvedChartType: ChartType =
-      isMultiSeries && !MULTI_SERIES_CHART_TYPES.includes(expanded.chartType)
-        ? 'Bar'
+      isMultiSeries && expanded.chartType === 'Pie'
+        ? 'Default'
         : expanded.chartType;
 
     console.group(`[Insert] ${isChartMode ? 'Chart' : 'Table'}: ${item.QueryName}`);
@@ -389,9 +389,9 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
         const isMultiSeries = (item.SeriesPerChart ?? 1) > 1;
         const availableChartTypes = isMultiSeries ? MULTI_SERIES_CHART_TYPES : ALL_CHART_TYPES;
         const effectiveChartType: ChartType =
-          expanded && isMultiSeries && !MULTI_SERIES_CHART_TYPES.includes(expanded.chartType)
-            ? 'Bar'
-            : expanded?.chartType ?? 'Bar';
+          expanded && isMultiSeries && expanded.chartType === 'Pie'
+            ? 'Default'
+            : expanded?.chartType ?? 'Default';
 
         return (
           <div key={item.QueryName} className={styles.itemRow}>
