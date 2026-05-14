@@ -128,7 +128,8 @@ const useStyles = makeStyles({
   },
 });
 
-const CHART_TYPES: ChartType[] = ['Bar', 'Line', 'Pie', 'Area', 'Column'];
+const ALL_CHART_TYPES: ChartType[] = ['Default', 'Bar', 'Line', 'Pie', 'Area', 'Column'];
+const MULTI_SERIES_CHART_TYPES: ChartType[] = ['Default', 'Bar', 'Line', 'Area', 'Column'];
 const INSERT_AT_CURSOR = 'Cursor';
 
 interface ExpandedItem {
@@ -218,7 +219,7 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
         ...prev,
         [queryName]: {
           corpID,
-          chartType: 'Bar',
+          chartType: 'Default',
           logScale: false,
           insertAt: namedShapes[0] ?? INSERT_AT_CURSOR,
           isInserting: false,
@@ -255,6 +256,12 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
       devDataFlags,
     };
 
+    const isMultiSeries = (item.SeriesPerChart ?? 1) > 1;
+    const resolvedChartType: ChartType =
+      isMultiSeries && expanded.chartType === 'Pie'
+        ? 'Default'
+        : expanded.chartType;
+
     console.group(`[Insert] ${isChartMode ? 'Chart' : 'Table'}: ${item.QueryName}`);
     console.log('QueryName:', item.QueryName);
     console.log('TableHeader:', item.TableHeader);
@@ -273,7 +280,7 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
       if (isChartMode) {
         await insertChartToPresentation({
           ...commonOpts,
-          chartType: expanded.chartType,
+          chartType: resolvedChartType,
           logScale: expanded.logScale,
         });
       } else {
@@ -379,6 +386,12 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
         const expanded = expandedItems[item.QueryName];
         const lock = lockedQueries[item.QueryName];
         const isUnavailable = item.HasData === false;
+        const isMultiSeries = (item.SeriesPerChart ?? 1) > 1;
+        const availableChartTypes = isMultiSeries ? MULTI_SERIES_CHART_TYPES : ALL_CHART_TYPES;
+        const effectiveChartType: ChartType =
+          expanded && isMultiSeries && expanded.chartType === 'Pie'
+            ? 'Default'
+            : expanded?.chartType ?? 'Default';
 
         return (
           <div key={item.QueryName} className={styles.itemRow}>
@@ -449,13 +462,13 @@ const AddTableAndChart: React.FC<Props> = ({ type }) => {
                     <Field label="Chart type" style={{ minWidth: 100 }}>
                       <Dropdown
                         size="small"
-                        value={expanded.chartType}
-                        selectedOptions={[expanded.chartType]}
+                        value={effectiveChartType}
+                        selectedOptions={[effectiveChartType]}
                         onOptionSelect={(_, d) =>
                           updateItem(item.QueryName, { chartType: (d.optionValue as ChartType) ?? 'Bar' })
                         }
                       >
-                        {CHART_TYPES.map((ct) => (
+                        {availableChartTypes.map((ct) => (
                           <Option key={ct} value={ct}>
                             {ct}
                           </Option>
