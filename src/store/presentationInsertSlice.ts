@@ -66,6 +66,9 @@ export const presentationInsertSlice = createSlice({
       state.defaultCorpID = action.payload.corpID;
       state.defaultCorpName = action.payload.corpName;
       state.defaultCorpModel = action.payload.corpModel;
+      // Clear per-company state so items can be re-inserted for the new company
+      state.insertedQueryNames = [];
+      state.lockedQueries = {};
     },
   },
 });

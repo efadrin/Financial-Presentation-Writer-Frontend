@@ -234,3 +234,19 @@ export function getCurrentPresentationBlob(): Promise<string> {
     );
   });
 }
+
+/**
+ * Returns the current document's filename without extension, derived from
+ * Office.context.document.url. Returns an empty string if unavailable.
+ */
+export function getCurrentDocumentName(): string {
+  try {
+    const url = Office.context.document.url;
+    if (!url) return '';
+    const parts = url.replace(/\\/g, '/').split('/');
+    const filename = parts[parts.length - 1] || '';
+    return filename.replace(/\.(pptx?|ppt)$/i, '');
+  } catch {
+    return '';
+  }
+}

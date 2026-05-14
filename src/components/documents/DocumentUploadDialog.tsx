@@ -28,6 +28,7 @@ import {
   TagPickerInput,
   TagPickerList,
   TagPickerOption,
+  Switch,
 } from '@fluentui/react-components';
 import {
   ArrowUpload20Regular,
@@ -44,6 +45,7 @@ import {
   useSubmitReportToEFAMutation,
 } from '@/services/apiSlice';
 import { getCurrentLanguageIdFromSettings } from '@/utils/languageUtils';
+import { getCurrentPresentationBlob, getCurrentDocumentName } from '@/utils/documentOpenUtils';
 import { ApiName, AuthorDetails, Common, LANGUAGE_MAPPING, SupportedLanguage } from '@/utils/constants';
 import { Company } from '@/interfaces/Company';
 import { Author } from '@/interfaces/Author';
@@ -123,6 +125,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const styles = useStyles();
   const settings = useSelector((state: RootState) => state.settings);
 
+  const [useCurrentPresentation, setUseCurrentPresentation] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [docName, setDocName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
@@ -151,8 +154,17 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
 
   // Determine if the selected file is a PowerPoint
   const isPowerPoint = useMemo(() => {
+    if (useCurrentPresentation) return true;
     return selectedFile ? isPowerPointFile(selectedFile.name) : false;
-  }, [selectedFile]);
+  }, [selectedFile, useCurrentPresentation]);
+
+  // Auto-populate docName from the currently open Office document
+  useEffect(() => {
+    if (open && useCurrentPresentation) {
+      const name = getCurrentDocumentName();
+      if (name) setDocName(name);
+    }
+  }, [open, useCurrentPresentation]);
 
   // Get account info for API calls
   const account = settings.account;
@@ -299,8 +311,13 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   );
 
   const handleUpload = useCallback(async () => {
-    if (!selectedFile || !docName.trim()) {
-      setError('Please select a file and provide a document name');
+    if (!docName.trim()) {
+      setError('Please provide a document name');
+      return;
+    }
+
+    if (!useCurrentPresentation && !selectedFile) {
+      setError('Please select a file to upload');
       return;
     }
 
@@ -330,21 +347,29 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
     setError(null);
 
     try {
-      // Convert file to base64
-      const fileBase64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          // Remove the data:... prefix to get just the base64 content
-          const base64 = result.split(',')[1] || result;
-          resolve(base64);
-        };
-        reader.onerror = () => reject(new Error('Failed to read file'));
-        reader.readAsDataURL(selectedFile);
-      });
+      // Get file as base64 — either from the current open presentation or a browsed file
+      let fileBase64: string;
+      let fileExtension: string;
+
+      if (useCurrentPresentation) {
+        fileBase64 = await getCurrentPresentationBlob();
+        fileExtension = 'pptx';
+      } else {
+        fileBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            // Remove the data:... prefix to get just the base64 content
+            const base64 = result.split(',')[1] || result;
+            resolve(base64);
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsDataURL(selectedFile!);
+        });
+        fileExtension = selectedFile!.name.split('.').pop() || '';
+      }
 
       // Prepare document name with extension
-      const fileExtension = selectedFile.name.split('.').pop() || '';
       const fullDocName = `${docName.trim()}.${fileExtension}`;
 
       // Generate a new DocID
@@ -375,8 +400,10 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       docVariables.push({ Name: 'EFADocID', Value: newDocID.toString() });
       // EFACorpID - The corporation ID (integer, -1 for None)
       docVariables.push({ Name: 'EFACorpID', Value: selectedCompany.corpId.toString() });
-      // EFAModel - The company model (e.g. 'Life', 'Banks', '' for non-corporate)
-      docVariables.push({ Name: 'EFAModel', Value: selectedCompany.model || '' });
+      // EFAModel - The company model (e.g. 'Life', 'Banks') — omitted for non-corporate to avoid validation error
+      if (selectedCompany.corpId !== '-1' && selectedCompany.model) {
+        docVariables.push({ Name: 'EFAModel', Value: selectedCompany.model });
+      }
       // EFADevData - '1' = unpublished/dev data (drafts always start unpublished)
       docVariables.push({ Name: 'EFADevData', Value: '1' });
       
@@ -438,6 +465,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
         onOpenChange(false);
         onUploadComplete?.();
         // Reset state
+        setUseCurrentPresentation(true);
         setSelectedFile(null);
         setDocName('');
         setSuccess(false);
@@ -457,6 +485,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
       setIsLoading(false);
     }
   }, [
+    useCurrentPresentation,
     selectedFile, 
     docName, 
     selectedCompany, 
@@ -481,6 +510,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
   const handleClose = useCallback(() => {
     if (!isLoading) {
       onOpenChange(false);
+      setUseCurrentPresentation(true);
       setSelectedFile(null);
       setDocName('');
       setError(null);
@@ -526,7 +556,34 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                   </MessageBar>
                 )}
 
-                {!selectedFile ? (
+                <Switch
+                  label={useCurrentPresentation ? 'Use current open presentation' : 'Upload from file'}
+                  checked={useCurrentPresentation}
+                  disabled={isLoading}
+                  onChange={(_, data) => {
+                    setUseCurrentPresentation(data.checked);
+                    if (data.checked) {
+                      setSelectedFile(null);
+                      setSelectedTemplateId(null);
+                      const name = getCurrentDocumentName();
+                      if (name) setDocName(name);
+                    } else {
+                      setDocName('');
+                    }
+                  }}
+                />
+
+                {useCurrentPresentation ? (
+                  <div className={styles.fileSelected}>
+                    <SlideText20Regular />
+                    <div className={styles.fileInfo}>
+                      <div style={{ fontWeight: 600 }}>Current open presentation</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>
+                        The currently open PowerPoint will be uploaded
+                      </div>
+                    </div>
+                  </div>
+                ) : !selectedFile ? (
                   <label>
                     <div
                       className={styles.uploadArea}
@@ -765,7 +822,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
               icon={isLoading ? <Spinner size='tiny' /> : success ? <Checkmark20Filled /> : <ArrowUpload20Regular />}
               onClick={handleUpload}
               disabled={
-                !selectedFile || 
+                (!useCurrentPresentation && !selectedFile) || 
                 !docName.trim() || 
                 docNameConflict ||
                 isLoading || 
