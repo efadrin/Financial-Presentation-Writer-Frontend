@@ -30,3 +30,4 @@ certs/
 
 # Tests
 tests/
+debug.log
