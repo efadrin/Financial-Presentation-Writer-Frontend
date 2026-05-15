@@ -794,7 +794,7 @@ export const DocumentUploadDialog: React.FC<DocumentUploadDialogProps> = ({
                         setSelectedTemplateId(newId);
                       }}
                     >
-                      {workflowTemplates?.map(template => (
+                      {workflowTemplates?.filter(t => t.TemplateID === 501).map(template => (
                         <Option key={template.TemplateID} value={String(template.TemplateID)} text={template.TemplateName}>
                           {template.TemplateName}
                           {template.TemplateDescription && ` (${template.TemplateDescription})`}
